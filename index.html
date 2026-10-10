@@ -141,7 +141,17 @@ h1, h2, h3, p { margin: 0; }
   justify-content: center;
   gap: 24px;
 }
-.start-title-wrap { text-align: center; }
+.start-title-wrap { text-align: center; position: relative; }
+/* 🔊 제목 오른쪽 위 효과음 단추 */
+.start-title-wrap .status-sound {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 1.25rem;
+  box-shadow: var(--shadow);
+}
 .start-sprout { font-size: 4rem; line-height: 1; display: inline-block; animation: sway 3s ease-in-out infinite; }
 @keyframes sway { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
 .start-title {
@@ -259,8 +269,9 @@ h1, h2, h3, p { margin: 0; }
 .char-card:hover { transform: translateY(-3px); }
 .char-card.is-selected { border-color: var(--mint-deep); background: #f0fcf7; transform: translateY(-4px); }
 .char-card:focus-visible { outline: 3px solid var(--mint-deep); outline-offset: 2px; }
-.char-look { font-size: 1.05rem; }
-.char-desc { font-size: 0.9rem; color: var(--ink-soft); }
+.char-look { font-size: 1.35rem; color: var(--green-deep); }   /* 캐릭터 이름 */
+.char-desc { font-size: 0.9rem; color: var(--ink-soft); line-height: 1.55; }
+.char-line { display: block; }                                  /* 소개 두 문장을 한 줄씩 */
 @media (max-width: 640px) {
   .char-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -1814,11 +1825,11 @@ const GAME_DATA = {
     wrong: '비밀번호가 달라요.',
     // ⏱ 수업 운영 모드 (공모전판)
     modeTitle: '⏱ 수업 운영 모드',
-    modeFullButton: '📘 기본 (80분 2차시)',
-    modeQuickButton: '⚡ 간편 (40분 1차시)',
-    modeFullNow: '지금은 기본 모드예요. 심화 자료와 근거 문장 고르기까지 모두 해요(약 50~60분).',
-    modeQuickNow: '지금은 간편 모드예요. 심화 자료와 근거 문장 고르기는 선택이 되고, 기사 읽는 시간 기준도 짧아져요(약 25~30분).',
-    modeNote: '이 기기에만 저장돼요. 학생 기기마다 바꿔 주시거나, 주소 끝에 ?quick=1(간편) · ?quick=0(기본)을 붙여 나눠 주세요.',
+    modeFullButton: '📘 기본',
+    modeQuickButton: '⚡ 간편',
+    modeFullNow: '지금은 기본 모드예요. 심화 자료와 근거 문장 고르기까지 모두 해요.',
+    modeQuickNow: '지금은 간편 모드예요. 심화 자료와 근거 문장 고르기는 선택이 되고, 기사 읽는 시간 기준도 짧아져요.',
+    modeNote: '보통은 주소로 나눠 주세요 — 기본은 그냥 주소, 간편은 주소 끝에 ?quick=1. 여기서 바꾸면 이 기기에만 저장돼요.',
     panelTitle: '🛠 선생님용 관리자 모드',
     panelGuide: '여기서 고른 내용은 저장되지 않아요. 학생들의 저장 기록에도 영향을 주지 않아요.',
     endingsTitle: '엔딩 미리 보기',
@@ -1878,14 +1889,17 @@ const GAME_DATA = {
      image: assets 폴더의 그림 / emoji: 그림이 없을 때 대신 보여줄 이모지
      ---------------------------------------------------------------- */
   characterSelect: {
-    guide: `{닉네임} 투자자님의 모습을 골라주세요!`,
-    confirmButton: '이 모습으로 할게요'
+    guide: `{닉네임} 투자자님과 함께할 친구를 골라주세요!`,
+    confirmButton: '이 친구로 할게요'
   },
+  /* 이름은 두 글자 우리말로 — 외국 사람이 읽기에도 어렵지 않게 골랐어요
+     (라미 Rami · 다온 Daon '좋은 것이 다 온다' · 아라 Ara '바다' · 미르 Mir '용') */
   characters: [
-    { id: 1, look: `돼지저금통을 든 아이`, desc: `차근차근 모으는 게 좋아요`,   image: 'assets/character1.png', emoji: '🐷' },
-    { id: 2, look: `동그란 안경을 쓴 아이`, desc: `책 읽기를 좋아해요`,         image: 'assets/character2.png', emoji: '📚' },
-    { id: 3, look: `돋보기를 든 아이`,     desc: `꼼꼼히 살펴보는 게 좋아요`,  image: 'assets/character3.png', emoji: '🔍' },
-    { id: 4, look: `태블릿을 든 아이`,     desc: `새로운 기술이 궁금해요`,     image: 'assets/character4.png', emoji: '📱' }
+    // look 은 그림을 못 볼 때 읽어 주는 설명, desc 는 카드에 보이는 소개 두 문장
+    { id: 1, name: `라미`, look: `돼지저금통을 든 아이`, desc: `돼지저금통을 늘 품고 다녀요.\n차근차근 모으는 걸 좋아해요.`, image: 'assets/character1.png', emoji: '🐷' },
+    { id: 2, name: `다온`, look: `동그란 안경을 쓴 아이`, desc: `동그란 안경을 쓰고 다녀요.\n책 읽기를 좋아해요.`,           image: 'assets/character2.png', emoji: '📚' },
+    { id: 3, name: `아라`, look: `돋보기를 든 아이`,     desc: `돋보기를 들고 다녀요.\n꼼꼼히 살펴보는 걸 좋아해요.`,     image: 'assets/character3.png', emoji: '🔍' },
+    { id: 4, name: `미르`, look: `태블릿을 든 아이`,     desc: `태블릿을 늘 들고 다녀요.\n새로운 기술이 궁금해요.`,       image: 'assets/character4.png', emoji: '📱' }
   ],
 
   /* ----------------------------------------------------------------
@@ -3491,8 +3505,8 @@ const GAME_DATA = {
                 '정답 하나를 맞히는 활동이 아니라, 근거를 확인하고 선택의 이유를 나누는 토론형 활동이에요. 다양한 판단을 존중하되, 내놓은 해결책이 실제 문제를 풀었는지는 기사 속 근거로 확인해요.',
                 '대상: 초등 5~6학년(중학교 1학년도 가능) · 기기: 크롬북·태블릿·컴퓨터(인터넷 없이 파일 하나로도 가능)'] },
       { h: '수업 시간 운영',
-        lines: ['기본(80분·2차시): 도입 5 / 1차시 전개 35(1~3라운드) / 2차시 전개 30(4~6라운드) / 정리 10. 게임은 약 50~60분이고, 나머지는 라운드 토론과 활동지에 써요.',
-                '간편(40분·1차시): 시작 화면의 [⚡ 간편]을 누르면 심화 자료·근거 고르기가 선택이 돼요. 도입 5 / 전개 25 / 정리 10.',
+        lines: ['기본 모드(그냥 주소): 심화 자료 확인 문제와 근거 문장 고르기까지 모두 합니다. 2차시로 나누어 1차시에 1~3라운드, 2차시에 4~6라운드와 정리를 권합니다.',
+                '간편 모드(주소 끝에 ?quick=1): 심화 자료·근거 고르기가 선택이 되고 기사 읽기 최소 시간이 짧아져, 1차시 안에 6라운드를 마칠 수 있습니다.',
                 '6라운드를 모두 끝내는 것이 목표가 아니에요. 라운드마다 토론 질문 하나는 꼭 이야기할 시간을 남겨 주세요.',
                 '빨리 끝낸 학생은 ⭐ 스페셜 라운드와 🏅 배지 도감에 도전하게 해요.',
                 '🔊 효과음: 문자가 오거나 배지를 받으면 짧은 소리가 나요. 한 교실에서 함께 할 때는 시작 화면의 [🔇 끄기]를 눌러 두거나, 게임 위쪽 🔊 단추로 각자 끄게 해 주세요(이어폰도 좋아요).'] },
@@ -3918,7 +3932,7 @@ const GAME_DATA = {
     const c = D.characters.find((x) => x.id === id) || D.characters[0];
     const fallback = () => el('div', { className: 'char-fallback char-bg-' + c.id, 'aria-hidden': 'true', text: c.emoji });
     const src = mood ? [String(c.image).replace(/\.png$/i, '_' + mood + '.png'), c.image] : c.image;
-    return el('div', { className: 'char-figure' }, imageOr(src, fallback, c.look));
+    return el('div', { className: 'char-figure' }, imageOr(src, fallback, c.name ? c.name + ' — ' + c.look : c.look));
   }
 
   function speech(text) {
@@ -4559,33 +4573,8 @@ const GAME_DATA = {
       );
     }
 
-    // ⏱ 수업 시간에 맞는 모드 고르기 (비밀번호 없이, 이 기기에만 저장)
-    function modeBox() {
-      const T = D.teacher;
-      const wrap = el('div', { className: 'card teacher-group mode-box' });
-      function draw() {
-        wrap.textContent = '';
-        wrap.appendChild(el('h2', { className: 'section-title', text: T.modeTitle }));
-        wrap.appendChild(el('p', { className: 'save-info', text: quickMode() ? T.modeQuickNow : T.modeFullNow }));
-        wrap.appendChild(el('div', { className: 'teacher-buttons' },
-          button(T.modeFullButton, quickMode() ? 'btn-gray' : 'btn-green', () => { setQuickMode(false); draw(); }),
-          button(T.modeQuickButton, quickMode() ? 'btn-green' : 'btn-gray', () => { setQuickMode(true); draw(); })
-        ));
-        // 🔊 효과음 켜고 끄기 (교실에서 함께 할 때는 끄거나 이어폰)
-        const S = D.sound;
-        if (S) {
-          wrap.appendChild(el('h2', { className: 'section-title', text: S.title }));
-          wrap.appendChild(el('p', { className: 'save-info', text: soundEnabled() ? S.onNow : S.offNow }));
-          wrap.appendChild(el('div', { className: 'teacher-buttons' },
-            button(S.onButton, soundEnabled() ? 'btn-green' : 'btn-gray', () => { setSound(true); draw(); }),
-            button(S.offButton, soundEnabled() ? 'btn-gray' : 'btn-green', () => { setSound(false); draw(); })
-          ));
-          wrap.appendChild(el('p', { className: 'save-info', text: S.note }));
-        }
-      }
-      draw();
-      return wrap;
-    }
+    /* ⏱ 수업 운영 모드는 주소로 나눠 줘요(기본은 그냥 주소, 간편은 끝에 ?quick=1).
+       첫 화면에 단추를 두지 않고, 선생님 모드 안에만 남겨 두었어요. */
 
     // 📊 학급 결과 모아보기 (코드를 붙여 넣어 이 기기 안에서만 집계해요 — 개인정보 없음)
     function statsBox() {
@@ -4629,6 +4618,7 @@ const GAME_DATA = {
 
     app.appendChild(el('section', { className: 'screen start-screen' },
       el('div', { className: 'start-title-wrap' },
+        soundButton(),   // 🔊 제목 오른쪽 위 — 게임 중에도 위쪽 상태바에서 끄고 켤 수 있어요
         el('div', { className: 'start-sprout', 'aria-hidden': 'true', text: '🌱' }),
         el('h1', { className: 'start-title', text: S.title }),
         el('p', { className: 'start-subtitle', text: S.subtitle })
@@ -4642,7 +4632,6 @@ const GAME_DATA = {
         startBtn,
         el('p', { className: 'autosave-note', text: S.autoSaveNote })
       ),
-      modeBox(),       // ⏱ 수업 시간 모드(비밀번호 없이)
       savedBox(),
       codeBox(),
       guideBox(),      // 👩‍🏫 교사용 안내 · AI 활용 표기 (공모전판)
@@ -4670,8 +4659,9 @@ const GAME_DATA = {
         'aria-pressed': String(selected === c.id)
       },
         characterFigure(c.id),
-        el('span', { className: 'char-look', text: c.look }),
-        el('span', { className: 'char-desc', text: c.desc })
+        el('span', { className: 'char-look', text: c.name || c.look }),
+        // 소개는 두 문장 — 줄마다 한 문장씩 보여 줘요
+        el('span', { className: 'char-desc' }, String(c.desc).split('\n').map((line) => el('span', { className: 'char-line', text: line })))
       );
       card.addEventListener('click', () => {
         selected = c.id;
