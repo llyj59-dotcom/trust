@@ -849,6 +849,29 @@ h1, h2, h3, p { margin: 0; }
 .rethink-btn.is-was { border-style: dashed; }   /* 아까 고른 것 */
 .rethink-btn.is-on { border-color: var(--green, #5aa85a); background: #eaf7ea; opacity: 1; font-weight: 700; }
 .rethink-feedback { font-size: 1.02rem; line-height: 1.65; min-height: 1.2em; }
+.rethink-whywrap { display: flex; flex-direction: column; gap: 6px; text-align: left; }
+.rethink-whylabel { font-size: 0.95rem; color: #555; margin-top: 4px; }
+.rethink-why {
+  width: 100%; padding: 10px 12px; border: 2px solid #ddd; border-radius: 10px;
+  font: inherit; font-size: 1rem; line-height: 1.6; resize: vertical;
+}
+.rethink-why:focus { outline: none; border-color: var(--green, #4fbf6a); }
+.rethink-saved { font-size: 0.88rem; color: #777; line-height: 1.55; }
+
+/* 투자 일기 속 재판단 줄 */
+.diary-rethink {
+  margin-top: 6px; padding: 8px 10px; border-radius: 8px;
+  background: #f4f1fb; font-size: 0.97rem; line-height: 1.6;
+}
+.diary-rethink b { color: #5b4bb7; }
+
+/* 배지 도감 접기 */
+.badge-details > summary {
+  cursor: pointer; font-size: 1.1rem; font-weight: 700; padding: 6px 2px; list-style: none;
+}
+.badge-details > summary::-webkit-details-marker { display: none; }
+.badge-details > summary::before { content: '▶ '; font-size: 0.85em; }
+.badge-details[open] > summary::before { content: '▼ '; }
 .rethink-open { margin-top: 10px; }
 .learning-card {
   background: var(--yellow);
@@ -1812,7 +1835,7 @@ const GAME_DATA = {
     onTarget:  '기사에서 이 회사의 진짜 문제를 짚어 근거로 밝혔어요. 거절이든 조건부 투자든, 근거가 있는 판단은 똑같이 신뢰를 키워요.',
     offTarget: '근거 문장을 골랐지만 이 회사의 진짜 문제와는 조금 달랐어요. 어떤 기사가 문제를 알려 주는 기사였는지 다시 살펴봐요.',
     readOnly:  '기사를 읽고 판단한 건 좋아요. 다음에는 결정서에서 "어느 문장을 보고 그렇게 생각했는지"까지 골라 봐요.',
-    none:      '기사를 읽지 않고 판단했어요. 근거가 없으면 맞는 선택이어도 신뢰는 오르지 않아요.',
+    none:      '아직 읽기 완료 표시나 근거 문장 고르기가 기록되지 않았어요. 고른 까닭이 기사 내용과 이어지는지 다시 살펴봐요.',
     invest:    '문제를 알려 주는 기사가 있었는데도 그대로 투자했어요. 사람들의 믿음을 지키지 못했어요.'
   },
 
@@ -1825,10 +1848,17 @@ const GAME_DATA = {
     title: '다시 판단해 볼까요?',
     guide: '결과를 보고 난 지금, 다시 고른다면 무엇을 고를까요? 씨앗과 신뢰지수는 바뀌지 않아요.',
     myChoiceLabel: '아까 고른 것',
-    same: '같은 선택이네요. 결과를 보고도 마음이 바뀌지 않은 까닭을 짝과 이야기해 봐요.',
-    changed: '생각이 바뀌었네요. 무엇을 보고 마음이 바뀌었는지 짝과 이야기해 봐요.',
+    same: '같은 선택이네요. 그대로 두어도 생각은 더 깊어질 수 있어요.',
+    changed: '생각이 바뀌었네요. 바꾸는 것도 좋은 판단이에요.',
+    // 🌱 바꿨는지가 아니라 "왜 그렇게 했는지"가 남아야 해요. 점수에는 들어가지 않아요.
+    whyLabel: '그대로 두거나 바꾼 까닭은 무엇인가요?',
+    whyPlaceholder: '예) 결과를 보니 피해를 입은 사람이 더 있을 것 같아서 생각이 바뀌었어요.',
+    morePlaceholder: '예) 회사가 약속을 지키는지 누가 확인하는지 더 알고 싶어요.',
+    moreLabel: '더 알고 싶은 것이 있다면 적어 봐요 (안 써도 돼요)',
+    saved: '적어 둔 내용은 엔딩의 투자 일기와 결과 복사에 남아요.',
     closeButton: '좋아요',
-    doneLabel: '다시 고른 선택'
+    doneLabel: '다시 고른 선택',
+    diaryLabel: '🤔 다시 판단'
   },
 
   /* ----------------------------------------------------------------
@@ -2400,7 +2430,8 @@ const GAME_DATA = {
              '중학생 이 모 군은 "부모님이나 선생님께 말하기 어려운 고민을 올렸더니 다른 친구들이 따뜻한 댓글을 많이 달아 줘서 힘이 났다"고 말했다.',
              '서로 공부 방법을 알려 주거나 좋아하는 가수 이야기를 나누는 방도 인기다.'],
             ['익명톡의 가입자는 올해 들어 두 배 가까이 늘었다.',
-             '회사는 "누구나 눈치 보지 않고 자유롭게 말할 수 있는 공간을 만드는 것이 목표"라며 "어떤 글도 함부로 지우지 않는다"고 밝혔다.']
+             '회사는 "누구나 눈치 보지 않고 자유롭게 말할 수 있는 공간을 만드는 것이 목표"라며 "어떤 글도 함부로 지우지 않는다"고 밝혔다.',
+             '대신 나쁜 말은 AI가 알아서 걸러 준다며 "그래서 신고 버튼을 따로 두지 않았다"고 설명했다.']
           ] },
         /* 2026-09 재구성
            ① 홍보: "어떤 글도 함부로 지우지 않는다"(괴롭힘 글도 그대로 남음)
@@ -2415,6 +2446,8 @@ const GAME_DATA = {
              '피해 학생의 부모는 "아이가 학교에 가기 싫다며 방에서 나오지 않는다"며 눈물을 보였다.'],
             // 원문: 신고하거나 차단하는 기능이 사실상 없어 피해가 커지고 있다는 지적이다. (답을 바로 알려 줘서 사실로 바꿈)
             ['문제가 된 글에는 "나도 봤다", "웃기다" 같은 댓글이 수백 개 달리며 순식간에 퍼졌다.',
+             '회사가 내세우던 AI는 이 글들을 걸러 내지 못했다.',
+             '글자 사이에 점을 찍거나 모양이 비슷한 글자를 섞어 쓰면 AI가 알아보지 못했기 때문이다.',
              '가족은 글을 지워 달라고 회사에 전자우편을 세 번 보냈지만, 답장은 2주가 지나서야 왔다.',
              '그사이 같은 별명을 쓰는 사용자가 비슷한 글을 또 올렸다.'],
             ['청소년 상담 전문가는 "화면 너머에도 마음을 다치는 진짜 사람이 있다"며 "괴롭힘 글을 보면 함께 웃지 말고 어른에게 알려야 한다"고 말했다.']
@@ -2430,7 +2463,9 @@ const GAME_DATA = {
              '한 선생님은 "익명 방에서 시작된 말다툼이 교실까지 이어져 친구 사이가 멀어진 일도 있었다"고 전했다.'],
             ['학생들에게 물어보니 "나쁜 글을 봐도 어떻게 해야 할지 모르겠다"는 대답이 많았다.',
              '앱에서 문제가 생겼을 때 도움을 요청하는 방법을 알고 있다는 학생은 10명 가운데 1명뿐이었다.',
-             '실제로 익명톡의 글 아래에는 "댓글"과 "공감하기" 버튼만 있고, 다른 버튼은 보이지 않는다.']
+             '실제로 익명톡의 글 아래에는 "댓글"과 "공감하기" 버튼만 있고, 다른 버튼은 보이지 않는다.',
+             '반대로 괴롭힘을 당하던 한 학생이 도움을 청하며 올린 글은 AI가 나쁜 말로 판단해 지워 버린 일도 있었다.',
+             '왜 지워졌는지 알려 주는 안내도, 다시 살려 달라고 할 방법도 없었다.']
           ] }
       ],
       deep: {
@@ -2463,7 +2498,8 @@ const GAME_DATA = {
           explain: '맞아요! 그래서 익명 공간일수록 신고·차단 같은 안전장치가 꼭 필요해요.'
         }
       },
-      evidence: ['놀리고 따돌리는 글', '누가 자신을 괴롭히는지조차', '수백 개 달리며 순식간에 퍼졌다', '2주가 지나서야', '같은 별명을 쓰는 사용자가', '다른 버튼은 보이지 않는다', '함부로 지우지 않는다', '관리하기 어렵다', '어떻게 해야 할지 모르겠다', '10명 가운데 1명뿐', '탈억제', '안전장치가 꼭 필요', '책임을 덜 느끼는', '쉽게 신고하고 차단'],
+      evidence: ['놀리고 따돌리는 글', '누가 자신을 괴롭히는지조차', '수백 개 달리며 순식간에 퍼졌다', '2주가 지나서야', '같은 별명을 쓰는 사용자가', '다른 버튼은 보이지 않는다', '함부로 지우지 않는다', '관리하기 어렵다', '어떻게 해야 할지 모르겠다', '10명 가운데 1명뿐', '탈억제', '안전장치가 꼭 필요', '책임을 덜 느끼는', '쉽게 신고하고 차단',
+        '신고 버튼을 따로 두지 않았다', '걸러 내지 못했다', 'AI가 알아보지 못했기', '지워 버린 일도', '다시 살려 달라고 할 방법도'],
       glossary: [
         { word: `익명`, meaning: `이름을 밝히지 않는 것` },
         { word: `사이버폭력`, meaning: `온라인에서 다른 사람을 괴롭히는 것` }
@@ -2478,11 +2514,11 @@ const GAME_DATA = {
       },
       conditionCorrect: {
         seeds: 1400,
-        result: `익명톡에 신고·차단 버튼이 생기고 괴롭힘 글은 자동으로 가려지게 되었어요. 이제 정말 고민을 나누는 따뜻한 공간이 되었어요!`
+        result: `익명톡에 신고·차단 버튼이 생겼어요. AI가 가린 글은 사람이 한 번 더 살펴보고, 잘못 지워진 글은 되돌릴 수 있게 되었어요. 이제 정말 고민을 나누는 따뜻한 공간이 되었어요!`
       },
       conditions: [
         { correct: true,
-          text: `신고·차단 버튼을 만들고, 괴롭힘 글은 자동으로 가리며, 신고가 쌓인 사용자는 이용을 막는다면 투자할게요.` },
+          text: `신고·차단 버튼을 만들고, AI가 가린 글은 사람이 다시 살펴보며, 잘못 지워졌을 때 되돌릴 수 있게 한다면 투자할게요.` },
         { correct: false, // 1라운드에서 배운 개인정보 보호와 부딪히는 함정 조건
           text: `모든 사용자의 실명과 전화번호를 공개하게 한다면 투자할게요.`,
           result: `괴롭힘 글은 줄었지만, 모든 사람의 이름과 전화번호가 드러나는 새로운 문제가 생겼어요. 한 문제를 고치려다 개인정보를 위험하게 만들었네요.` },
@@ -2630,6 +2666,8 @@ const GAME_DATA = {
              'B군은 "4년 전에 장난으로 쓴 글이라 올린 줄도 잊고 있었다"며 "지금은 그 친구와 사이좋게 지내는데, 글이 다시 퍼져서 너무 미안하고 창피했다"고 말했다.'],
             // B군이 미리 알 수 없었고(본인 확인 없음), 친구 화면에도 떴고, 지우는 방법은 멤버십 안내뿐이었다는 단서
             ['글은 "4년 전 오늘의 추억"이라는 알림과 함께 저절로 나타났고, 같은 시각 B군과 친구를 맺은 사람들의 화면에도 함께 떴다.',
+             '그 글이 다시 뽑힌 까닭은 4년 전에 댓글과 좋아요가 유난히 많았기 때문이었다.',
+             'AI는 그 글이 B군에게 어떤 기억인지까지는 따지지 않았다.',
              '누군가 화면을 캡처해 단체 대화방에 올리면서 글은 순식간에 학교 전체로 퍼졌다.',
              'B군은 "미리 알았더라면 먼저 지웠을 텐데, 지우는 방법을 찾다가 멤버십 안내만 봤다"고 말했다.'],
             [`전문가들은 "온라인에 남긴 기록은 생각보다 오래, 널리 남는다"고 조언했다.`,
@@ -2648,7 +2686,8 @@ const GAME_DATA = {
              '혜택 목록의 맨 아래에는 "추억 소환 게시물 숨기기·지우기"도 멤버십 전용 기능으로 적혀 있다.',
              '무료 이용자는 옛 글을 하나씩 찾아 지워야 하는데, 몇 년 동안 올린 글이 수백 개가 넘으면 사실상 불가능하다.'],
             ['회사 측은 "추억 소환은 이용자들이 가장 좋아하는 기능"이라며 "멤버십은 더 좋은 서비스를 위한 것"이라고 설명했다.',
-             '추억 소환 알림은 이용자가 따로 고르지 않아도 오고, 설정에 따라 친구들의 화면에도 함께 나타난다.']
+             '추억 소환 알림은 이용자가 따로 고르지 않아도 오고, 설정에 따라 친구들의 화면에도 함께 나타난다.',
+             'AI가 어떤 기준으로 옛 글을 고르는지, 그 기준을 이용자가 바꿀 수 있는지는 안내 어디에도 나와 있지 않다.']
           ] },
         { kind: '홍보',
           terms: ['열풍', '게시물', '후기'],
@@ -2660,6 +2699,8 @@ const GAME_DATA = {
              '한 이용자는 "초등학교 졸업식 날 친구들과 찍은 사진이 다시 떠서 오랜만에 친구들에게 연락했다"며 웃었다.',
              '가족 여행 사진이나 반려동물의 어린 시절 사진을 다시 보고 뭉클했다는 후기도 줄을 잇는다.'],
             ['이 기능 덕분에 타임캡슐SNS의 사용자는 올해에만 두 배 넘게 늘었다.',
+             '어떤 글을 다시 보여 줄지는 AI가 고른다.',
+             '회사는 "그때 댓글과 좋아요가 많았던 글을 AI가 먼저 골라 준다"고 설명했다.',
              '회사는 앞으로 추억 사진을 모아 짧은 영상으로 만들어 주는 기능도 선보일 예정이다.']
           ] }
       ],
@@ -2691,7 +2732,8 @@ const GAME_DATA = {
           explain: '맞아요! 그래서 내 기록을 지우는 기본 권리를 돈을 내야만 쓰게 하는 건 바람직하지 않아요.'
         }
       },
-      evidence: ['멤버십 전용 기능', '사실상 불가능', '반 친구들에게 퍼지면서', '저절로 나타났고', '친구를 맺은 사람들의 화면에도', '미리 알았더라면', '멤버십 안내만', '캡처된 사진은 계속', '돈을 내야만', '본인이 먼저 확인', '친구들의 화면에도 함께', '따로 고르지 않아도', '완전히 없애기 어렵다'],
+      evidence: ['멤버십 전용 기능', '사실상 불가능', '반 친구들에게 퍼지면서', '저절로 나타났고', '친구를 맺은 사람들의 화면에도', '미리 알았더라면', '멤버십 안내만', '캡처된 사진은 계속', '돈을 내야만', '본인이 먼저 확인', '친구들의 화면에도 함께', '따로 고르지 않아도', '완전히 없애기 어렵다',
+        '댓글과 좋아요가 많았던 글을 AI가', '댓글과 좋아요가 유난히 많았기', '어떤 기억인지까지는 따지지 않았다', '기준을 이용자가 바꿀 수 있는지는'],
       glossary: [
         { word: `디지털 발자국`, meaning: `인터넷에 남긴 글·사진·검색 기록 같은 흔적` },
         { word: `유료 멤버십`, meaning: `돈을 내야 쓸 수 있는 회원 서비스` }
@@ -2706,11 +2748,11 @@ const GAME_DATA = {
       },
       conditionCorrect: {
         seeds: 1400,
-        result: `타임캡슐SNS가 옛 게시물이 다시 나오기 전에 본인이 먼저 확인하고, 무료로 지우거나 숨길 수 있게 바꿨어요. 이제 좋은 추억만 다시 만날 수 있어요!`
+        result: `타임캡슐SNS가 옛 게시물이 다시 나오기 전에 본인이 먼저 확인하고, 무료로 지우거나 숨길 수 있게 바꿨어요. AI가 무엇을 골라 보여 줄지도 이용자가 정할 수 있게 되었어요. 이제 좋은 추억만 다시 만날 수 있어요!`
       },
       conditions: [
         { correct: true,
-          text: `옛 게시물이 다시 나오기 전에 본인이 먼저 확인하고, 무료로 지우거나 숨길 수 있게 한다면 투자할게요.` },
+          text: `옛 게시물이 다시 나오기 전에 본인이 먼저 확인하고, 무료로 지우거나 숨길 수 있으며, AI가 무엇을 골라 보여 줄지도 이용자가 정할 수 있게 한다면 투자할게요.` },
         { correct: false,
           text: `옛 게시물을 친구들에게도 자동으로 보여준다면 투자할게요.`,
           result: `옛 게시물이 친구들에게까지 보이게 되면서 곤란한 일이 더 늘어났어요. 디지털 발자국은 더 넓게 퍼질 수 있다는 걸 기억해요.` },
@@ -2944,11 +2986,11 @@ const GAME_DATA = {
                 '1라운드 공지에서 아카데미는 "문자로 비밀번호를 절대 요구하지 않는다"고 했어요.',
                 '"30분 안에", "정지"라는 말로 겁을 줘요.'] }
     ],
-    summaryTitle: '📱 휴대폰 보안',
+    summaryTitle: '📱 휴대폰 문자 활동 (라운드 중에 온 문자 6개)',
     summaryScam: '사기 문자에 속지 않음',
     summaryReported: '그중 신고까지 함',
     summaryLegit: '진짜 문자에 알맞게 답함',
-    summaryNote: '진짜 문자와 사기 문자를 가려내는 게 핵심이에요. 모든 문자를 차단하는 건 정답이 아니에요.'
+    summaryNote: '라운드를 하는 동안 도착한 문자만 센 기록이에요. 라운드 사이의 ⚡ 긴급 상황은 아래에 따로 있어요. 진짜 문자와 사기 문자를 가려내는 게 핵심이고, 모든 문자를 차단하는 건 정답이 아니에요.'
   },
 
   /* 📊 심화 자료 (2026-09 추가 · 라운드마다 조금 어려운 기사 1편 + 확인 문제 1개) */
@@ -3187,7 +3229,7 @@ const GAME_DATA = {
       afterRound: 5,
       summaryTitle: '⚡ 긴급 상황 · 이 영상, 진짜일까요?',
       title: '이 영상, 진짜일까요?',
-      narration: '마지막 투자를 마친 {닉네임} 투자자님에게 친구 "민트"가 영상 하나를 보내왔어요. 영상 속 전문가는 진짜 사람처럼 자연스럽게 말하고 있어요. 그런데 영상 어디에도 출처가 없고, 뉴스에서는 한 번도 들어 본 적 없는 이야기예요.',
+      narration: '다섯 번째 투자를 마친 {닉네임} 투자자님에게 친구 "민트"가 영상 하나를 보내왔어요. 영상 속 전문가는 진짜 사람처럼 자연스럽게 말하고 있어요. 그런데 영상 어디에도 출처가 없고, 뉴스에서는 한 번도 들어 본 적 없는 이야기예요.',
       chatTitle: '민트',
       messages: [
         { from: '민트', text: '이거 봤어? 완전 충격이야!' },
@@ -3289,8 +3331,8 @@ const GAME_DATA = {
   endingScreen: {
     finalSeedsLabel: '최종 씨앗',
     finalTrustLabel: '최종 신뢰지수',
-    badgesTitle: '라운드별 선택',
-    learningTitle: `{닉네임} 투자자님이 이번 게임에서 만난 디지털 시민 약속 5가지`,
+    badgesTitle: '라운드별 판단 기록',
+    learningTitle: `{닉네임} 투자자님이 이번 게임에서 만난 디지털 시민 약속 6가지`,
     certificateButton: `🏆 인증서 받기`,
     retryButton: `다시 도전하기`,
     homeButton: `처음으로`,
@@ -3304,17 +3346,19 @@ const GAME_DATA = {
     copyFail: '복사가 안 됐어요. 아래 글상자의 내용을 직접 복사해 주세요.',
     diaryTitle: '📝 나의 투자 일기',
     diaryEmpty: '(쓴 글이 없어요)',
-    eventsTitle: '⚡ 긴급 상황 대처',
+    eventsTitle: '⚡ 긴급 상황 활동 (라운드 사이에 만난 4가지)',
     badgeLegend: '배지 뜻'
   },
 
-  /* 라운드별 선택 배지 (기획서 5장) */
+  /* 라운드별 판단 기록 표시 (기획서 5장)
+     🌱 선택의 좋고 나쁨이 아니라 "근거를 대고 판단했는지"를 보여 줘요.
+        그래서 거절과 조건부 투자가 같은 표시를 받을 수 있어요. */
   badges: {
-    conditionCorrect: { icon: `🟢`, label: `올바른 조건부 투자` },
-    conditionWrong:   { icon: `🟠`, label: `엉뚱한 조건` },
-    pass:             { icon: `🟡`, label: `투자하지 않음` },
-    invest:           { icon: `🔴`, label: `투자함` },
-    none:             { icon: '⚪', label: '기록 없음' } // 테스트 모드에서 중간 라운드부터 시작했을 때
+    onTarget:  { icon: `🎯`, label: `근거로 진짜 문제를 짚음` },
+    offTarget: { icon: `🔍`, label: `근거를 댔지만 다른 문제` },
+    readOnly:  { icon: `📖`, label: `기사를 읽고 판단` },
+    invest:    { icon: `💸`, label: `문제를 둔 채 투자` },
+    none:      { icon: '⚪', label: '근거 기록 없음' }
   },
 
   /* ----------------------------------------------------------------
@@ -3388,8 +3432,8 @@ const GAME_DATA = {
           explain: '"5점 후기 3천 개… 그런데" 기사 첫 문단에 나와요. 하루에 1,200개는 보통 일이 아니죠.' },
         { text: '반짝언니의 추천 영상에는 "광고"라는 표시가 있었다.', answer: false,
           explain: '"알고 보니 협찬" 기사 첫 문단: 영상 어디에도 "광고"나 "협찬"이라는 말이 없었어요.' },
-        { text: '별점요정에 후기를 쓴 사람은 모두 물건을 실제로 산 사람이다.', answer: false,
-          explain: '"5점 후기 3천 개" 기사 둘째 문단: 별점요정은 실제로 샀는지 확인하지 않아요.' },
+        { text: '별점요정은 후기를 쓴 사람이 실제로 물건을 샀는지 확인한다.', answer: false,
+          explain: '"5점 후기 3천 개" 기사 둘째 문단: 별점요정은 실제로 샀는지 확인하지 않아요. (그렇다고 후기를 쓴 사람이 모두 안 샀다는 뜻은 아니에요 — 기사만으로는 알 수 없어요.)' },
         { text: '슬라임 회사는 5점 후기를 쓰면 선물을 주는 행사를 했다.', answer: true,
           explain: '"5점 후기 3천 개" 기사 마지막 문단: 슬라임 한 통을 더 준다는 안내가 있어요. 선물을 받고 쓴 후기는 믿기 어려워요.' },
         { text: '별점요정은 후기를 쓰는 사람에게 포인트를 준다.', answer: true,
@@ -3451,28 +3495,29 @@ const GAME_DATA = {
       { title: '4라운드 · 족집게AI', ids: ['r4read', 'r4cond', 'r4deep'] },
       { title: '5라운드 · 타임캡슐SNS', ids: ['r5read', 'r5cond', 'r5pass'] },
       { title: '6라운드 · 별빛추천', ids: ['r6read', 'r6cond'] },
-      { title: '한 판 전체 · 스페셜', ids: ['trap3', 'perfect', 'phone', 'special', 'explorer'] }
+      { title: '한 판 전체 · 스페셜', ids: ['trap3', 'perfect', 'rethink', 'phone', 'special', 'explorer'] }
     ],
     items: {
       r1read:   { icon: '📖', name: '약관 17쪽 탐험가',  how: '1라운드 기사 3개와 📊 심화 자료를 모두 끝까지 읽기' },
-      r1cond:   { icon: '🔒', name: '얼굴 지킴이',       how: '1라운드에서 올바른 조건부 투자 하기' },
+      r1cond:   { icon: '🔒', name: '얼굴 지킴이',       how: '1라운드에서 기사 속 진짜 문제를 근거로 짚어 판단하기 (거절·조건부 투자 모두)' },
       r1invest: { icon: '🎰', name: '대박 예감?!',       how: '1라운드에서 과감하게 "투자한다" 골라 보기 (그 뒤에 무슨 일이?)' },
       r2read:   { icon: '📖', name: '출처 추적자',       how: '2라운드 기사 3개와 📊 심화 자료를 모두 끝까지 읽기' },
-      r2cond:   { icon: '©️', name: '창작 존중 투자자',  how: '2라운드에서 올바른 조건부 투자 하기' },
+      r2cond:   { icon: '©️', name: '창작 존중 판단자',  how: '2라운드에서 기사 속 진짜 문제를 근거로 짚어 판단하기 (거절·조건부 투자 모두)' },
       r2half:   { icon: '🌗', name: '반쪽의 교훈',       how: '2라운드에서 "반만 맞는 조건"을 골라 왜 반쪽인지 확인하기' },
       r3read:   { icon: '📖', name: '익명톡 조사관',     how: '3라운드 기사 3개와 📊 심화 자료를 모두 끝까지 읽기' },
-      r3cond:   { icon: '🛡️', name: '안전장치 설계자',   how: '3라운드에서 올바른 조건부 투자 하기' },
+      r3cond:   { icon: '🛡️', name: '안전장치 설계자',   how: '3라운드에서 기사 속 진짜 문제를 근거로 짚어 판단하기 (거절·조건부 투자 모두)' },
       r3evid:   { icon: '🎯', name: '근거 저격수',       how: '3라운드 투자 결정서에서 진짜 문제를 보여 주는 근거 문장 고르기' },
       r4read:   { icon: '📖', name: 'AI 검증단',         how: '4라운드 기사 3개와 📊 심화 자료를 모두 끝까지 읽기' },
-      r4cond:   { icon: '🤖', name: 'AI 코치',           how: '4라운드에서 올바른 조건부 투자 하기' },
+      r4cond:   { icon: '🤖', name: 'AI 검증가',         how: '4라운드에서 기사 속 진짜 문제를 근거로 짚어 판단하기 (거절·조건부 투자 모두)' },
       r4deep:   { icon: '🧠', name: '한 번에 척척',      how: '4라운드 📊 심화 자료 확인 문제를 한 번에 맞히기' },
       r5read:   { icon: '📖', name: '발자국 추적자',     how: '5라운드 기사 3개와 📊 심화 자료를 모두 끝까지 읽기' },
-      r5cond:   { icon: '👣', name: '잊힐 권리 수호자',  how: '5라운드에서 올바른 조건부 투자 하기' },
-      r5pass:   { icon: '✋', name: '멈춤의 용기',       how: '5라운드에서 기사를 읽고 "투자하지 않는다" 고르기' },
+      r5cond:   { icon: '👣', name: '잊힐 권리 수호자',  how: '5라운드에서 기사 속 진짜 문제를 근거로 짚어 판단하기 (거절·조건부 투자 모두)' },
+      r5pass:   { icon: '✋', name: '멈춤의 용기',       how: '5라운드에서 기사를 읽고 "투자하지 않는다" 고르기 (거절도 이유 있는 판단이에요)' },
       r6read:   { icon: '📖', name: '공정성 조사관',     how: '6라운드 기사 3개와 📊 심화 자료를 모두 끝까지 읽기' },
-      r6cond:   { icon: '⚖️', name: '공정한 규칙 설계자', how: '6라운드에서 올바른 조건부 투자 하기 (누가 빠졌는지 살피는 조건)' },
-      trap3:    { icon: '🪤', name: '함정 탈출',         how: '한 판에서 올바른 조건부 투자를 3번 이상 하기 (그럴듯한 함정 조건을 피해요)' },
-      perfect:  { icon: '🌳', name: '완벽한 제안가',     how: '한 판에서 모든 라운드(6개)에서 올바른 조건부 투자 하기' },
+      r6cond:   { icon: '⚖️', name: '공정한 규칙 설계자', how: '6라운드에서 "누가 빠졌는지"를 근거로 짚어 판단하기 (거절·조건부 투자 모두)' },
+      trap3:    { icon: '🪤', name: '함정 탈출',         how: '한 판에서 진짜 문제를 근거로 3번 이상 짚기 (그럴듯한 함정을 피해요)' },
+      perfect:  { icon: '🌳', name: '근거를 끝까지 이은 판단자', how: '한 판의 모든 라운드(6개)에서 진짜 문제를 근거로 짚기 (무엇을 골랐는지는 상관없어요)' },
+      rethink:  { icon: '🔄', name: '다시 본 사람',      how: '결과를 본 뒤 [🤔 다시 판단해 보기]로 한 번 더 생각해 보기' },
       phone:    { icon: '📱', name: '문자 탐정',         how: '한 판에서 사기 문자 3개를 모두 🚫 차단·신고하고 한 번도 속지 않기' },
       special:  { icon: '⭐', name: '팩트체크 달인',     how: '⭐ 스페셜 라운드에서 팩트체크 6개를 모두 맞히고 올바른 조건 고르기' },
       explorer: { icon: '🗺️', name: '다른 길 탐험가',    how: '서로 다른 엔딩을 2가지 이상 보기 ([다시 도전하기]로!)' }
@@ -3594,10 +3639,13 @@ const GAME_DATA = {
       { h: '평가 관점',
         lines: ['씨앗·신뢰지수 점수로 학생을 평가하지 않아요. 엔딩은 선택의 결과를 보여 주는 장치예요.',
                 '신뢰지수는 "어떤 선택을 했는지"가 아니라 "근거를 대고 판단했는지"를 봅니다. 기사에서 그 회사의 진짜 문제를 짚었다면, 투자하지 않는 선택도 조건부 투자와 똑같이 신뢰지수가 올라요. 학생에게도 이렇게 안내해 주세요.',
-                '근거가 진짜 문제를 비껴갔거나 기사만 읽고 근거를 고르지 않았으면 조금만 올라요. 읽지도 않고 판단하면 오르지 않고, 문제를 그대로 둔 채 투자하면 내려가요.',
+                '근거가 진짜 문제를 비껴갔거나 기사만 읽고 근거를 고르지 않았으면 조금만 올라요. 읽기 완료 표시가 없으면 오르지 않고, 문제를 그대로 둔 채 투자하면 내려가요.',
+                '"읽기 완료 표시"는 기사를 펼쳐 둔 시간이 기준이에요. 학생이 읽었는지·이해했는지를 가리키지는 않아요. 표시가 없다고 "안 읽었다"고 말하지 마시고, 고른 근거와 까닭을 보고 판단해 주세요.',
                 '결과 화면의 [🤔 다시 판단해 보기]는 결과를 보고 난 뒤 판단을 한 번 더 점검하는 칸이에요. 점수와는 상관이 없으니, 생각이 바뀌었는지와 그 까닭을 짝과 이야기하게 해 주세요(활동지의 [짝과 이야기했어요] 칸과 이어집니다).',
                 '볼 것: ① 투자 결정서에 쓴 까닭 ② 기사에서 고른 근거 문장 ③ 다시 판단할 때 생각이 바뀌었는지와 그 까닭 ④ 토론에서 한 말.',
-                '자기 점검(사전·사후)은 성취도가 아니라 성찰 자료예요. 변화가 없어도 괜찮다고 안내해 주세요.',
+                '자기 점검(사전·사후)은 성취도가 아니라 성찰 자료예요. 변화가 없어도 괜찮다고 안내해 주세요. 게임 직후라 "평소에 이렇게 한다"는 답이 바로 늘기는 어려워요.',
+                '효과를 보여 주는 가장 좋은 자료는 ① 처음 보는 사례를 수업 전·후에 판단하게 한 과제와 ② 투자 일기에 남은 까닭·근거·다시 판단 기록이에요. 만족도나 신뢰지수, 모은 배지 수는 효과의 근거로 쓰지 마세요.',
+                '사후 설문에 이 두 문항을 꼭 넣어 주세요 — "고를 때 무엇을 가장 중요하게 생각했나요?(근거와 영향받는 사람 / 신뢰지수 / 씨앗 / 배지)", "만든 사람이 원하는 정답을 찾아야 한다고 느꼈나요?" 이 답이 보상 설계가 수업 목표와 맞는지 알려 줘요.',
                 '엔딩의 [결과 복사하기]를 구글 폼이나 클래스룸에 붙이면 한 번에 모을 수 있어요.'] },
       { h: '생성형 AI 활용 표기',
         lines: ['기획·시나리오 구성·교육과정 연계·최종 검토: 출품 교사가 직접 했습니다.',
@@ -4542,6 +4590,7 @@ const GAME_DATA = {
     '.deep-hint-text', '.decision-question', '.decision-frame', '.fair-intro', '.fair-feedback',
     '.fair-my', '.ethics-q', '.cert-hint', '.key-guide', '.change-summary', '.company-slogan',
     '.condition-text', '.news-para', '.phone-handled', '.result-why', '.rethink-guide', '.rethink-feedback',
+    '.rethink-saved', '.diary-rethink',
     '.guide-list li', '.tips-list li', '.fair-more-list li', '.ethics-list li'
   ].join(', ');
   // 글자가 잘리면 안 되는 곳(코드·주소)과 한 글자씩 찍히는 엔딩 글은 건드리지 않아요
@@ -5666,6 +5715,26 @@ const GAME_DATA = {
     const was = c.type === 'invest' ? 'invest' : c.type === 'pass' ? 'pass' : 'condition';
     const names = D.decision.choiceNames;
     const feedback = el('p', { className: 'rethink-feedback' });
+
+    // 까닭 적는 칸 — 고른 뒤에 열려요. 길이를 따지지 않고, 안 써도 닫을 수 있어요.
+    const whyBox = el('textarea', {
+      className: 'rethink-why', rows: '2', maxlength: '200',
+      placeholder: T.whyPlaceholder, 'aria-label': T.whyLabel
+    });
+    const moreBox = el('textarea', {
+      className: 'rethink-why', rows: '2', maxlength: '200',
+      placeholder: T.morePlaceholder, 'aria-label': T.moreLabel
+    });
+    whyBox.value = c.rethinkWhy || '';
+    moreBox.value = c.rethinkMore || '';
+    whyBox.addEventListener('input', () => { c.rethinkWhy = whyBox.value.trim(); save(); });
+    moreBox.addEventListener('input', () => { c.rethinkMore = moreBox.value.trim(); save(); });
+    const whyWrap = el('div', { className: 'rethink-whywrap', hidden: true },
+      el('label', { className: 'rethink-whylabel', text: T.whyLabel }), whyBox,
+      el('label', { className: 'rethink-whylabel', text: T.moreLabel }), moreBox,
+      el('p', { className: 'rethink-saved', text: T.saved })
+    );
+
     const buttons = ['invest', 'pass', 'condition'].map((k) => {
       const btn = el('button', {
         type: 'button',
@@ -5678,7 +5747,10 @@ const GAME_DATA = {
         buttons.forEach((x) => { x.disabled = true; x.classList.remove('is-on'); });
         btn.classList.add('is-on');
         feedback.textContent = (k === was ? T.same : T.changed);
-        play(k === was ? 'tap' : 'seedUp');
+        whyWrap.hidden = false;
+        whyBox.focus();
+        play('tap');                 // 바꿨든 그대로든 같은 소리 — 한쪽이 정답이 아니에요
+        awardBadge('rethink');
       });
       return btn;
     });
@@ -5688,6 +5760,7 @@ const GAME_DATA = {
         buttons.forEach((x) => { x.disabled = true; });
         buttons[i].classList.add('is-on');
         feedback.textContent = (c.rethink === was ? T.same : T.changed);
+        whyWrap.hidden = false;
       }
     }
     showModal(el('div', { className: 'rethink' },
@@ -5698,7 +5771,8 @@ const GAME_DATA = {
       ),
       el('p', { className: 'rethink-guide', text: T.guide }),
       el('div', { className: 'rethink-buttons' }, buttons),
-      feedback
+      feedback,
+      whyWrap
     ), [{ label: T.closeButton, className: 'btn-primary' }], 'modal-rethink');
   }
 
@@ -6283,6 +6357,24 @@ const GAME_DATA = {
     later(() => { stage.classList.add('is-dialog'); typeNext(); }, 2900);
   }
 
+  /* 저장된 선택 하나가 "근거를 얼마나 댔는지" — scoreOf 와 같은 기준이에요.
+     무엇을 골랐는지(거절·조건부)가 아니라 근거를 보기 때문에 둘이 같은 표시를 받을 수 있어요. */
+  function choiceWhy(c) {
+    if (!c) return 'none';
+    if (c.type === 'invest') return 'invest';
+    if (c.type === 'conditionCorrect' || c.evidenceOk) return 'onTarget';
+    if (c.evidence || c.type === 'conditionWrong') return 'offTarget';
+    if (c.read >= 1) return 'readOnly';
+    return 'none';
+  }
+
+  // 저장된 선택의 이름 (투자한다 / 투자하지 않는다 / 조건부 투자)
+  function choiceNameOf(c) {
+    if (!c) return '';
+    const N = D.decision.choiceNames;
+    return c.type === 'invest' ? N.invest : c.type === 'pass' ? N.pass : N.condition;
+  }
+
   function endingSummary(ending) {
     const S = D.endingScreen;
     const B = D.badges;
@@ -6291,17 +6383,18 @@ const GAME_DATA = {
       D.rounds.map((R, i) => {
         const c = state.choices[i];
         // 저장 기록이 깨졌거나 예전 판이면 '기록 없음'으로 넘겨요 (엔딩이 하얗게 멈추지 않게)
-        const b = (c && B[c.type]) || B.none;
-        return el('li', { className: 'badge-item', title: b.label },
+        const b = B[choiceWhy(c)] || B.none;
+        const name = choiceNameOf(c);
+        return el('li', { className: 'badge-item', title: (name ? name + ' · ' : '') + b.label },
           el('span', { className: 'badge-round', text: (i + 1) + '' }),
           el('span', { className: 'badge-icon', 'aria-hidden': 'true', text: b.icon }),
           el('span', { className: 'badge-company', text: R.company }),
-          el('span', { className: 'sr-only', text: b.label })
+          el('span', { className: 'sr-only', text: (name ? name + ', ' : '') + b.label })
         );
       })
     );
     const legend = el('p', { className: 'badge-legend' },
-      ['conditionCorrect', 'conditionWrong', 'pass', 'invest'].map((k) => el('span', { text: B[k].icon + ' ' + B[k].label }))
+      ['onTarget', 'offTarget', 'readOnly', 'invest'].map((k) => el('span', { text: B[k].icon + ' ' + B[k].label }))
     );
 
     const learnings = el('ul', { className: 'promise-list' },
@@ -6323,7 +6416,12 @@ const GAME_DATA = {
             choiceName ? el('span', { className: 'diary-choice', text: choiceName }) : null),
           c && c.evidence ? el('p', { className: 'diary-evidence' },
             el('span', { text: D.evidenceUi.diaryLabel + ' ' }), el('q', { text: c.evidence })) : null,
-          el('p', { className: 'diary-text', text: c && c.reason ? c.reason : S.diaryEmpty })
+          el('p', { className: 'diary-text', text: c && c.reason ? c.reason : S.diaryEmpty }),
+          // 🤔 다시 판단해 보기 기록 (점수와는 상관없어요)
+          c && c.rethink ? el('p', { className: 'diary-rethink' },
+            el('span', { text: D.rethink.diaryLabel + ' ' }),
+            el('b', { text: D.decision.choiceNames[c.rethink] }),
+            c.rethinkWhy ? el('span', { text: ' — ' + c.rethinkWhy }) : null) : null
         );
       })
     );
@@ -6385,17 +6483,18 @@ const GAME_DATA = {
         el('div', { className: 'stat' }, el('span', { text: D.ui.seedIcon + ' ' + S.finalSeedsLabel }), el('b', { text: formatNum(state.seeds) })),
         el('div', { className: 'stat' }, el('span', { text: D.ui.trustIcon + ' ' + S.finalTrustLabel }), el('b', { className: 'trust-' + trustLevel(state.trust), text: trustText(state.trust) }))
       ),
+      // 🌱 마무리 순서: 내 판단 돌아보기 → 공정성 → 사후 점검 → 결과 제출 → 배지·추가 도전
       el('div', { className: 'card' }, el('h2', { className: 'section-title', text: S.badgesTitle }), badgeRow, legend),
+      el('div', { className: 'card' }, el('h2', { className: 'section-title', text: S.diaryTitle }), diary),
       ethicsCard(),        // 🧭 오늘 만난 AI 윤리 원칙 (공모전판)
-      badgeCard(),
       el('div', { className: 'card promise-card' }, el('h2', { className: 'section-title', text: fill(S.learningTitle) }), learnings),
       fairnessCard(),      // ⚖️ 공정성 생각 열기 (공모전판)
       postCheckCard(),     // 🧪 사후 자기 점검 → 📈 나의 변화 (공모전판)
       deepReadingCard(),
-      phoneSummaryCard(),
-      el('div', { className: 'card' }, el('h2', { className: 'section-title', text: S.diaryTitle }), diary),
       el('div', { className: 'card' }, el('h2', { className: 'section-title', text: S.eventsTitle }), events),
+      phoneSummaryCard(),
       submitCard,
+      badgeCard(),     // 배지 도감은 마무리 활동 뒤에 (접어 두었어요)
       specialCard(),   // 결과 코드를 먼저 적고, 시간이 남으면 도전해요
       buttons
     ];
@@ -6431,11 +6530,20 @@ const GAME_DATA = {
     lines.push('엔딩: ' + ending.emoji + ' ' + ending.title);
     lines.push('최종 씨앗: ' + formatNum(state.seeds) + ' / 신뢰지수: ' + trustText(state.trust));
     lines.push('결과 코드: ' + makeResultCode());
-    lines.push('라운드별 선택: ' + D.rounds.map((R, i) => {
+    lines.push('라운드별 판단: ' + D.rounds.map((R, i) => {
       const c = state.choices[i];
-      return (i + 1) + '.' + R.company + ' ' + (c ? B[c.type].label : B.none.label);
+      const name = choiceNameOf(c) || '기록 없음';
+      return (i + 1) + '.' + R.company + ' ' + name + '(' + (B[choiceWhy(c)] || B.none).label + ')';
     }).join(' / '));
-    lines.push('긴급 상황 대처: ' + D.events.map((ev) => {
+    // 다시 판단해 보기 — 처음 고른 것, 다시 고른 것, 그리고 그 까닭
+    const rethought = D.rounds.map((R, i) => {
+      const c = state.choices[i];
+      if (!c || !c.rethink) return null;
+      return (i + 1) + ') ' + R.company + ' — 처음 ' + choiceNameOf(c) + ' / 다시 ' + D.decision.choiceNames[c.rethink] +
+        (c.rethinkWhy ? ' : ' + c.rethinkWhy : '');
+    }).filter(Boolean);
+    if (rethought.length) { lines.push('다시 판단해 보기:'); rethought.forEach((t) => lines.push(' ' + t)); }
+    lines.push('긴급 상황 활동(라운드 사이): ' + D.events.map((ev) => {
       const idx = state.eventResults[ev.afterRound];
       const lv = idx === undefined ? D.eventUi.levels.none : eventLevel(ev, eventLevelKey(ev, ev.choices[idx]));
       return ev.title + ' ' + lv.label;
@@ -6444,7 +6552,7 @@ const GAME_DATA = {
     if (dr.rounds) lines.push('깊이 읽기: 심화 확인 문제 한 번에 맞힘 ' + dr.firstTry + '/' + dr.rounds + ' / 진짜 문제를 짚은 근거 ' + dr.evidenceOk + '/' + dr.evidence);
     if (D.phone) {
       const ps = phoneStats();
-      if (ps.scams || ps.legit) lines.push('휴대폰 보안: 사기 문자 ' + ps.scams + '개 중 속지 않음 ' + ps.safe + ' / 신고 ' + ps.reported + ' / 진짜 문자에 알맞게 답함 ' + ps.legitGood + '/' + ps.legit);
+      if (ps.scams || ps.legit) lines.push('휴대폰 문자 활동(라운드 중): 사기 문자 ' + ps.scams + '개 중 속지 않음 ' + ps.safe + ' / 신고 ' + ps.reported + ' / 진짜 문자에 알맞게 답함 ' + ps.legitGood + '/' + ps.legit);
     }
     // 공모전판: 자기 점검·공정성 활동 기록 (점수와 무관)
     if (D.selfCheck && (Array.isArray(state.pre) || Array.isArray(state.post))) {
@@ -6811,12 +6919,13 @@ const GAME_DATA = {
   function checkChoiceBadges(R, c, pc) {
     if (!c) return;
     const r = state.round;
-    if (c.type === 'conditionCorrect') awardBadge('r' + r + 'cond');
+    // 🌱 거절이든 조건부 투자든, 근거로 진짜 문제를 짚었으면 똑같이 받아요
+    if (c.type === 'conditionCorrect' || c.evidenceOk) awardBadge('r' + r + 'cond');
     if (r === 1 && c.type === 'invest') awardBadge('r1invest');
     if (r === 2 && c.type === 'conditionWrong' && pc && R.conditions[pc.condition] && R.conditions[pc.condition].half) awardBadge('r2half');
     if (r === 3 && c.evidenceOk) awardBadge('r3evid');
     if (r === 5 && c.type === 'pass' && c.read >= 1) awardBadge('r5pass');
-    const good = state.choices.filter((x) => x && x.type === 'conditionCorrect').length;
+    const good = state.choices.filter((x) => x && (x.type === 'conditionCorrect' || x.evidenceOk)).length;
     if (good >= 3) awardBadge('trap3');
     if (good >= D.rounds.length) awardBadge('perfect');
   }
@@ -6870,15 +6979,18 @@ const GAME_DATA = {
     const C = D.collect;
     const n = badgeCount();
     const fresh = Array.isArray(state.badgesNew) ? state.badgesNew.filter((id) => C.items[id]) : [];
+    // 도감이 길어서 마무리 활동을 가리지 않도록 접어 두고, 새 배지가 있으면 펼쳐요
     return el('div', { className: 'card badge-card' },
-      el('h2', { className: 'section-title' }, C.title + ' ', el('span', { className: 'badge-count', text: badgeCountText() })),
-      el('div', { className: 'badge-progress', 'aria-hidden': 'true' }, el('i', { style: 'width:' + Math.round(n / BADGE_IDS.length * 100) + '%' })),
-      el('p', { className: 'badge-new-line', text: fresh.length
-        ? C.newThisGame + ': ' + fresh.map((id) => C.items[id].icon + ' ' + C.items[id].name).join(', ')
-        : C.noneThisGame }),
-      badgeBook(null, fresh),
-      el('p', { className: 'save-info', text: C.guide }),
-      n >= BADGE_IDS.length ? button(C.masterButton, 'btn-yellow btn-block', () => go('badgeCert')) : null
+      el('details', Object.assign({ className: 'badge-details' }, fresh.length ? { open: true } : {}),
+        el('summary', {}, C.title + ' ', el('span', { className: 'badge-count', text: badgeCountText() })),
+        el('div', { className: 'badge-progress', 'aria-hidden': 'true' }, el('i', { style: 'width:' + Math.round(n / BADGE_IDS.length * 100) + '%' })),
+        el('p', { className: 'badge-new-line', text: fresh.length
+          ? C.newThisGame + ': ' + fresh.map((id) => C.items[id].icon + ' ' + C.items[id].name).join(', ')
+          : C.noneThisGame }),
+        badgeBook(null, fresh),
+        el('p', { className: 'save-info', text: C.guide }),
+        n >= BADGE_IDS.length ? button(C.masterButton, 'btn-yellow btn-block', () => go('badgeCert')) : null
+      )
     );
   }
 
