@@ -866,6 +866,11 @@ h1, h2, h3, p { margin: 0; }
 .diary-rethink b { color: #5b4bb7; }
 
 /* 배지 도감 접기 */
+.stats-limit {
+  padding: 10px 12px; border-left: 5px solid #e8a33c; border-radius: 0 8px 8px 0;
+  background: #fff7e8; line-height: 1.65;
+}
+
 .badge-details > summary {
   cursor: pointer; font-size: 1.1rem; font-weight: 700; padding: 6px 2px; list-style: none;
 }
@@ -1973,8 +1978,9 @@ const GAME_DATA = {
     statsCount: '참여 {인원}명',
     statsSkipped: '읽지 못한 줄 {개수}개는 건너뛰었어요.',
     statsRoundTitle: '라운드별 선택 분포',
-    statsPrincipleTitle: '원칙별 "올바른 조건" 고른 비율',
-    statsPrincipleNote: '그 원칙과 이어진 라운드에서 회사의 진짜 문제를 고친 조건을 고른 학생의 비율이에요.',
+    statsPrincipleTitle: '원칙별 "올바른 조건" 선택 현황',
+    // ⚠️ 이 숫자는 조건을 고른 비율일 뿐, 이해도·성취도 점수가 아니에요.
+    statsPrincipleNote: '그 원칙과 이어진 라운드에서 "올바른 조건"을 고른 학생의 비율이에요. 이해도나 성취도 점수가 아니에요 — 근거를 들어 투자하지 않은 학생은 여기에 들어가지 않아요.',
     statsSelfTitle: '자기 점검 변화 (사전 → 사후)',
     statsSelfNote: '뒤에 글자 5자가 붙은 코드에서만 계산돼요. 사전 점검을 건너뛴 학생은 빠져요.',
     statsSelfRow: '오름 {오름} · 같음 {같음} · 내림 {내림}',
@@ -1982,6 +1988,7 @@ const GAME_DATA = {
     statsTalkTitle: '💬 토론 추천 라운드',
     statsTalkNote: '선택이 가장 많이 갈린 라운드예요. 서로 왜 그렇게 골랐는지 이야기해 보세요.',
     statsAnon: '학생 개인은 표시하지 않아요. 줄 번호로만 셉니다.',
+    statsLimit: '⚠️ 결과 코드에는 "무엇을 골랐는지"만 담겨요. 어떤 근거를 골랐는지, 다시 판단하며 생각이 어떻게 바뀌었는지는 코드에 없어요. 그 기록은 학생이 엔딩에서 [📋 결과 복사하기]로 낸 글에 들어 있으니, 평가는 그 글과 활동지로 해 주세요.',
     exitButton: '나가기 (시작 화면으로)',
     roundButton: '{번호}라운드',
     endingButton: '{번호}. {칭호}'
@@ -7429,7 +7436,8 @@ const GAME_DATA = {
      📊 학급 결과 모아보기 (2026-10 공모전판)
      결과 코드를 여러 줄 붙여 넣으면 이 기기 안에서만 집계해요(서버 없음·이름 없음).
      ================================================================== */
-  const CHOICE_LABEL = { 1: '투자한다', 2: '투자하지 않는다', 3: '투자하지 않음(기사 안 읽음)', 4: '올바른 조건', 5: '엉뚱한 조건' };
+  // 교사 집계에 보이는 이름 — 기록이 없는 것을 "하지 않았다"고 단정하지 않아요
+  const CHOICE_LABEL = { 1: '투자한다', 2: '투자하지 않는다', 3: '투자하지 않음(읽기 완료 표시 없음)', 4: '올바른 조건', 5: '엉뚱한 조건' };
 
   function buildClassStats(text) {
     const lines = String(text || '').split('\n').map((s) => s.trim()).filter((s) => s.length);
@@ -7502,6 +7510,7 @@ const GAME_DATA = {
       const parts = [1, 2, 3, 4, 5].filter((k) => r.counts[k]).map((k) => CHOICE_LABEL[k] + ' ' + r.counts[k] + '명');
       out.push(' ' + r.name + ' — ' + (parts.join(' / ') || '기록 없음'));
     });
+    out.push('', T.statsLimit);
     out.push('', T.statsPrincipleTitle);
     Object.keys(s.principles).forEach((name) => {
       const p = s.principles[name];
@@ -7552,6 +7561,7 @@ const GAME_DATA = {
           [1, 2, 3, 4, 5].filter((k) => r.counts[k]).map((k) => bar(CHOICE_LABEL[k], r.counts[k], r.total))));
       });
 
+      box.appendChild(el('p', { className: 'save-info stats-limit', text: T.statsLimit }));
       box.appendChild(el('h3', { className: 'stats-h', text: T.statsPrincipleTitle }));
       box.appendChild(el('ul', { className: 'stats-list' },
         Object.keys(s.principles).map((name) => bar(name, s.principles[name].ok, s.principles[name].total))));
