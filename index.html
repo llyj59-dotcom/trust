@@ -49,6 +49,12 @@
 
 * { box-sizing: border-box; }
 
+/* 한글은 낱말(어절) 단위로만 줄을 바꿔요. 단추·입력칸은 글꼴을 따로 받으므로 한 번 더 지정해요. */
+button, input, textarea, select, option { word-break: keep-all; overflow-wrap: break-word; }
+
+/* 끊어 읽기 조각 — 이 안에서는 줄이 바뀌지 않아요. 덕분에 줄이 넘어갈 때 의미 덩어리 사이에서만 끊겨요. */
+.cl { white-space: nowrap; }
+
 /* 화면이 넓어지면 글씨와 카드도 같이 커져요 (큰 모니터에서 작아 보이지 않게) */
 html {
   font-size: clamp(16px, 0.85vw + 10px, 23px);
@@ -327,6 +333,7 @@ h1, h2, h3, p { margin: 0; }
 .tutorial-card { display: flex; flex-direction: column; align-items: center; gap: 18px; text-align: center; }
 .tutorial-figure { width: 160px; }
 .tutorial-text { font-size: 1.25rem; min-height: 5.5em; display: flex; align-items: center; }
+.tutorial-line { display: block; width: 100%; }
 .dots { display: flex; gap: 10px; justify-content: center; }
 .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--gray); }
 .dot.is-on { background: var(--mint-deep); }
@@ -809,6 +816,40 @@ h1, h2, h3, p { margin: 0; }
 .delta-chip.is-up { background: #e2f7e6; color: var(--green-deep); }
 .delta-chip.is-down { background: #fde4e1; color: var(--red); }
 .result-text { font-size: 1.2rem; line-height: 1.7; }
+
+/* 신뢰지수가 왜 그렇게 바뀌었는지 알려 주는 줄 */
+.result-why {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #f1f8f1;
+  border-left: 5px solid var(--green, #5aa85a);
+  border-radius: 10px;
+  font-size: 1.02rem;
+  line-height: 1.65;
+  text-align: left;
+}
+
+/* 🤔 다시 판단해 보기 */
+.modal-title { font-size: 1.25rem; }
+.rethink { display: flex; flex-direction: column; gap: 12px; }
+.rethink-was { font-size: 1.02rem; }
+.rethink-was b { color: var(--green, #5aa85a); }
+.rethink-guide { font-size: 0.98rem; color: #555; line-height: 1.6; }
+.rethink-buttons { display: flex; flex-direction: column; gap: 8px; }
+.rethink-btn {
+  padding: 12px 14px;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  background: #fff;
+  font: inherit;
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+.rethink-btn:disabled { cursor: default; opacity: 0.55; }
+.rethink-btn.is-was { border-style: dashed; }   /* 아까 고른 것 */
+.rethink-btn.is-on { border-color: var(--green, #5aa85a); background: #eaf7ea; opacity: 1; font-weight: 700; }
+.rethink-feedback { font-size: 1.02rem; line-height: 1.65; min-height: 1.2em; }
+.rethink-open { margin-top: 10px; }
 .learning-card {
   background: var(--yellow);
   border: 3px dashed var(--yellow-deep);
@@ -1004,7 +1045,8 @@ h1, h2, h3, p { margin: 0; }
   padding: 8px 12px;
   font-size: 1rem;
   line-height: 1.5;
-  word-break: break-all;
+  word-break: keep-all;          /* 낱말은 자르지 않아요 */
+  overflow-wrap: anywhere;       /* 긴 주소만 어쩔 수 없이 꺾어요 */
 }
 .chat-msg.is-link .chat-bubble { color: #1a5fd0; text-decoration: underline; font-family: 'Consolas', 'Menlo', monospace; letter-spacing: 0.5px; }
 .chat-msg.is-image .chat-bubble { background: #eef1f4; color: var(--ink-soft); font-style: italic; }
@@ -1750,12 +1792,43 @@ const GAME_DATA = {
      투자한다의 씨앗(이익·속보 손실)과 올바른 조건의 씨앗은 라운드마다 달라서
      아래 rounds 안에 있어요.
      ---------------------------------------------------------------- */
+  /* 🌱 신뢰지수는 "어떤 선택을 했는지"가 아니라 "근거를 대고 판단했는지"를 봅니다.
+     그래서 거절이든 조건부 투자든, 회사의 진짜 문제를 짚었다면 똑같이 +15 예요. */
   scoring: {
-    invest:           { trust: -15 },
-    passRead:         { seeds: 0, trust: 5 },   // 투자하지 않는다 (기사를 1개 이상 읽음)
-    passUnread:       { seeds: 0, trust: 0 },   // 투자하지 않는다 (기사를 하나도 안 읽음)
-    conditionCorrect: { trust: 15 },
-    conditionWrong:   { seeds: 300, trust: -5 }
+    onTarget:         { trust: 15 },            // 근거로 회사의 진짜 문제를 짚음 (거절·조건부 모두)
+    offTarget:        { trust: 5 },             // 근거는 댔지만 진짜 문제는 비껴감
+    readOnly:         { trust: 5 },             // 기사는 읽었지만 근거 문장은 고르지 않음
+    none:             { trust: 0 },             // 읽지도, 근거를 대지도 않음
+    invest:           { trust: -15 },           // 문제를 그대로 둔 채 투자
+    conditionWrong:   { seeds: 300 }            // 엉뚱한 조건일 때 씨앗 변화
+  },
+
+  /* ----------------------------------------------------------------
+     결과 화면에서 "신뢰지수가 왜 이렇게 바뀌었는지" 알려 주는 한 줄
+     (위 scoring 의 이름과 짝이에요)
+     ---------------------------------------------------------------- */
+  trustWhy: {
+    label: '왜 이렇게 바뀌었을까요?',
+    onTarget:  '기사에서 이 회사의 진짜 문제를 짚어 근거로 밝혔어요. 거절이든 조건부 투자든, 근거가 있는 판단은 똑같이 신뢰를 키워요.',
+    offTarget: '근거 문장을 골랐지만 이 회사의 진짜 문제와는 조금 달랐어요. 어떤 기사가 문제를 알려 주는 기사였는지 다시 살펴봐요.',
+    readOnly:  '기사를 읽고 판단한 건 좋아요. 다음에는 결정서에서 "어느 문장을 보고 그렇게 생각했는지"까지 골라 봐요.',
+    none:      '기사를 읽지 않고 판단했어요. 근거가 없으면 맞는 선택이어도 신뢰는 오르지 않아요.',
+    invest:    '문제를 알려 주는 기사가 있었는데도 그대로 투자했어요. 사람들의 믿음을 지키지 못했어요.'
+  },
+
+  /* ----------------------------------------------------------------
+     🤔 다시 판단해 보기 (결과를 본 뒤 한 번 더 생각해 보는 칸)
+     점수·결과 코드와는 아무 상관이 없어요. 생각이 바뀌었는지만 돌아봐요.
+     ---------------------------------------------------------------- */
+  rethink: {
+    button: '🤔 다시 판단해 보기',
+    title: '다시 판단해 볼까요?',
+    guide: '결과를 보고 난 지금, 다시 고른다면 무엇을 고를까요? 씨앗과 신뢰지수는 바뀌지 않아요.',
+    myChoiceLabel: '아까 고른 것',
+    same: '같은 선택이네요. 결과를 보고도 마음이 바뀌지 않은 까닭을 짝과 이야기해 봐요.',
+    changed: '생각이 바뀌었네요. 무엇을 보고 마음이 바뀌었는지 짝과 이야기해 봐요.',
+    closeButton: '좋아요',
+    doneLabel: '다시 고른 선택'
   },
 
   /* ----------------------------------------------------------------
@@ -1908,7 +1981,7 @@ const GAME_DATA = {
   tutorial: {
     pages: [
       '반가워요, {닉네임} 투자자님! 씨앗 10,000개로 첫 투자를 시작해요. 앞으로 6개의 회사를 만나 투자할지 결정하게 돼요. 정답 하나를 맞히는 게임이 아니라, 근거를 찾아 판단하고 친구들과 "왜 그렇게 골랐는지" 이유를 나누며 함께 생각하는 게임이에요.',
-      `화면 위의 🌱 신뢰지수는 기사를 읽고 근거를 확인하며 판단했는지를 보여줘요. 정답 점수가 아니에요! 이유가 있다면 투자하지 않는 것도 훌륭한 선택이고, "이렇게 고치면 투자할게요" 하고 문제를 해결할 방법까지 제안하면 신뢰지수가 가장 많이 올라요. 씨앗이 많다고 꼭 좋은 투자자는 아니랍니다!`,
+      `화면 위의 🌱 신뢰지수는 기사를 읽고 근거를 확인하며 판단했는지를 보여줘요. 정답 점수가 아니에요! 투자한다·투자하지 않는다·조건부 투자 가운데 무엇이 정답인지는 정해져 있지 않아요. 어느 것을 고르든 기사에서 근거를 찾아 "왜 그렇게 생각했는지"를 밝히면 신뢰지수가 올라가요. 씨앗이 많다고 꼭 좋은 투자자는 아니랍니다!`,
       `회사마다 기사가 3개씩 있어요. 기사를 2개 이상 읽으면 '조건부 투자'가 열려요. 조건부 투자는 '이 문제를 고치면 투자할게요'라고 제안하는 거예요.`,
       '하나 더! 기사 아래에 조금 어려운 "📊 심화 자료"가 있어요. 끝까지 읽고 확인 문제를 풀어야 조건부 투자가 열려요. 투자 결정서에는 내 주장(선택)과 이유를 쓰고, 기사 속에서 근거 문장을 직접 골라 붙여요. 주장·이유·근거가 서로 잘 맞는지 살펴보는 것이 "타당성"을 따지는 거예요.'
     ],
@@ -1958,7 +2031,7 @@ const GAME_DATA = {
     okButton: `확인`,
     learningCardTitle: '배움 카드',
     toEndingButton: '결과 보기',
-    passNote: '투자하지 않는 것도 기사를 읽고 내린 이유 있는 선택이에요. 다만 "이렇게 고치면 투자할게요"까지 제안했다면 어땠을까요?',
+    passNote: '투자하지 않는 것도 기사를 읽고 내린 이유 있는 선택이에요.',
     testBadge: '🛠 선생님 모드 (저장 안 함)',
     testReason: '테스트 모드에서 자동으로 채운 투자 결정서예요.'
   },
@@ -2895,7 +2968,7 @@ const GAME_DATA = {
   evidenceUi: {
     title: '🔍 근거 문장 고르기',
     requiredNote: '(조건부 투자는 꼭 골라요)',
-    optionalNote: '(골라도 되고 안 골라도 돼요)',
+    optionalNote: '(어떤 선택이든 근거를 고르면 신뢰지수가 올라가요)',
     guide: '아래 기사에서 내 선택의 까닭이 되는 문장을 눌러 골라요.',
     pickGuide: '👆 근거로 쓸 문장을 눌러 골라요. 형광펜이 아닌 문장도 고를 수 있어요.',
     pickAria: '이 문장을 근거로 고르기',
@@ -2935,7 +3008,7 @@ const GAME_DATA = {
       condition: '예) 두 번째 기사에서 "…"라는 문제를 찾았어요. 이 문제를 고치면 믿을 수 있어서 이 조건을 골랐어요.'
     },
     frameHint: '✍️ 주장(내 선택) → 이유(왜 그렇게 골랐나요?) → 근거(몇 번째 기사에서 찾은 내용)',
-    checkHint: '✅ 쓰고 나서 살펴봐요: ① 이유가 내 선택을 뒷받침하나요? ② 근거가 이유와 관련 있나요? ③ 근거가 기사 속 사실인가요?',
+    checkHint: '✅ 쓰고 나서 살펴봐요: ① 이유가 내 선택을 뒷받침하나요? ② 근거가 이유와 관련 있나요? ③ 근거가 기사 속 사실인가요? ④ 이 선택으로 영향을 받는 사람(쓰는 사람·만든 사람·피해를 입은 사람)을 떠올렸나요?',
     minLength: 10,              // 최소 글자 수
     maxLength: 200,             // 최대 글자 수
     count: '{글자수}자 / {최소}자 이상',
@@ -3164,7 +3237,7 @@ const GAME_DATA = {
   endings: [
     {
       id: 1, best: true,
-      trustMin: 70, seedsMin: 13000,
+      trustMin: 100, seedsMin: 13000,
       emoji: `🌳`, title: `신뢰의 숲을 가꾼 투자자`,
       image: 'assets/ending1.png', fallbackEmoji: '🌳',
       gradient: 'linear-gradient(180deg, #bfe9ff 0%, #c8f5c8 55%, #7ccf7c 100%)',
@@ -3173,7 +3246,8 @@ const GAME_DATA = {
     },
     {
       id: 2, best: false,
-      trustMin: 70, seedsMin: null,
+      // 신뢰지수가 근거 중심으로 바뀌면서(핵심을 짚으면 +15, 비껴가면 +5) 2등 기준도 올렸어요
+      trustMin: 100, seedsMin: null,
       emoji: `🌲`, title: `곧은 나무 같은 투자자`,
       image: 'assets/ending2.png', fallbackEmoji: '🌲',
       gradient: 'linear-gradient(180deg, #a9d8ff 0%, #d9f2e6 60%, #9fd49f 100%)',
@@ -3328,7 +3402,8 @@ const GAME_DATA = {
     conditionTitle: '어떤 조건을 걸까요?',
     backToEnding: '← 엔딩 화면으로 돌아가기',
     finishNote: '보너스 신뢰는 엔딩과 결과 코드에는 들어가지 않아요. 배지 도감과 [결과 복사하기]에 남아요.',
-    scoring: { invest: -15, passRead: 5, conditionCorrect: 15, conditionWrong: -5 },
+    // 팩트체크를 통과한 뒤에만 고를 수 있어서, 거절도 조건부와 똑같이 봐요
+    scoring: { invest: -15, passRead: 15, conditionCorrect: 15, conditionWrong: 5 },
     results: {
       invest: '별점요정에 투자했어요. 그런데 곧 "별점 조작·뒷광고 앱"이라는 기사가 쏟아지며 이용자들이 떠나기 시작했어요.',
       pass: '별점요정에는 투자하지 않았어요. 믿기 어려운 후기가 가득한 곳에 씨앗을 심지 않았어요.',
@@ -3518,11 +3593,13 @@ const GAME_DATA = {
                 '교과서 영상 보기(주장 파악)와 모둠 카드 뉴스 찾기는 게임에 없어요. 교과서 활동 하나를 골라 이어서 해 주세요.'] },
       { h: '평가 관점',
         lines: ['씨앗·신뢰지수 점수로 학생을 평가하지 않아요. 엔딩은 선택의 결과를 보여 주는 장치예요.',
-                '신뢰지수는 "근거를 확인하고 해결책을 내놓은 판단"에 더 오르도록 설계했지만, 투자하지 않는 선택도 근거가 있으면 충분히 타당해요. 학생에게도 이렇게 안내해 주세요.',
-                '볼 것: ① 투자 결정서에 쓴 까닭 ② 기사에서 고른 근거 문장 ③ 토론에서 한 말.',
+                '신뢰지수는 "어떤 선택을 했는지"가 아니라 "근거를 대고 판단했는지"를 봅니다. 기사에서 그 회사의 진짜 문제를 짚었다면, 투자하지 않는 선택도 조건부 투자와 똑같이 신뢰지수가 올라요. 학생에게도 이렇게 안내해 주세요.',
+                '근거가 진짜 문제를 비껴갔거나 기사만 읽고 근거를 고르지 않았으면 조금만 올라요. 읽지도 않고 판단하면 오르지 않고, 문제를 그대로 둔 채 투자하면 내려가요.',
+                '결과 화면의 [🤔 다시 판단해 보기]는 결과를 보고 난 뒤 판단을 한 번 더 점검하는 칸이에요. 점수와는 상관이 없으니, 생각이 바뀌었는지와 그 까닭을 짝과 이야기하게 해 주세요(활동지의 [짝과 이야기했어요] 칸과 이어집니다).',
+                '볼 것: ① 투자 결정서에 쓴 까닭 ② 기사에서 고른 근거 문장 ③ 다시 판단할 때 생각이 바뀌었는지와 그 까닭 ④ 토론에서 한 말.',
                 '자기 점검(사전·사후)은 성취도가 아니라 성찰 자료예요. 변화가 없어도 괜찮다고 안내해 주세요.',
                 '엔딩의 [결과 복사하기]를 구글 폼이나 클래스룸에 붙이면 한 번에 모을 수 있어요.'] },
-      { h: '생성형 AI 활용 표기 (확인 후 수정해 주세요)',
+      { h: '생성형 AI 활용 표기',
         lines: ['기획·시나리오 구성·교육과정 연계·최종 검토: 출품 교사가 직접 했습니다.',
                 '생성형 AI(Anthropic Claude)를 보조 도구로 사용한 범위: 웹 코드 구현, 기사·선택지 문장 초안 작성과 다듬기, 용어 풀이 초안.',
                 'AI가 만든 모든 문장은 교사가 사실과 표현을 검토하고 수정했습니다. 기사와 회사는 모두 교육용 가상 사례입니다.',
@@ -3722,9 +3799,9 @@ const GAME_DATA = {
   let savingEnabled = true; // 테스트 모드에서는 꺼요(6단계)
 
   /* ⏱ 수업 운영 모드 (2026-10 공모전판)
-     기본(80분 2차시): 심화 자료 + 읽는 시간 바닥 그대로.
-     간편(40분 1차시): 심화 자료를 선택 활동으로 돌리고 읽는 시간 바닥을 줄여요(약 25~30분).
-     선생님 모드에서 바꾸며, 그 기기에만 저장돼요. 주소 끝에 ?quick=1 / ?quick=0 으로도 바꿀 수 있어요. */
+     기본: 심화 자료 + 읽는 시간 바닥 그대로.
+     간편: 심화 자료를 선택 활동으로 돌리고 읽는 시간 바닥을 줄여요.
+     보통은 주소로 나눠 줘요(기본 = 그냥 주소, 간편 = 끝에 ?quick=1). 선생님 모드에서 바꾸면 그 기기에만 저장돼요. */
   const MODE_KEY = 'trustGame_mode_v1';
   function quickMode() {
     try { return localStorage.getItem(MODE_KEY) === 'quick'; } catch (e) { return false; }
@@ -4009,6 +4086,7 @@ const GAME_DATA = {
       )
     );
     modalRoot.appendChild(el('div', { className: 'modal-backdrop' }, box));
+    applyReadingChunks(box);
     const first = box.querySelector('button');
     if (first) first.focus();
   }
@@ -4032,19 +4110,31 @@ const GAME_DATA = {
      점수 계산 (게임 진행과 이어하기 코드 복원이 같은 규칙을 써요)
      ------------------------------------------------------------------ */
   // type: invest | pass | condition, readCount: 읽은 기사 수, condition: 조건 번호
-  function scoreOf(R, type, readCount, condition) {
+  /* 🌱 신뢰지수 = "근거를 대고 판단했는가"
+     거절이든 조건부 투자든, 회사의 진짜 문제를 짚었다면 똑같이 쳐 줘요.
+     ev = { text: 고른 근거 문장, ok: 진짜 문제를 짚었는지 } */
+  function scoreOf(R, type, readCount, condition, ev) {
+    const S = D.scoring;
+    const hasEv = !!(ev && ev.text);
+    const onTarget = hasEv && ev.ok;
+
     if (type === 'invest') {
-      return { type: 'invest', seeds: R.invest.seeds, trust: D.scoring.invest.trust, text: R.invest.result };
+      return { type: 'invest', seeds: R.invest.seeds, trust: S.invest.trust, text: R.invest.result, why: 'invest' };
     }
     if (type === 'pass') {
-      const rule = readCount >= 1 ? D.scoring.passRead : D.scoring.passUnread;
-      return { type: 'pass', seeds: rule.seeds, trust: rule.trust, text: R.pass.result + (readCount >= 1 && D.ui.passNote ? ' ' + D.ui.passNote : '') };
+      let trust, why;
+      if (onTarget) { trust = S.onTarget.trust; why = 'onTarget'; }
+      else if (hasEv) { trust = S.offTarget.trust; why = 'offTarget'; }
+      else if (readCount >= 1) { trust = S.readOnly.trust; why = 'readOnly'; }
+      else { trust = S.none.trust; why = 'none'; }
+      const note = (readCount >= 1 && D.ui.passNote) ? ' ' + D.ui.passNote : '';
+      return { type: 'pass', seeds: 0, trust: trust, text: R.pass.result + note, why: why };
     }
     const cond = R.conditions[condition];
     if (cond.correct) {
-      return { type: 'conditionCorrect', seeds: R.conditionCorrect.seeds, trust: D.scoring.conditionCorrect.trust, text: R.conditionCorrect.result };
+      return { type: 'conditionCorrect', seeds: R.conditionCorrect.seeds, trust: S.onTarget.trust, text: R.conditionCorrect.result, why: 'onTarget' };
     }
-    return { type: 'conditionWrong', seeds: D.scoring.conditionWrong.seeds, trust: D.scoring.conditionWrong.trust, text: cond.result };
+    return { type: 'conditionWrong', seeds: S.conditionWrong.seeds, trust: S.offTarget.trust, text: cond.result, why: 'offTarget' };
   }
 
   function endingFor(seeds, trust) {
@@ -4433,7 +4523,122 @@ const GAME_DATA = {
       teacher: renderTeacher
     };
     (screens[state.screen] || renderStart)();
+    applyReadingChunks(app);
     if (!savingEnabled) app.appendChild(el('div', { className: 'test-badge', text: D.ui.testBadge }));
+  }
+
+
+  /* ------------------------------------------------------------------
+     끊어 읽기 줄바꿈
+     글을 억지로 줄 바꾸지는 않아요. 다만 줄이 넘어갈 때 아무 데서나 끊기지 않고
+     "진짜 이름 말고 / 게임에서 쓸 별명을 / 지어주세요!" 처럼
+     의미 덩어리 사이에서만 넘어가도록, 덩어리마다 안 끊기는 조각으로 감싸요.
+     ------------------------------------------------------------------ */
+  // 끊어 읽기를 적용할 곳 — 폭이 넉넉한 안내·설명·기사 글
+  const FLOW_SELECTOR = [
+    '.save-info', '.nickname-guide', '.autosave-note', '.speech-bubble', '.tutorial-text',
+    '.tutorial-line', '.learning-text', '.discuss-text', '.modal-text', '.result-text', '.event-feedback-text',
+    '.event-narration', '.event-my-choice', '.deep-explain', '.deep-question', '.deep-locked',
+    '.deep-hint-text', '.decision-question', '.decision-frame', '.fair-intro', '.fair-feedback',
+    '.fair-my', '.ethics-q', '.cert-hint', '.key-guide', '.change-summary', '.company-slogan',
+    '.condition-text', '.news-para', '.phone-handled', '.result-why', '.rethink-guide', '.rethink-feedback',
+    '.guide-list li', '.tips-list li', '.fair-more-list li', '.ethics-list li'
+  ].join(', ');
+  // 글자가 잘리면 안 되는 곳(코드·주소)과 한 글자씩 찍히는 엔딩 글은 건드리지 않아요
+  const NO_CHUNK = '.code-value, .phone-url, .phone-link, .ending-story, .cert-code-value, input, textarea';
+
+  const MAX_CHUNK = 15;   // 조각 최대 글자 수 (좁은 화면에서도 한 줄에 들어가게)
+  // www.a.co.kr 같은 주소인지 (마침표 양옆이 영문·숫자면 주소로 봐요)
+  function looksLikeUrl(t) {
+    for (let k = 1; k < t.length - 2; k++) {
+      if (t[k] !== '.') continue;
+      if (/[A-Za-z0-9]/.test(t[k - 1]) && /[A-Za-z]/.test(t[k + 1])) return true;
+    }
+    return false;
+  }
+  const JOSA = /(?:이|가|을|를|은|는|에|에서|에게|께|으로|로|와|과|의|도|만|부터|까지|보다|처럼|라고|이라고|하고|한테|에는|에도)$/;
+  const EOMI = /(?:고|며|면서|면|지만|는데|은데|아서|어서|여서|니까|거나|려고|도록|대신|때문에|위해|통해)$/;
+
+  // 마지막 글자의 받침 (ㄴ=4, ㄹ=8) — 관형형("쓸 별명", "가는 길")을 가려내려고 봐요
+  function jongseong(ch) {
+    const code = ch.charCodeAt(0) - 0xAC00;
+    return (code < 0 || code > 11171) ? -1 : code % 28;
+  }
+
+  /* 한 문단을 끊어 읽기 덩어리로 나눠요 (덩어리 사이에서만 줄이 바뀌어요) */
+  function readingChunks(text) {
+    const words = text.split(/\s+/).filter(Boolean);
+    const chunks = [];
+    let cur = [];
+    const len = () => cur.join(' ').length;
+    for (let i = 0; i < words.length; i++) {
+      const w = words[i];
+      // 조각이 너무 길어지면(좁은 칸에서 넘쳐요) 넣기 전에 끊어요
+      if (cur.length && len() + 1 + w.length > MAX_CHUNK) { chunks.push(cur.join(' ')); cur = []; }
+      cur.push(w);
+      if (i === words.length - 1) break;
+      const bare = w.replace(/[^0-9A-Za-z가-힣]+$/, '');
+      if (!bare) continue;   // '[💾' 처럼 기호·그림 글자만 있는 조각은 뒤 낱말에 붙여요
+      const last = bare[bare.length - 1];
+      const jong = jongseong(last);
+      // 관형형으로 보이면 뒤 낱말과 붙여 둬요 (쓸 / 가는 / 지키는 …)
+      const modifier = bare.length <= 3 && last !== '을' && last !== '를'
+        && (last === '는' || last === '은' || jong === 4 || jong === 8);
+      const hard = /[,·;:]$/.test(w) || /[.!?]["'”’)\]]*$/.test(w);
+      const tail = JOSA.test(bare) || EOMI.test(bare);
+      if (hard || (tail && !modifier && len() >= 5) || len() >= MAX_CHUNK - 3) {
+        chunks.push(cur.join(' '));
+        cur = [];
+      }
+    }
+    if (cur.length) chunks.push(cur.join(' '));
+    return chunks;
+  }
+
+  /* 글자 덩어리를 "안 끊기는 조각"으로 감싸요 (앞뒤 띄어쓰기는 그대로 둬요) */
+  function chunkTextNode(node) {
+    const raw = node.nodeValue;
+    const head = (raw.match(/^\s+/) || [''])[0];
+    const foot = (raw.match(/\s+$/) || [''])[0];
+    const body = raw.slice(head.length, raw.length - foot.length);
+    if (body.length < 14 || !/\s/.test(body)) return;
+    const chunks = readingChunks(body);
+    if (chunks.length < 2) return;
+    const frag = document.createDocumentFragment();
+    if (head) frag.appendChild(document.createTextNode(head));
+    chunks.forEach((c, i) => {
+      // 누리집 주소나 아주 긴 조각은 감싸지 않아요 — 자리가 모자라면 꺾일 수 있어야 하니까요
+      const unbreakable = c.length > MAX_CHUNK || c.indexOf('://') >= 0 || looksLikeUrl(c);
+      frag.appendChild(unbreakable ? document.createTextNode(c) : el('span', { className: 'cl', text: c }));
+      if (i < chunks.length - 1) frag.appendChild(document.createTextNode(' '));
+    });
+    if (foot) frag.appendChild(document.createTextNode(foot));
+    node.parentNode.replaceChild(frag, node);
+  }
+
+  // 이 칸이 flex·grid 인가요? (조각을 넣으면 한 줄로 늘어서는 곳)
+  function isFlexy(node) {
+    const d = getComputedStyle(node).display;
+    return d === 'flex' || d === 'inline-flex' || d === 'grid' || d === 'inline-grid';
+  }
+
+  function applyReadingChunks(root) {
+    if (!root || !root.querySelectorAll) return;
+    root.querySelectorAll(FLOW_SELECTOR).forEach((box) => {
+      if (box.closest(NO_CHUNK)) return;
+      const walker = document.createTreeWalker(box, NodeFilter.SHOW_TEXT);
+      const nodes = [];
+      while (walker.nextNode()) {
+        const n = walker.currentNode;
+        if (!n.parentElement) continue;
+        if (n.parentElement.classList.contains('cl')) continue;
+        if (n.parentElement.closest(NO_CHUNK)) continue;
+        // flex·grid 칸에서는 조각 하나하나가 '칸'이 되어 줄이 안 바뀌어요. 그런 곳은 건드리지 않아요
+        if (isFlexy(n.parentElement)) continue;
+        nodes.push(n);
+      }
+      nodes.forEach(chunkTextNode);
+    });
   }
 
   /* ---------- 시작 화면 ---------- */
@@ -4699,7 +4904,8 @@ const GAME_DATA = {
     app.appendChild(el('section', { className: 'screen tutorial-screen' },
       el('div', { className: 'card tutorial-card' },
         el('div', { className: 'tutorial-figure' }, characterFigure(state.character)),
-        el('p', { className: 'tutorial-text', text: fill(T.pages[page]) }),
+        // 가운데 맞춤은 바깥 칸(flex)이 하고, 글은 안쪽 칸에 넣어요 (끊어 읽기가 되도록)
+        el('p', { className: 'tutorial-text' }, el('span', { className: 'tutorial-line', text: fill(T.pages[page]) })),
         el('div', { className: 'dots', 'aria-label': (page + 1) + ' / ' + T.pages.length },
           T.pages.map((_, i) => el('span', { className: 'dot' + (i === page ? ' is-on' : '') }))
         )
@@ -5288,11 +5494,10 @@ const GAME_DATA = {
           document.querySelectorAll('.pick-sent.is-picked').forEach((x) => x.classList.remove('is-picked'));
           save(); drawChip();
         }));
-        if (pc.type === 'condition') {
-          const ok = evidenceOk(R, t);
-          evFeedback.textContent = ok ? EV.good : EV.check;
-          evFeedback.className = 'evidence-feedback ' + (ok ? 'is-good' : 'is-check');
-        }
+        // 조건부 투자뿐 아니라 투자·거절에서도 근거가 알맞은지 알려 줘요
+        const ok = evidenceOk(R, t);
+        evFeedback.textContent = ok ? EV.good : EV.check;
+        evFeedback.className = 'evidence-feedback ' + (ok ? 'is-good' : 'is-check');
       }
       if (typeof update === 'function') update();
     }
@@ -5353,8 +5558,9 @@ const GAME_DATA = {
         submitBtn
       ),
       // 근거를 고를 기사들(심화 자료 포함). 조건부 투자면 펼쳐진 채로 시작해요
-      el('details', Object.assign({ className: 'decision-articles' }, needEv ? { open: true } : {}),
-        el('summary', { text: needEv ? EV.articlesTitle : X.articlesTitle }),
+      // 어떤 선택이든 근거 문장을 고를 수 있게, 기사는 늘 펼쳐진 채로 시작해요
+      el('details', { className: 'decision-articles', open: true },
+        el('summary', { text: EV.articlesTitle }),
         el('div', { className: 'news-list' },
           articleCards(R.articles.concat(R.deep ? [R.deep] : []), R, state.readArticles, null, 'review', pickSentence))
       ),
@@ -5370,26 +5576,27 @@ const GAME_DATA = {
     const R = roundData();
     const pc = state.pendingChoice;
     if (!pc) return;
-    const s = scoreOf(R, pc.type, state.readArticles.length, pc.condition);
+    const evText = state.evidenceDraft || '';
+    const evInfo = { text: evText, ok: evText ? evidenceOk(R, evText) : false };
+    const s = scoreOf(R, pc.type, state.readArticles.length, pc.condition, evInfo);
     if (pc.type === 'invest') state.pendingNews = state.round;
     const before = { seeds: state.seeds, trust: state.trust };
     state.seeds += s.seeds;
     state.trust = clampTrust(state.trust + s.trust);
-    const ev = state.evidenceDraft || '';
     state.choices[state.round - 1] = {
       type: s.type,
       read: state.readArticles.length,
       condition: pc.type === 'condition' ? pc.condition : null,
       reason: reason,
-      evidence: ev,                                   // 결정서에서 고른 근거 문장
-      evidenceOk: ev ? evidenceOk(R, ev) : false       // 진짜 문제를 짚은 문장인지
+      evidence: evInfo.text,                          // 결정서에서 고른 근거 문장
+      evidenceOk: evInfo.ok                           // 진짜 문제를 짚은 문장인지
     };
     state.evidenceDraft = '';
     checkChoiceBadges(R, state.choices[state.round - 1], pc);
     state.lastResult = {
       type: s.type, text: s.text,
       seedsBefore: before.seeds, trustBefore: before.trust,
-      seedsDelta: s.seeds, trustDelta: s.trust
+      seedsDelta: s.seeds, trustDelta: s.trust, why: s.why
     };
     state.pendingChoice = null;
     state.reasonDraft = '';
@@ -5419,10 +5626,12 @@ const GAME_DATA = {
           deltaChip(D.ui.seedIcon, D.ui.seedLabel, res.seedsDelta),
           deltaChip(D.ui.trustIcon, D.ui.trustLabel, res.trustDelta)
         ),
-        el('p', { className: 'result-text', text: fill(res.text, R.company) })
+        el('p', { className: 'result-text', text: fill(res.text, R.company) }),
+        whyNote(res.why)
       ),
       learningCard(R.learning, state.round),
-      button(D.ui.nextButton, 'btn-primary btn-block', afterResult)
+      button(D.ui.nextButton, 'btn-primary btn-block', afterResult),
+      button(D.rethink.button, 'btn-ghost btn-block rethink-open', () => showRethink())
     ));
 
     // 씨앗·신뢰지수 변화 애니메이션
@@ -5434,6 +5643,63 @@ const GAME_DATA = {
       if (res.seedsDelta !== 0) bar.seedNum.classList.add(res.seedsDelta > 0 ? 'flash-up' : 'flash-down');
       if (state.trust !== res.trustBefore) bar.trustNum.classList.add(state.trust > res.trustBefore ? 'flash-up' : 'flash-down');
     }, 300);
+  }
+
+  // 신뢰지수가 왜 그렇게 바뀌었는지 한 줄로 알려 줘요
+  function whyNote(why) {
+    const W = D.trustWhy;
+    if (!W || !why || !W[why]) return null;
+    return el('p', { className: 'result-why' },
+      el('b', { text: '💡 ' + W.label + ' ' }),
+      el('span', { text: W[why] })
+    );
+  }
+
+  /* 🤔 다시 판단해 보기
+     결과를 본 뒤 "지금이라면 무엇을 고를까"를 한 번 더 생각해 보는 칸이에요.
+     점수·엔딩·결과 코드에는 전혀 들어가지 않아요. */
+  function showRethink() {
+    if (state.screen !== 'result') return;
+    const T = D.rethink;
+    const c = state.choices[state.round - 1];
+    if (!c) return;
+    const was = c.type === 'invest' ? 'invest' : c.type === 'pass' ? 'pass' : 'condition';
+    const names = D.decision.choiceNames;
+    const feedback = el('p', { className: 'rethink-feedback' });
+    const buttons = ['invest', 'pass', 'condition'].map((k) => {
+      const btn = el('button', {
+        type: 'button',
+        className: 'rethink-btn' + (k === was ? ' is-was' : ''),
+        text: names[k]
+      });
+      btn.addEventListener('click', () => {
+        c.rethink = k;
+        save();
+        buttons.forEach((x) => { x.disabled = true; x.classList.remove('is-on'); });
+        btn.classList.add('is-on');
+        feedback.textContent = (k === was ? T.same : T.changed);
+        play(k === was ? 'tap' : 'seedUp');
+      });
+      return btn;
+    });
+    if (c.rethink) {
+      const i = ['invest', 'pass', 'condition'].indexOf(c.rethink);
+      if (i >= 0) {
+        buttons.forEach((x) => { x.disabled = true; });
+        buttons[i].classList.add('is-on');
+        feedback.textContent = (c.rethink === was ? T.same : T.changed);
+      }
+    }
+    showModal(el('div', { className: 'rethink' },
+      el('h2', { className: 'modal-title', text: T.title }),
+      el('p', { className: 'rethink-was' },
+        el('span', { text: T.myChoiceLabel + ' ' }),
+        el('b', { text: names[was] })
+      ),
+      el('p', { className: 'rethink-guide', text: T.guide }),
+      el('div', { className: 'rethink-buttons' }, buttons),
+      feedback
+    ), [{ label: T.closeButton, className: 'btn-primary' }], 'modal-rethink');
   }
 
   function afterResult() {
@@ -6835,9 +7101,11 @@ const GAME_DATA = {
      닉네임 "테스트", 캐릭터 1번으로 시작하고, 저장은 하지 않아요.
      ================================================================== */
   // 엔딩별 가짜 기록 (라운드 수만큼 채워요)
+  // correct: 올바른 조건부 / passOn: 근거로 진짜 문제를 짚고 거절 / passRead: 읽기만 하고 거절
+  // passUnread: 읽지 않고 거절 / invest: 그냥 투자
   const TEST_PATTERNS = {
     1: ['correct', 'correct', 'correct', 'correct', 'correct', 'correct'],
-    2: ['passRead', 'passRead', 'passRead', 'passRead', 'passRead', 'passRead'],
+    2: ['passOn', 'passOn', 'passOn', 'passOn', 'passOn', 'passOn'],
     3: ['passUnread', 'passUnread', 'passUnread', 'passUnread', 'passUnread', 'passUnread'],
     4: ['invest', 'invest', 'invest', 'invest', 'invest', 'invest'],
     5: ['invest', 'invest', 'passRead', 'passRead', 'passRead', 'invest']
@@ -6863,11 +7131,16 @@ const GAME_DATA = {
       const type = kind === 'correct' ? 'condition' : kind === 'invest' ? 'invest' : 'pass';
       const read = kind === 'passUnread' ? 0 : 2;
       const condition = kind === 'correct' ? R.conditions.findIndex((c) => c.correct) : null;
-      const s = scoreOf(R, type, read, condition);
+      // passOn 이면 "진짜 문제를 짚은 근거 문장"을 고른 셈으로 쳐요
+      const ev = kind === 'passOn' ? { text: (R.evidence && R.evidence[0]) || '근거', ok: true } : null;
+      const s = scoreOf(R, type, read, condition, ev);
       state.seeds += s.seeds;
       state.trust = clampTrust(state.trust + s.trust);
       if (type === 'invest') state.seeds += R.invest.news.seeds; // 속보 손실까지 반영
-      state.choices[i] = { type: s.type, read: read, condition: condition, reason: D.ui.testReason };
+      state.choices[i] = {
+        type: s.type, read: read, condition: condition, reason: D.ui.testReason,
+        evidence: ev ? ev.text : '', evidenceOk: !!(ev && ev.ok)
+      };
     });
     // 이벤트 결과도 종류별로 하나씩 채워서 화면을 확인할 수 있게 해요(씨앗이 바뀌는 선택이면 반영)
     const levels = ['good', 'bad', 'ok', 'good'];
