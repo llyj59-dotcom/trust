@@ -1917,7 +1917,7 @@ const GAME_DATA = {
     continueButton: `이어하기`,
     newGameButton: `새로 시작`,
     savedTitle: '📂 저장된 게임',
-    modeMixedWarn: '⚠️ 이 판은 하는 중에 운영 모드가 바뀌었어요. 결과 코드는 처음 시작한 모드로 만들어집니다.',
+    modeKeptNote: '📘 이 판은 {모드}로 시작해서 끝까지 같은 조건으로 했어요.',
     savedGuide: '내 별명을 찾아 이어서 해요. 새로 하려면 위에 별명을 쓰고 [새로 시작]을 눌러요.',
     modeBadgeFull: '📘 기본 모드 (80분)',
     modeBadgeQuick: '⚡ 간편 모드 (40분)',
@@ -3381,7 +3381,7 @@ const GAME_DATA = {
     tapToSkip: '화면을 누르면 이야기를 바로 볼 수 있어요',
     scrollHint: '▼ 아래로 내려서 결과를 확인해요',
     codeTitle: '📮 선생님께 알려줄 결과 코드',
-    modeMixedWarn: '⚠️ 이 판은 하는 중에 운영 모드가 바뀌었어요. 결과 코드는 처음 시작한 모드로 만들어집니다. 선생님께 알려 주세요.',
+    modeKeptNote: '📘 이 판은 {모드}로 시작해서 끝까지 같은 조건으로 했어요. 지금 기기 설정과 달라도 결과는 시작한 모드 기준이에요.',
     codeGuide: '숫자 8자리예요. 선생님께 불러 드리거나 공책에 적어 주세요. 친구와 같은 선택을 했다면 코드도 같을 수 있어요.',
     copyButton: '📋 결과 복사하기',
     copyBoxTitle: '제출용 결과',
@@ -3781,7 +3781,7 @@ const GAME_DATA = {
       // 이 판을 어떤 운영 모드로 시작했는지. 투자를 시작할 때 한 번 적고 바꾸지 않아요.
       // 결과 코드는 "지금 설정"이 아니라 이 값으로 만들어서, 기기 설정을 바꿔도 코드가 흔들리지 않아요.
       mode: null,             // 'full' | 'quick' | null(옛 저장본)
-      modeMixed: false        // 하는 중에 모드가 바뀐 적이 있으면 true
+      modeKept: false         // 기기 설정과 달라서 시작 모드를 그대로 쓰는 중이면 true
     };
   }
   function freshDeep() { return { read: false, answered: false, wrong: [], order: null }; }
@@ -3899,6 +3899,12 @@ const GAME_DATA = {
      간편: 심화 자료를 선택 활동으로 돌리고 읽는 시간 바닥을 줄여요.
      보통은 주소로 나눠 줘요(기본 = 그냥 주소, 간편 = 끝에 ?quick=1). 선생님 모드에서 바꾸면 그 기기에만 저장돼요. */
   const MODE_KEY = 'trustGame_mode_v1';
+  // 간편 모드에서 되돌릴 수 있게 원래 값을 기억해 둡니다
+  const BASE_SETTINGS = {
+    deepForCondition: D.settings.deepForCondition,
+    evidenceForCondition: D.settings.evidenceForCondition,
+    readFloor: D.settings.readFloor
+  };
   function quickMode() {
     try { return localStorage.getItem(MODE_KEY) === 'quick'; } catch (e) { return false; }
   }
@@ -3913,13 +3919,25 @@ const GAME_DATA = {
     if (!st.mode) st.mode = quickMode() ? 'quick' : 'full';
     return st.mode;
   }
-  /* 하는 중에 설정이 달라졌는지 — 달라졌으면 표시만 남깁니다 */
-  function checkModeDrift(st) {
+  /* 이어 하는 판은 "시작한 모드" 를 그대로 적용합니다.
+     기기 설정이 그 사이 바뀌었더라도 판 하나는 끝까지 같은 조건으로 갑니다.
+     (다른 모드는 새 게임부터 적용됩니다)                               */
+  function modeLabel(m) { return m === 'quick' ? (D.start.modeBadgeQuick || '간편 모드') : (D.start.modeBadgeFull || '기본 모드'); }
+  function applyGameMode(st) {
     st = st || state;
-    if (!st.mode) return false;
-    const now = quickMode() ? 'quick' : 'full';
-    if (now !== st.mode && !st.modeMixed) { st.modeMixed = true; try { save(); } catch (e) { /* 무시 */ } }
-    return !!st.modeMixed;
+    if (!st.mode) return false;                       // 옛 저장본은 그대로 둡니다
+    const device = quickMode() ? 'quick' : 'full';
+    if (st.mode === 'quick') {
+      D.settings.deepForCondition = false;
+      D.settings.evidenceForCondition = false;
+      D.settings.readFloor = { charsPerSec: 16, minSec: 5, maxSec: 22 };
+    } else {
+      D.settings.deepForCondition = BASE_SETTINGS.deepForCondition;
+      D.settings.evidenceForCondition = BASE_SETTINGS.evidenceForCondition;
+      D.settings.readFloor = BASE_SETTINGS.readFloor;
+    }
+    st.modeKept = (device !== st.mode);                // 기기 설정과 다르면 알려 주기만
+    return st.modeKept;
   }
   function applyMode() {
     if (!quickMode()) return;
@@ -3966,12 +3984,14 @@ const GAME_DATA = {
     const slot = readSaves().slots[name];
     if (!slot || !slot.state) return;
     state = Object.assign(freshState(), slot.state);
+    applyGameMode(state);   // 이 판을 시작한 모드로 되돌린 뒤 그려요
     render();
     afterRestore();
   }
 
   // 아직 안 보여준 속보가 있으면 이어하기 직후 보여줘요
   function afterRestore() {
+    applyGameMode(state);     // 이 판을 시작한 모드로 되돌려 놓고 이어 갑니다
     if (state.pendingNews && state.screen === 'result') showNews();
   }
 
@@ -6536,8 +6556,9 @@ const GAME_DATA = {
       el('h2', { className: 'section-title', text: S.codeTitle }),
       el('p', { className: 'code-value submit-code', text: makeResultCode() }),
       el('p', { className: 'save-info', text: S.codeGuide }),
-      checkModeDrift(state) && S.modeMixedWarn
-        ? el('p', { className: 'mode-badge mode-quick', text: S.modeMixedWarn }) : null,
+      state.modeKept && S.modeKeptNote
+        ? el('p', { className: 'mode-badge mode-full',
+            text: S.modeKeptNote.replace('{모드}', modeLabel(gameMode(state))) }) : null,
       el('h3', { className: 'submit-sub', text: S.copyBoxTitle }),
       copyBox,
       copyBtn,
@@ -6607,6 +6628,7 @@ const GAME_DATA = {
     lines.push('엔딩: ' + ending.emoji + ' ' + ending.title);
     lines.push('최종 씨앗: ' + formatNum(state.seeds) + ' / 신뢰지수: ' + trustText(state.trust));
     lines.push('결과 코드: ' + makeResultCode());
+    lines.push('운영 모드: ' + modeLabel(gameMode(state)) + (state.modeKept ? ' (이 기기의 지금 설정과는 다름 — 시작한 모드로 끝까지 함)' : ''));
     lines.push('라운드별 판단: ' + D.rounds.map((R, i) => {
       const c = state.choices[i];
       const name = choiceNameOf(c) || '기록 없음';
