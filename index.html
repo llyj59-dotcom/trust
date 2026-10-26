@@ -1775,6 +1775,18 @@ h1, h2, h3, .btn, .status-bar, .status-code, .section-title, .screen-title, .sta
 
 .decision-check { background: var(--mint, #e6f6ee); color: #1f6b4a; margin-top: 0; }
 
+.mode-badge{
+  margin:10px 0 0;
+  padding:7px 11px;
+  border-radius:9px;
+  font-size:.82rem;
+  font-weight:700;
+  line-height:1.5;
+  text-align:center;
+}
+.mode-badge.mode-full{ background:#e9f2ec; color:#2c5b45; }
+.mode-badge.mode-quick{ background:#fbf0dd; color:#8a6020; }
+
 .decision-auto{
   margin:10px 0 0;
   padding:9px 12px;
@@ -1855,7 +1867,7 @@ const GAME_DATA = {
     onTarget:  '기사에서 이 회사의 진짜 문제를 짚어 근거로 밝혔어요. 거절이든 조건부 투자든, 근거가 있는 판단은 똑같이 신뢰를 키워요.',
     offTarget: '근거 문장을 골랐지만 이 회사의 진짜 문제와는 조금 달랐어요. 어떤 기사가 문제를 알려 주는 기사였는지 다시 살펴봐요.',
     readOnly:  '기사를 끝까지 읽은 표시가 남았어요. 다음에는 결정서에서 "어느 문장을 보고 그렇게 생각했는지"까지 골라 두면 신뢰지수가 더 올라가요.',
-    none:      '이 라운드에는 읽기 완료 표시나 고른 근거 문장이 남지 않았어요. 결정서에 쓴 까닭은 아래 "나의 투자 일기"에 그대로 있으니, 선생님과 함께 살펴봐요.',
+    none:      '이 라운드에는 읽기 완료 표시나 고른 근거 문장이 남지 않았어요. 결정서에 쓴 까닭은 게임을 마친 뒤 엔딩의 "나의 투자 일기"에서 볼 수 있어요. 선생님과 함께 살펴봐요.',
     invest:    '문제를 알려 주는 기사가 있었는데도 그대로 투자했어요. 사람들의 믿음을 지키지 못했어요.'
   },
 
@@ -1876,6 +1888,7 @@ const GAME_DATA = {
     morePlaceholder: '예) 회사가 약속을 지키는지 누가 확인하는지 더 알고 싶어요.',
     moreLabel: '더 알고 싶은 것이 있다면 적어 봐요 (안 써도 돼요)',
     saved: '적어 둔 내용은 엔딩의 투자 일기와 결과 복사에 남아요.',
+    modeNote: '간편 모드는 조건부 투자의 심화 확인·근거 선택 필수 조건을 해제하고, 읽기 최소 시간을 줄입니다.',
     closeButton: '좋아요',
     doneLabel: '다시 고른 선택',
     diaryLabel: '🤔 다시 판단'
@@ -1904,7 +1917,11 @@ const GAME_DATA = {
     continueButton: `이어하기`,
     newGameButton: `새로 시작`,
     savedTitle: '📂 저장된 게임',
+    modeMixedWarn: '⚠️ 이 판은 하는 중에 운영 모드가 바뀌었어요. 결과 코드는 처음 시작한 모드로 만들어집니다.',
     savedGuide: '내 별명을 찾아 이어서 해요. 새로 하려면 위에 별명을 쓰고 [새로 시작]을 눌러요.',
+    modeBadgeFull: '📘 기본 모드 (80분)',
+    modeBadgeQuick: '⚡ 간편 모드 (40분)',
+    modeBadgeHint: '선생님이 정해 주신 모드가 맞는지 확인해 주세요.',
     autoSaveNote: '💾 게임은 저절로 저장돼요. 다음 시간에 같은 기기라면 아래 목록에서 [이어하기], 다른 기기라면 게임 중 위쪽 [💾 코드]를 눌러 나온 코드를 적어 두세요.',
     savedProgress: '{번호}라운드 진행 중',
     savedProgressReady: '시작 준비 중',
@@ -2033,7 +2050,7 @@ const GAME_DATA = {
   tutorial: {
     pages: [
       '반가워요, {닉네임} 투자자님! 씨앗 10,000개로 첫 투자를 시작해요. 앞으로 6개의 회사를 만나 투자할지 결정하게 돼요. 정답 하나를 맞히는 게임이 아니라, 근거를 찾아 판단하고 친구들과 "왜 그렇게 골랐는지" 이유를 나누며 함께 생각하는 게임이에요.',
-      `화면 위의 🌱 신뢰지수는 정답 점수가 아니에요! 투자한다·투자하지 않는다·조건부 투자 가운데 무엇이 정답인지는 정해져 있지 않아요. 신뢰지수는 게임에서 고른 근거 문장과 해결 조건, 읽기 완료 표시에 따라 달라져요. 어느 것을 고르든 기사에서 근거 문장을 골라 두면 올라가요. 씨앗이 많다고 꼭 좋은 투자자는 아니랍니다!`,
+      `화면 위의 🌱 신뢰지수는 정답 점수가 아니에요! 투자한다·투자하지 않는다·조건부 투자 가운데 무엇이 정답인지는 정해져 있지 않아요. 신뢰지수는 게임에서 고른 근거 문장과 해결 조건, 읽기 완료 표시에 따라 달라져요. 기사에서 근거 문장을 골라 두면 올라가지만, 문제를 해결하지 않은 채 투자하면 내려갈 수도 있어요. 씨앗이 많다고 꼭 좋은 투자자는 아니랍니다!`,
       `한 가지 알아 둘 것이 있어요. 결정서에 직접 쓴 글은 컴퓨터가 잘 썼는지 못 썼는지 채점하지 않아요. 쓴 글은 엔딩의 "나의 투자 일기"에 그대로 모이고, 선생님과 친구들이 함께 읽어요. 그러니 점수를 올리려고 쓰지 말고, 내 생각이 잘 전해지도록 써 주세요.`,
       `회사마다 기사가 3개씩 있어요. 기사를 2개 이상 읽으면 '조건부 투자'가 열려요. 조건부 투자는 '이 문제를 고치면 투자할게요'라고 제안하는 거예요.`,
       '하나 더! 기사 아래에 조금 어려운 "📊 심화 자료"가 있어요. 끝까지 읽고 확인 문제를 풀어야 조건부 투자가 열려요. 투자 결정서에는 내 주장(선택)과 이유를 쓰고, 기사 속에서 근거 문장을 직접 골라 붙여요. 주장·이유·근거가 서로 잘 맞는지 살펴보는 것이 "타당성"을 따지는 거예요.'
@@ -3033,7 +3050,7 @@ const GAME_DATA = {
   evidenceUi: {
     title: '🔍 근거 문장 고르기',
     requiredNote: '(조건부 투자는 꼭 골라요)',
-    optionalNote: '(어떤 선택이든 근거 문장을 고르면 신뢰지수가 올라가요)',
+    optionalNote: '(근거 문장을 고르면 신뢰지수가 올라가요. 다만 문제를 둔 채 투자하면 내려가요)',
     guide: '아래 기사에서 내 선택의 까닭이 되는 문장을 눌러 골라요.',
     pickGuide: '👆 근거로 쓸 문장을 눌러 골라요. 형광펜이 아닌 문장도 고를 수 있어요.',
     pickAria: '이 문장을 근거로 고르기',
@@ -3073,11 +3090,12 @@ const GAME_DATA = {
       condition: '예) 두 번째 기사에서 "…"라는 문제를 찾았어요. 이 문제를 고치면 믿을 수 있어서 이 조건을 골랐어요.'
     },
     frameHint: '✍️ 주장(내 선택) → 이유(왜 그렇게 골랐나요?) → 근거(몇 번째 기사에서 찾은 내용)',
-    autoNote: '📌 여기에 쓴 글은 컴퓨터가 채점하지 않아요. 엔딩의 "나의 투자 일기"에 그대로 남아서 선생님과 친구들이 읽어요.',
+    autoNote: '📌 여기에 쓴 글은 컴퓨터가 채점하지 않아요. 게임을 마친 뒤 엔딩의 "나의 투자 일기"에 그대로 모여서 선생님과 친구들이 읽어요.',
     checkHint: '✅ 쓰고 나서 살펴봐요: ① 이유가 내 선택을 뒷받침하나요? ② 근거가 이유와 관련 있나요? ③ 근거가 기사 속 사실인가요? ④ 이 선택으로 영향을 받는 사람(쓰는 사람·만든 사람·피해를 입은 사람)을 떠올렸나요?',
     minLength: 10,              // 최소 글자 수
     maxLength: 200,             // 최대 글자 수
     count: '{글자수}자 / {최소}자 이상',
+    shortOk: '✍️ 짧아도 괜찮아요. 쓰기가 힘들면 선생님께 말로 설명하고, 선생님이 대신 적어 주셔도 돼요.',
     tooShort: '{최소}자 이상 써 주세요.',
     bannedMessage: '다른 친구들도 볼 수 있어요. 고운 말로 다시 써 볼까요?',
     articlesTitle: '📰 기사 다시 보기',
@@ -3363,6 +3381,7 @@ const GAME_DATA = {
     tapToSkip: '화면을 누르면 이야기를 바로 볼 수 있어요',
     scrollHint: '▼ 아래로 내려서 결과를 확인해요',
     codeTitle: '📮 선생님께 알려줄 결과 코드',
+    modeMixedWarn: '⚠️ 이 판은 하는 중에 운영 모드가 바뀌었어요. 결과 코드는 처음 시작한 모드로 만들어집니다. 선생님께 알려 주세요.',
     codeGuide: '숫자 8자리예요. 선생님께 불러 드리거나 공책에 적어 주세요. 친구와 같은 선택을 했다면 코드도 같을 수 있어요.',
     copyButton: '📋 결과 복사하기',
     copyBoxTitle: '제출용 결과',
@@ -3758,7 +3777,11 @@ const GAME_DATA = {
       // 공모전판(2026-10): 자기 점검과 공정성 활동. 점수·엔딩·결과 코드와는 상관없어요.
       pre: null,              // 🧪 사전 자기 점검 [0~3, 0~3, 0~3, 0~3]
       post: null,             // 🧪 사후 자기 점검
-      fair: null              // ⚖️ 공정성 생각 열기에서 고른 번호
+      fair: null,             // ⚖️ 공정성 생각 열기에서 고른 번호
+      // 이 판을 어떤 운영 모드로 시작했는지. 투자를 시작할 때 한 번 적고 바꾸지 않아요.
+      // 결과 코드는 "지금 설정"이 아니라 이 값으로 만들어서, 기기 설정을 바꿔도 코드가 흔들리지 않아요.
+      mode: null,             // 'full' | 'quick' | null(옛 저장본)
+      modeMixed: false        // 하는 중에 모드가 바뀐 적이 있으면 true
     };
   }
   function freshDeep() { return { read: false, answered: false, wrong: [], order: null }; }
@@ -3878,6 +3901,25 @@ const GAME_DATA = {
   const MODE_KEY = 'trustGame_mode_v1';
   function quickMode() {
     try { return localStorage.getItem(MODE_KEY) === 'quick'; } catch (e) { return false; }
+  }
+  /* 이 판의 모드 — 적혀 있으면 그걸 쓰고, 옛 저장본이면 지금 설정을 따릅니다 */
+  function gameMode(st) {
+    st = st || state;
+    return st.mode || (quickMode() ? 'quick' : 'full');
+  }
+  /* 투자를 시작할 때 한 번 적어 둡니다 */
+  function lockMode(st) {
+    st = st || state;
+    if (!st.mode) st.mode = quickMode() ? 'quick' : 'full';
+    return st.mode;
+  }
+  /* 하는 중에 설정이 달라졌는지 — 달라졌으면 표시만 남깁니다 */
+  function checkModeDrift(st) {
+    st = st || state;
+    if (!st.mode) return false;
+    const now = quickMode() ? 'quick' : 'full';
+    if (now !== st.mode && !st.modeMixed) { st.modeMixed = true; try { save(); } catch (e) { /* 무시 */ } }
+    return !!st.modeMixed;
   }
   function applyMode() {
     if (!quickMode()) return;
@@ -4279,7 +4321,7 @@ const GAME_DATA = {
     const post = hasPost ? packFour(st.post) : 0;
     const flag = (hasPre ? 1 : 0) + (hasPost ? 2 : 0);              // 0~3
     const fair = (st.fair === 0 || st.fair) ? st.fair + 1 : 0;      // 0 없음, 1~3
-    const quick = quickMode() ? 1 : 0;
+    const quick = gameMode(st) === 'quick' ? 1 : 0;   // 지금 설정이 아니라 "이 판의 모드"
     const bonus = bonusCodeValue(st);                                // 0~4
     let p = pre;
     p = p * 256 + post;
@@ -4907,6 +4949,11 @@ const GAME_DATA = {
         input,
         count,
         el('p', { className: 'nickname-guide', id: 'nickname-guide', text: S.nicknameGuide }),
+        // 지금 어떤 모드인지 늘 보이게 — 앞사람이 간편 모드로 열어 둔 기기를 그대로 쓰는 일을 막아요
+        S.modeBadgeFull ? el('p', {
+          className: 'mode-badge ' + (quickMode() ? 'mode-quick' : 'mode-full'),
+          text: (quickMode() ? S.modeBadgeQuick : S.modeBadgeFull) + ' · ' + (S.modeBadgeHint || '')
+        }) : null,
         error,
         startBtn,
         el('p', { className: 'autosave-note', text: S.autoSaveNote })
@@ -4971,7 +5018,7 @@ const GAME_DATA = {
       page > 0 ? button(T.prevButton, 'btn-ghost', () => { state.tutorialPage = page - 1; go('tutorial'); }) : null,
       isLast
         // 공모전판: 투자 전에 🧪 사전 자기 점검을 먼저 해요
-        ? button(T.startButton, 'btn-primary', () => { if (D.selfCheck) go('precheck'); else startRound(1); })
+        ? button(T.startButton, 'btn-primary', () => { lockMode(state); if (D.selfCheck) go('precheck'); else startRound(1); })
         : button(T.nextButton, 'btn-primary', () => { state.tutorialPage = page + 1; go('tutorial'); })
     );
 
@@ -4994,6 +5041,7 @@ const GAME_DATA = {
   function roundData() { return D.rounds[state.round - 1]; }
 
   function startRound(n) {
+    if (n === 1) lockMode(state);      // 첫 라운드에 들어갈 때 이 판의 모드를 적어 둡니다
     state.round = n;
     state.readArticles = [];
     state.conditionToastShown = false;
@@ -5627,6 +5675,7 @@ const GAME_DATA = {
         X.frameHint ? el('p', { className: 'decision-frame', text: X.frameHint }) : null,
         X.checkHint ? el('p', { className: 'decision-frame decision-check', text: X.checkHint }) : null,
         X.autoNote ? el('p', { className: 'decision-auto', text: X.autoNote }) : null,
+        X.shortOk ? el('p', { className: 'decision-frame', text: X.shortOk }) : null,
         area,
         count,
         error,
@@ -6487,6 +6536,8 @@ const GAME_DATA = {
       el('h2', { className: 'section-title', text: S.codeTitle }),
       el('p', { className: 'code-value submit-code', text: makeResultCode() }),
       el('p', { className: 'save-info', text: S.codeGuide }),
+      checkModeDrift(state) && S.modeMixedWarn
+        ? el('p', { className: 'mode-badge mode-quick', text: S.modeMixedWarn }) : null,
       el('h3', { className: 'submit-sub', text: S.copyBoxTitle }),
       copyBox,
       copyBtn,
