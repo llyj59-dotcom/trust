@@ -105,7 +105,8 @@ function 기록시트만들기() {
   for (var i = 1; i <= 인원; i++) 시간행.push([반수식, 'K' + ('0' + i).slice(-2), '기본']);
   시간.getRange(2, 1, 시간행.length, 3).setValues(시간행);
   머리글(시간, 14);
-  시간.setFrozenRows(1).setFrozenColumns(2);
+  시간.setFrozenRows(1);
+  시간.setFrozenColumns(2);
 
   /* ---- 2. 사례과제 채점표 ---- */
   var 채점 = ss.insertSheet('2. 사례과제 채점표');
@@ -154,7 +155,8 @@ function 기록시트만들기() {
       .setHelpText('미제출·결석은 0점이 아니라 빈칸으로 둡니다.').build()
   );
   머리글(채점, 14);
-  채점.setFrozenRows(1).setFrozenColumns(3);
+  채점.setFrozenRows(1);
+  채점.setFrozenColumns(3);
   채점.getRange(1, 11, 1, 3).setBackground('#d9e7dd');
   채점.getRange('F1:I1').setNote('제출했지만 관련 설명이 전혀 없으면 0점을 적습니다. 아직 채점하지 않았으면 비워 두세요.');
 
