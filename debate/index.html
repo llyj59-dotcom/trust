@@ -133,6 +133,13 @@ th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-ali
 th{background:var(--soft);font-weight:700;font-size:13.5px}
 .bar{height:22px;border-radius:6px;background:var(--green);min-width:3px}
 .mini{font-size:13px;color:var(--sub)}
+.gchip{padding:5px 10px;font-size:13px}
+.gchip[aria-pressed=true]{background:var(--green);color:#fff}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.grades{min-width:640px}
+.grades td{vertical-align:middle}
+.grades input.gnote{font-size:13.5px;padding:7px 9px;border-radius:8px;min-width:220px}
+@media print{.grades input.gnote{border:0;padding:0;min-width:0}}
 .movecard{border:1.5px solid var(--purple);background:var(--purple-l);border-radius:12px;padding:12px 14px;margin:10px 0}
 .movecard .t{font-weight:800;color:var(--purple);font-size:15px}
 .jobgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:10px 0}
@@ -145,7 +152,10 @@ th{background:var(--soft);font-weight:700;font-size:13.5px}
 .jobkey{display:flex;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--sub);margin-top:4px}
 .jobkey span{display:inline-flex;align-items:center;gap:5px}
 .jobkey i{width:13px;height:13px;border-radius:4px;display:inline-block}
-@media print{body{background:#fff}.noprint{display:none!important}.card{box-shadow:none;break-inside:avoid}}
+.printonly{display:none}
+pre.plain{white-space:pre-wrap;font-family:inherit;font-size:15px;line-height:1.7;margin:0}
+@media print{body{background:#fff}.noprint{display:none!important}.printonly{display:block}.card{box-shadow:none;break-inside:avoid}
+  .card.hasprint textarea{display:none}}
 @media (max-width:520px){
   body{font-size:16px}
   .vl-line .dot{width:19px;height:19px}
@@ -159,7 +169,7 @@ th{background:var(--soft);font-weight:700;font-size:13.5px}
 <body>
 <div class="wrap">
   <div class="top noprint">
-    <h1>🌱 생각 모으기</h1>
+    <h1 id="appName">🌱 생각 모으기</h1>
     <span class="tag">우리 반 토의·토론</span>
     <span class="sp"></span>
     <button class="ghost" id="btnMode">선생님용</button>
@@ -169,6 +179,11 @@ th{background:var(--soft);font-weight:700;font-size:13.5px}
 <script>
 (function(){
 'use strict';
+
+/* 앱 이름은 여기 한 곳만 바꾸면 제목·머리글·결과 글에 모두 반영됩니다. */
+var APP_NAME = '생각 모으기';
+document.title = APP_NAME + ' — 우리 반 토의·토론';
+document.getElementById('appName').textContent = '🌱 ' + APP_NAME;
 
 /* ===================== 주제 ===================== */
 var TOPICS = [
@@ -379,17 +394,24 @@ var EVTYPE = [
 
 /* ===================== 상태 ===================== */
 var KEY = 'saenggak-moagi-v1';
+var TKEY = 'saenggak-moagi-teacher-v1';
 var S = {
   mode:'student', step:0, topic:null, custom:'',
   name:'', first:null, claim:'', claimPick:-1, reason:'', ev:'', evType:-1,
-  who:'', jobs:{}, other:'', still:'', moved:'', last:null, why:'', checked:false
+  who:'', jobs:{}, other:'', still:'', moved:'', last:null, why:'', checked:false,
+  customL:'', customR:''
 };
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
+  try{ localStorage.setItem(TKEY, JSON.stringify(T)); }catch(e){}
+}
 function load(){
   try{ var r=localStorage.getItem(KEY); if(r){ var o=JSON.parse(r); for(var k in o) if(k in S) S[k]=o[k]; } }catch(e){}
+  try{ var tr=localStorage.getItem(TKEY); if(tr){ var to=JSON.parse(tr); for(var tk in to) if(tk in T) T[tk]=to[tk]; } }catch(e){}
 }
 function topic(){
-  if(S.topic==='custom') return {id:'custom',ic:'✏️',cat:'우리가 정한 주제',q:S.custom,sub:'',think:[],stems:[]};
+  if(S.topic==='custom') return {id:'custom',ic:'✏️',cat:'우리가 정한 주제',q:S.custom,sub:'',think:[],stems:[],
+    ends:[(S.customL||'').trim()||'아니다',(S.customR||'').trim()||'그렇다']};
   for(var i=0;i<TOPICS.length;i++) if(TOPICS[i].id===S.topic) return TOPICS[i];
   return null;
 }
@@ -508,6 +530,9 @@ function viewStudent(){
     }
     h += '</div><label class="f" style="margin-top:18px" for="cq">또는 우리 반이 정한 주제</label>'
       + '<input type="text" id="cq" value="'+esc(S.custom)+'" placeholder="예: 우리 반 자리는 어떻게 정해야 할까?">'
+      + '<div class="fh" style="margin-top:8px">선 양 끝에 붙일 말 (비워 두면 "아니다 / 그렇다")</div>'
+      + '<div class="row"><input type="text" id="cl" value="'+esc(S.customL)+'" placeholder="왼쪽 끝 (예: 제비뽑기로)" style="flex:1;min-width:140px">'
+      + '<input type="text" id="cr" value="'+esc(S.customR)+'" placeholder="오른쪽 끝 (예: 스스로 고르게)" style="flex:1;min-width:140px"></div>'
       + '<div class="row" style="margin-top:10px"><button class="btn sec sm" data-topic="custom">이 주제로 하기</button></div>'
       + '</div>';
     return h;
@@ -608,6 +633,9 @@ function viewStudent(){
          + '<span class="b"><span class="t">'+cs[e].t+'</span><span class="d">'+esc(cs[e].d)+'</span></span></div>';
     h += '<div class="warn"><b>노란 칸이 있어도 넘어갈 수 있어요.</b> 다만 친구들이 그 자리를 먼저 물어볼 거예요. '
        + '지금 고치면 토론할 때 훨씬 편해요.</div>'
+      + '<div class="note">글을 더 다듬고 싶으면 아래 단추로 복사한 글을 <a href="https://www.jajakjajak.com/" target="_blank" rel="noopener" style="color:inherit;font-weight:700">자작자작</a>에 붙여 넣어 보세요. '
+       + '어디가 어색한지 한 번 더 짚어 줘요. 다만 고쳐 준 글을 그대로 가져오지 말고, 내 말로 다시 써야 내 생각이 돼요.</div>'
+      + '<div class="row noprint" style="margin-bottom:10px"><button class="btn sec sm" data-go="copy">📋 지금까지 쓴 글 복사하기</button></div>'
       + '<div class="row noprint"><button class="btn sec" data-go="fix">돌아가서 고치기</button>'
       + '<button class="btn" data-go="next" style="flex:1">반대편 생각 보러 가기</button></div></div>';
     return h;
@@ -652,7 +680,7 @@ function viewStudent(){
       + '<div class="row noprint">'
       + '<button class="btn sec" data-go="copy">📋 결과 복사하기</button>'
       + '<button class="btn sec" data-go="print">🖨 인쇄하기</button></div>'
-      + '<p class="hint">복사한 내용을 선생님이 알려 주신 곳(패들렛·노션 등)에 붙여 넣으면 돼요.</p>'
+      + '<p class="hint">복사한 내용을 선생님이 알려 주신 곳(패들렛 등)에 붙여 넣으면 돼요. 토론이 끝난 뒤에 한 번 더 복사해서 올릴 거예요.</p>'
       + nav('이전','토론 끝나고 누르기', true) + '</div>';
     return h;
   }
@@ -660,7 +688,7 @@ function viewStudent(){
   /* --- 6. 듣고 나서 --- */
   if(S.step===6){
     var moved = S.last!==null && S.first!==null && S.last!==S.first;
-    h += '<div class="card"><h2>이야기를 다 나눈 뒤</h2>'
+    h += '<div class="card hasprint"><h2>이야기를 다 나눈 뒤</h2>'
       + '<p class="lead">토론이 끝났으면 여기를 채워요. 오늘의 진짜 기록이에요.</p>'
       + '<label class="f"><span class="n">1</span>나를 움직인 친구의 말</label>'
       + '<div class="fh">생각이 바뀌지 않았어도, 마음에 남은 말 한마디를 적어요.</div>'
@@ -680,6 +708,7 @@ function viewStudent(){
     }
     h += '<label class="f"><span class="n">3</span>그렇게 된 까닭</label>'
       + '<textarea id="why" placeholder="예: ~라는 근거를 듣고 ~ 쪽으로 옮겼다. / 반대 의견을 들었지만 ~ 때문에 그대로다.">'+esc(S.why)+'</textarea>'
+      + '<pre class="plain printonly">'+esc(resultText())+'</pre>'
       + '<div class="row noprint" style="margin-top:16px">'
       + '<button class="btn" data-go="copy" style="flex:1">📋 결과 복사하기</button>'
       + '<button class="btn sec" data-go="print">🖨 인쇄</button></div>'
@@ -693,7 +722,7 @@ function viewStudent(){
 /* ===================== 결과 글 ===================== */
 function resultText(){
   var t = topic(), L = [], n = okCount();
-  L.push('━━━ 생각 모으기 ━━━');
+  L.push('━━━ ' + APP_NAME + ' ━━━');
   L.push('이름/코드: ' + (S.name||'(안 적음)'));
   L.push('주제: ' + (t?t.q:''));
   L.push('');
@@ -712,7 +741,7 @@ function resultText(){
   if(t && t.jobs){
     var a=[],b=[],c=[];
     for(var k in S.jobs){
-      var v=S.jobs[k]; if(!v) continue;
+      var v=S.jobs[k]; if(!v || !JOBS[k]) continue;
       (v===1?a:v===2?b:c).push(JOBS[k][0]);
     }
     L.push('[직업 — 사라질 것 같다] ' + (a.join(', ')||'-'));
@@ -728,12 +757,19 @@ function resultText(){
     L.push('[그 까닭] ' + (S.why||''));
   }
   L.push('');
-  L.push('@@' + [ (S.name||'').replace(/[|@]/g,''), (t?t.id:''),
+  function cell(x){ return String(x==null?'':x).replace(/[|@\r\n]/g,' ').trim(); }
+  L.push('@@' + [ cell(S.name), (t?t.id:''),
     (S.first===null?'':S.first), (S.last===null?'':S.last),
-    (S.evType<0?'':EVTYPE[S.evType][0]), n[0]+'/'+n[1] ].join('|') + '@@');
+    (S.evType<0?'':EVTYPE[S.evType][0]), n[0]+'/'+n[1],
+    cell(t?t.ends[0]:''), cell(t?t.ends[1]:''), cell(t&&t.id==='custom'?t.q:'') ].join('|') + '@@');
   return L.join('\n');
 }
 function copyOut(){
+  if(!(S.name||'').trim()){
+    var nm = prompt('이름이나 참여 코드를 적지 않았어요. 선생님이 누구 글인지 알 수 있게 적어 주세요.', '');
+    if(nm===null) return;
+    S.name = nm.trim(); save();
+  }
   var tx = resultText();
   function done(){ alert('복사했어요. 선생님이 알려 주신 곳에 붙여 넣으세요.'); }
   if(navigator.clipboard && navigator.clipboard.writeText){
@@ -750,17 +786,99 @@ function copyOut(){
 }
 
 /* ===================== 선생님 화면 ===================== */
-var T = { tab:'guide', paste:'', a1:'', a2:'', a3:'', a4:'' };
+var T = { tab:'guide', paste:'', a1:'', a2:'', a3:'', a4:'', topicPick:'', grades:{}, notes:{} };
+function num(x){ x=String(x==null?'':x).trim(); if(x==='') return null; var v=+x; return (v>=0 && v<=10 && v===Math.floor(v)) ? v : null; }
 function parsePastes(){
-  var rows = [], blocks = (T.paste||'').split(/@@/);
+  var rows = [], seen = {}, blocks = (T.paste||'').split(/@@/);
   for(var i=1;i<blocks.length;i+=2){
     var p = blocks[i].split('|');
     if(p.length<6) continue;
-    rows.push({ name:p[0]||'(이름없음)', topic:p[1], first:p[2]===''?null:+p[2],
-      last:p[3]===''?null:+p[3], evt:p[4]||'-', score:p[5] });
+    var row = { name:(p[0]||'').trim()||'(이름없음)', topic:(p[1]||'').trim(), first:num(p[2]),
+      last:num(p[3]), evt:(p[4]||'').trim()||'-', score:(p[5]||'').trim(),
+      endL:(p[6]||'').trim(), endR:(p[7]||'').trim(), q:(p[8]||'').trim(), dup:false,
+      text:readFields(blocks[i-1]||'') };
+    /* 같은 이름이 같은 주제로 두 번 들어오면(토론 전·후 두 번 복사) 뒤의 것을 씁니다. */
+    var key = row.name==='(이름없음)' ? null : row.name+'\u0001'+row.topic;
+    if(key && seen[key]!==undefined){ rows[seen[key]] = row; row.dup=true; continue; }
+    if(key) seen[key]=rows.length;
+    rows.push(row);
   }
   return rows;
 }
+/* 결과 글의 "[주장] ..." 같은 줄을 읽어 옵니다. 같은 이름표가 여러 번이면 마지막 것을 씁니다. */
+var FIELDS = { claim:'주장', reason:'이유', ev:'근거', who:'영향', other:'반대편에서 가장 일리 있던 말',
+  still:'그래도 내 생각인 까닭', moved:'나를 움직인 말', why:'그 까닭' };
+function readFields(txt){
+  var out = { found:false };
+  for(var k in FIELDS){
+    var re = new RegExp('^\\['+FIELDS[k]+'\\] ?(.*)$','mg'), m, v='';
+    while((m=re.exec(txt))){ v=m[1]; out.found=true; }
+    if(k==='ev') v = v.replace(/\s*\((자료|경험|숫자|사례|들은 말)\)\s*$/,'');
+    out[k] = v.trim();
+  }
+  return out;
+}
+/* 상·중·하 제안. 글에서 읽은 것만 봅니다. 설득력 자체는 선생님이 보셔야 해요. */
+var STRONG_EV = {'자료':1,'숫자':1,'사례':1};
+function evaluate(r){
+  var x = r.text, c = [];
+  var L = function(k){ return x && x[k] ? x[k].length : 0; };
+  if(x && x.found){
+    c.push({ k:'주장·이유', v: (L('claim')>=5 && L('reason')>=15) ? 2 : (L('claim')>=5 || L('reason')>=10) ? 1 : 0 });
+    c.push({ k:'근거', v: (L('ev')>=10 && STRONG_EV[r.evt]) ? 2 : (L('ev')>=10 || r.evt!=='-') ? 1 : 0 });
+    c.push({ k:'다른 의견 듣기', v: (L('other')>=6 && L('still')>=6) ? 2 : (L('other')>=6) ? 1 : 0 });
+    c.push({ k:'돌아보기', v: (r.last!==null && (L('why')>=6 || L('moved')>=6)) ? 2 : (r.last!==null || L('moved')>=6) ? 1 : 0 });
+  } else {
+    var sc = /^(\d+)\/(\d+)$/.exec(r.score||''), ratio = sc ? (+sc[1])/(+sc[2]||1) : 0;
+    c.push({ k:'주장·이유', v: ratio>=0.8 ? 2 : ratio>=0.5 ? 1 : 0 });
+    c.push({ k:'근거', v: STRONG_EV[r.evt] ? 2 : r.evt!=='-' ? 1 : 0 });
+    c.push({ k:'다른 의견 듣기', v: ratio>=0.8 ? 1 : 0 });
+    c.push({ k:'돌아보기', v: r.last!==null ? 1 : 0 });
+  }
+  var sum = 0; for(var i=0;i<c.length;i++) sum += c[i].v;
+  var grade = sum>=7 ? '상' : sum>=4 ? '중' : '하';
+  return { c:c, sum:sum, grade:grade, partial: !(x && x.found) };
+}
+function gradeKey(r){ return r.name+'\u0001'+r.topic; }
+function gradeOf(r){ return T.grades[gradeKey(r)] || evaluate(r).grade; }
+function noteOf(r){
+  var k = gradeKey(r);
+  if(T.notes[k]!==undefined && T.notes[k]!=='') return T.notes[k];
+  return autoNote(r);
+}
+function autoNote(r){
+  var e = evaluate(r), c = e.c, x = r.text || {}, s = [];
+  if(e.partial) return '글 없이 코드만 있어서 스스로 점검 '+(r.score||'-')+'과 근거 종류('+r.evt+')만 보았어요. 글을 보고 다시 적어 주세요.';
+  if(c[0].v===2) s.push('주장과 이유를 또렷하게 세웠어요');
+  else if(c[0].v===1) s.push('주장은 세웠지만 이유를 더 풀어 쓰면 좋겠어요');
+  else s.push('주장과 이유를 함께 세우는 연습이 더 필요해요');
+  if(c[1].v===2) s.push('근거를 '+r.evt+'에서 가져와 믿을 만해요');
+  else if(c[1].v===1) s.push('근거가 '+(r.evt!=='-'?r.evt+'에 머물러':'아직 약해')+' 확인할 수 있는 자료를 찾아보면 좋겠어요');
+  else s.push('근거를 적지 않았어요');
+  if(c[2].v===2) s.push('반대 의견을 듣고도 자기 생각을 설명했어요');
+  else if(c[2].v===1) s.push('반대 의견은 찾았지만 그에 대한 자기 생각은 비어 있어요');
+  else s.push('반대 의견을 찾아보는 단계가 비어 있어요');
+  if(r.first!==null && r.last!==null){
+    if(r.first!==r.last) s.push('토론 뒤 자리를 '+r.first+'에서 '+r.last+'로 옮기며'+(c[3].v===2?' 까닭을 적었어요':' 까닭은 적지 않았어요'));
+    else s.push('자리를 지켰고'+(c[3].v===2?' 그 까닭을 적었어요':' 까닭은 적지 않았어요'));
+  } else s.push('토론 뒤 자리는 아직 없어요');
+  return s.join('. ') + '.';
+}
+function gradesText(rows){
+  var L = ['이름/코드\t평가\t주장·이유\t근거\t다른 의견 듣기\t돌아보기\t처음→나중\t한 줄 평'];
+  for(var i=0;i<rows.length;i++){
+    var r = rows[i], e = evaluate(r);
+    L.push([r.name, gradeOf(r), e.c[0].v, e.c[1].v, e.c[2].v, e.c[3].v,
+      (r.first===null?'-':r.first)+'→'+(r.last===null?'-':r.last), noteOf(r).replace(/\t/g,' ')].join('\t'));
+  }
+  return L.join('\n');
+}
+function gradeRows(){
+  var rows = parsePastes();
+  if(T.topicPick){ var f=[]; for(var i=0;i<rows.length;i++) if(rows[i].topic===T.topicPick) f.push(rows[i]); if(f.length) rows=f; }
+  return rows;
+}
+function topicById(id){ for(var i=0;i<TOPICS.length;i++) if(TOPICS[i].id===id) return TOPICS[i]; return null; }
 function viewTeacher(){
   var h = '<div class="tabs noprint">'
     + '<button class="tab" data-tab="guide" aria-pressed="'+(T.tab==='guide')+'">진행 순서</button>'
@@ -816,6 +934,16 @@ function viewTeacher(){
       + '"오늘 <b>생각이 움직인 사람</b> 손들어 볼까요? 무엇이 움직이게 했나요?"<br>'
       + '움직인 아이를 칭찬하면, 다음 토론부터 아이들이 이기려 들지 않고 듣기 시작합니다.</div></div>';
 
+    h += '<div class="card"><h2>📥 아이들 결과를 모으는 방법</h2>'
+      + '<p class="lead">앱은 서버가 없어서 결과가 저절로 모이지 않아요. 아이들이 복사한 글을 한곳에 모았다가 여기 붙여 넣습니다.</p>'
+      + '<table><tr><th style="width:36px">　</th><th style="width:140px">언제</th><th>어떻게</th></tr>'
+      + '<tr><td><b>1</b></td><td>수업 전</td><td>패들렛에 오늘 토론용 담벼락을 하나 만들고 링크를 아이들에게 줍니다. 구글 문서 하나를 공유해도 됩니다.</td></tr>'
+      + '<tr><td><b>2</b></td><td>⑤ 나눌 준비</td><td>아이들이 [📋 결과 복사하기]를 눌러 담벼락에 글 하나로 붙여 넣습니다. (토론 전 자리)</td></tr>'
+      + '<tr><td><b>3</b></td><td>⑦ 듣고 나서</td><td>같은 단추를 한 번 더 눌러 다시 올립니다. (나중 자리까지 들어 있음)</td></tr>'
+      + '<tr><td><b>4</b></td><td>집계</td><td>담벼락 글을 모두 긁어 복사해서 [결과 모아 보기] 칸에 붙여 넣고 [집계하기]. '
+      + '<span class="mini">앞뒤에 다른 글이 섞여 있어도 괜찮아요. @@ 표시 사이의 줄만 읽습니다. 같은 아이가 두 번 올렸으면 뒤의 것만 셉니다.</span></td></tr></table>'
+      + '<div class="note">패들렛은 [공유 → 내보내기]로 전체 글을 한 번에 받을 수도 있습니다. 받은 글을 통째로 붙여 넣어도 됩니다.</div></div>';
+
     h += '<div class="card"><h2>💬 막힐 때 쓰는 말</h2><table>'
       + '<tr><th style="width:200px">이럴 때</th><th>이렇게</th></tr>'
       + '<tr><td>같은 말만 되풀이할 때</td><td>"그 말을 <b>다른 말로</b> 한 번 더 해 줄래요?"</td></tr>'
@@ -834,7 +962,33 @@ function viewTeacher(){
       + '<p class="lead">아이들이 복사한 글을 모두 아래에 붙여 넣으세요. 여러 명을 한꺼번에 붙여도 됩니다.</p>'
       + '<textarea class="out" id="paste" placeholder="학생들의 [📋 결과 복사하기] 내용을 그대로 붙여 넣으세요.">'+esc(T.paste)+'</textarea>'
       + '<div class="row" style="margin-top:10px"><button class="btn sm" data-go="agg">집계하기</button>'
-      + '<span class="mini">읽은 사람: <b>'+rows.length+'명</b></span></div></div>';
+      + '<span class="mini">읽은 사람: <b>'+rows.length+'명</b></span>'
+      + (T.paste ? '<button class="btn sm sec" data-go="clearpaste">붙여 넣은 내용 비우기</button>' : '')
+      + '</div>'
+      + '<p class="mini" style="margin-top:8px">붙여 넣은 내용은 이 기기의 브라우저에 남아 있어요. 새로고침해도 사라지지 않아요.</p></div>';
+
+    var allRows = rows, byTopic = {}, topicIds = [], ti;
+    for(ti=0;ti<allRows.length;ti++){
+      var tid = allRows[ti].topic || '?';
+      if(!byTopic[tid]){ byTopic[tid]=[]; topicIds.push(tid); }
+      byTopic[tid].push(allRows[ti]);
+    }
+    if(topicIds.length>1){
+      if(!T.topicPick || !byTopic[T.topicPick]){
+        var best = topicIds[0];
+        for(ti=1;ti<topicIds.length;ti++) if(byTopic[topicIds[ti]].length>byTopic[best].length) best=topicIds[ti];
+        T.topicPick = best;
+      }
+      h += '<div class="card noprint"><div class="warn" style="margin-top:0"><b>주제가 다른 결과가 섞여 있어요.</b> 한 주제씩 나누어 보여 드릴게요. 아래에서 고르세요.</div><div class="chips">';
+      for(ti=0;ti<topicIds.length;ti++){
+        var tt = topicById(topicIds[ti]), r0 = byTopic[topicIds[ti]][0];
+        var lab = tt ? tt.q : (r0.q || (topicIds[ti]==='custom' ? '우리 반이 정한 주제' : topicIds[ti]));
+        h += '<button class="chip" data-tpick="'+esc(topicIds[ti])+'" aria-pressed="'+(T.topicPick===topicIds[ti])+'">'
+           + esc(lab)+' ('+byTopic[topicIds[ti]].length+'명)</button>';
+      }
+      h += '</div></div>';
+      rows = byTopic[T.topicPick];
+    }
 
     if(rows.length){
       var fc=[],lc=[],i,p;
@@ -849,9 +1003,9 @@ function viewTeacher(){
         }
         evc[r.evt] = (evc[r.evt]||0)+1;
       }
-      var tp = null;
-      for(i=0;i<TOPICS.length;i++) if(rows[0] && TOPICS[i].id===rows[0].topic) tp=TOPICS[i];
-      var EL = tp ? tp.ends : ['왼쪽','오른쪽'];
+      var tp = topicById(rows[0].topic);
+      var EL = tp ? tp.ends : [rows[0].endL||'왼쪽', rows[0].endR||'오른쪽'];
+      var tq = tp ? tp.q : (rows[0].q || (rows[0].topic==='custom' ? '우리 반이 정한 주제' : ''));
 
       function mapHtml(arr, cls){
         var hh = '<div class="vlmap"><div class="lab"><span>◀ '+esc(EL[0])+'</span><span>'+esc(EL[1])+' ▶</span></div><div class="cols">';
@@ -865,7 +1019,8 @@ function viewTeacher(){
         return hh + '</div></div>';
       }
 
-      h += '<div class="card"><h2>가치 수직선 — 우리 반이 어디에 서 있나</h2>';
+      h += '<div class="card"><h2>가치 수직선 — 우리 반이 어디에 서 있나</h2>'
+        + (tq ? '<p class="lead">주제: '+esc(tq)+' · '+rows.length+'명</p>' : '');
       h += '<h3 style="font-size:15.5px;margin:6px 0 2px">토론 전</h3>' + mapHtml(fc,'a');
       if(nL) h += '<h3 style="font-size:15.5px;margin:6px 0 2px">토론 후</h3>' + mapHtml(lc,'b');
       h += '<div class="vlkey"><span><i class="pip a" style="background:#b9ccc0"></i>토론 전</span>'
@@ -898,14 +1053,52 @@ function viewTeacher(){
           + '<td>'+(rr.last!==null?rr.last:'-')+(rr.first!==null&&rr.last!==null&&rr.first!==rr.last?' 🔄':'')+'</td>'
           + '<td>'+esc(rr.evt)+'</td><td>'+esc(rr.score)+'</td></tr>';
       }
-      h += '</table><p class="hint noprint">글로 쓴 주장·이유·근거는 위 붙여넣기 칸에 그대로 남아 있습니다. '
-        + '사례로 쓸 두세 명을 거기서 골라 노션이나 사례집에 옮기세요.</p></div>';
+      h += '</table>';
+
+      /* 상·중·하 평가 */
+      var cnt = {'상':0,'중':0,'하':0}, partial=0;
+      for(i=0;i<rows.length;i++){ cnt[gradeOf(rows[i])]++; if(evaluate(rows[i]).partial) partial++; }
+      h += '<h3 style="font-size:16px;margin:22px 0 6px">토의·토론 평가 — 상·중·하</h3>'
+        + '<p class="mini">아이들이 쓴 글을 네 기준으로 읽어 앱이 먼저 제안합니다. 설득력이나 태도는 글만으로 알 수 없으니, '
+        + '<b>단추를 눌러 고치고</b> 한 줄 평도 바꿔 쓰세요. 고친 것은 이 기기에 남아요.</p>'
+        + '<details class="think"><summary>📏 평가 기준 보기</summary><div class="in">'
+        + '<table style="margin-top:8px"><tr><th style="width:120px">기준</th><th>2점</th><th>1점</th><th>0점</th></tr>'
+        + '<tr><td>주장·이유</td><td>주장이 또렷하고 이유를 풀어 씀</td><td>둘 중 하나만</td><td>둘 다 비었거나 짧음</td></tr>'
+        + '<tr><td>근거</td><td>자료·숫자·사례에서 가져옴</td><td>경험·들은 말이거나 종류만 고름</td><td>없음</td></tr>'
+        + '<tr><td>다른 의견 듣기</td><td>반대편 말을 찾고 그래도 내 생각인 까닭까지 씀</td><td>반대편 말만</td><td>없음</td></tr>'
+        + '<tr><td>돌아보기</td><td>나중 자리를 찍고 까닭(또는 움직인 말)을 씀</td><td>둘 중 하나만</td><td>없음</td></tr></table>'
+        + '<p class="mini" style="margin-top:8px">8점 만점. <b>상</b> 7~8점 · <b>중</b> 4~6점 · <b>하</b> 0~3점. '
+        + '자리를 옮겼는지 안 옮겼는지는 점수에 넣지 않아요. 옮긴 것도 지킨 것도 까닭이 있으면 같은 점수예요.</p>'
+        + '</div></details>'
+        + '<p class="mini" style="margin:8px 0">상 <b>'+cnt['상']+'</b>명 · 중 <b>'+cnt['중']+'</b>명 · 하 <b>'+cnt['하']+'</b>명'
+        + (partial ? ' · <span style="color:var(--amber)">'+partial+'명은 글 없이 코드만 있어서 일부 기준만 읽었어요</span>' : '') + '</p>'
+        + '<div class="tscroll"><table class="grades"><tr><th>이름/코드</th><th style="width:60px">주장·이유</th><th style="width:48px">근거</th><th style="width:60px">다른 의견</th><th style="width:56px">돌아보기</th><th style="width:150px">평가</th><th>한 줄 평</th></tr>';
+      for(i=0;i<rows.length;i++){
+        var gr = rows[i], ge = evaluate(gr), gk = gradeKey(gr), cur = gradeOf(gr), gb = '';
+        var GR = ['상','중','하'];
+        for(var g=0; g<3; g++)
+          gb += '<button class="chip gchip" data-grade="'+GR[g]+'" data-gkey="'+esc(gk)+'" aria-pressed="'+(cur===GR[g])+'">'+GR[g]+'</button>';
+        h += '<tr><td>'+esc(gr.name)+(ge.partial?' <span class="mini">(코드만)</span>':'')+'</td>'
+          + '<td>'+ge.c[0].v+'</td><td>'+ge.c[1].v+'</td><td>'+ge.c[2].v+'</td><td>'+ge.c[3].v+'</td>'
+          + '<td><div class="chips" style="margin:0;gap:4px">'+gb+'</div>'
+          + (T.grades[gk] && T.grades[gk]!==ge.grade ? '<div class="mini">앱 제안: '+ge.grade+'</div>' : '') + '</td>'
+          + '<td><input type="text" class="gnote" data-gnote="'+esc(gk)+'" value="'+esc(noteOf(gr))+'"></td></tr>';
+      }
+      h += '</table></div><div class="row noprint" style="margin-top:10px">'
+        + '<button class="btn sm" data-go="copygrades">📋 평가표 복사 (엑셀·시트에 붙이기)</button>'
+        + '<button class="btn sm sec" data-go="print">🖨 인쇄</button>'
+        + '<button class="btn sm sec" data-go="resetgrades">앱 제안으로 되돌리기</button></div>'
+        + '<p class="mini" style="margin-top:6px">한 줄 평은 그대로 쓰기보다 아이 이름을 넣어 다듬어 주세요. 복사한 표는 탭으로 나뉘어 있어 시트에 붙이면 칸이 맞습니다.</p>';
+
+      h += '<p class="hint noprint">글로 쓴 주장·이유·근거는 위 붙여넣기 칸에 그대로 남아 있습니다. '
+        + '사례로 쓸 두세 명을 거기서 골라 노션이나 사례집에 옮기세요.<br>'
+        + '같은 이름이 같은 주제로 두 번 들어오면(토론 전·후 두 번 복사) 뒤에 붙여 넣은 쪽만 셉니다.</p></div>';
     }
     return h;
   }
 
   /* 합의문 */
-  h += '<div class="card agree"><h2>📜 우리 반 합의문</h2>'
+  h += '<div class="card agree hasprint"><h2>📜 우리 반 합의문</h2>'
     + '<p class="lead">네 칸을 채우면 끝납니다. 아이들에게 불러 주면서 함께 적으세요.</p>'
     + '<label class="f"><span class="n">1</span>우리가 모두 동의한 것</label>'
     + '<div class="fh">양쪽이 다 맞다고 인정한 사실·가치. 여기부터 적어야 싸움이 멈춥니다.</div>'
@@ -919,6 +1112,7 @@ function viewTeacher(){
     + '<label class="f"><span class="n">4</span>더 알아봐야 할 것</label>'
     + '<div class="fh">모르는 걸 적는 건 진 게 아니라 다음 수업의 씨앗입니다.</div>'
     + '<textarea id="a4" placeholder="예: 얼굴 자료를 실제로 얼마나 보관하는지, 지워 달라고 요청할 수 있는지 알아보기로 했다.">'+esc(T.a4)+'</textarea>'
+    + '<pre class="plain printonly">'+esc(agreeText())+'</pre>'
     + '<div class="row noprint" style="margin-top:16px">'
     + '<button class="btn" data-go="copyagree">📋 합의문 복사</button>'
     + '<button class="btn sec" data-go="print">🖨 인쇄해서 게시하기</button></div>'
@@ -937,29 +1131,38 @@ function agreeText(){
 
 /* ===================== 그리기 · 이벤트 ===================== */
 function render(){
+  if(S.mode!=='teacher' && S.step>0 && !topic()){ S.step=0; S.topic=null; }
+  var key = S.mode+'/'+(S.mode==='teacher'?T.tab:S.step), y = window.pageYOffset||0;
   app(S.mode==='teacher' ? viewTeacher() : viewStudent());
   $('btnMode').textContent = S.mode==='teacher' ? '학생용' : '선생님용';
-  window.scrollTo(0,0);
+  window.scrollTo(0, key===render.lastKey ? y : 0);
+  render.lastKey = key;
 }
 function grab(){
-  var ids = ['claim','reason','ev','who','other','still','moved','why','nm','cq','paste','a1','a2','a3','a4'];
+  var ids = ['claim','reason','ev','who','other','still','moved','why','nm','cq','cl','cr','paste','a1','a2','a3','a4'];
   for(var i=0;i<ids.length;i++){
     var el = $(ids[i]); if(!el) continue;
     var v = el.value;
     if(ids[i]==='nm') S.name=v;
     else if(ids[i]==='cq') S.custom=v;
+    else if(ids[i]==='cl') S.customL=v;
+    else if(ids[i]==='cr') S.customR=v;
     else if(ids[i]==='paste') T.paste=v;
     else if(ids[i].charAt(0)==='a' && ids[i].length===2) T[ids[i]]=v;
     else S[ids[i]]=v;
   }
+  var notes = document.querySelectorAll('input[data-gnote]');
+  for(var j=0;j<notes.length;j++) T.notes[notes[j].getAttribute('data-gnote')] = notes[j].value;
   save();
 }
 document.addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('[data-go],[data-topic],[data-first],[data-last],[data-stem],[data-evt],[data-job],[data-tab]') : null;
+  var el = e.target.closest ? e.target.closest('[data-go],[data-topic],[data-first],[data-last],[data-stem],[data-evt],[data-job],[data-tab],[data-tpick],[data-grade]') : null;
   if(!el) return;
   var d = el.dataset;
 
   if(d.tab){ grab(); T.tab=d.tab; render(); return; }
+  if(d.tpick!==undefined){ grab(); T.topicPick=d.tpick; save(); render(); return; }
+  if(d.grade!==undefined){ grab(); T.grades[d.gkey]=d.grade; save(); render(); return; }
 
   if(d.topic){
     grab();
@@ -987,6 +1190,22 @@ document.addEventListener('click', function(e){
     case 'copy': grab(); copyOut(); break;
     case 'print': grab(); window.print(); break;
     case 'agg': grab(); render(); break;
+    case 'copygrades':
+      grab();
+      (function(tx){
+        if(navigator.clipboard && navigator.clipboard.writeText)
+          navigator.clipboard.writeText(tx).then(function(){alert('평가표를 복사했어요. 시트나 문서에 붙여 넣으세요.');},function(){prompt('복사하세요',tx);});
+        else prompt('복사하세요', tx);
+      })(gradesText(gradeRows()));
+      break;
+    case 'resetgrades':
+      grab();
+      if(!confirm('고친 평가와 한 줄 평을 지우고 앱 제안으로 되돌릴까요?')) break;
+      T.grades={}; T.notes={}; save(); render(); break;
+    case 'clearpaste':
+      grab();
+      if(!confirm('붙여 넣은 학생 결과를 모두 지울까요? 합의문은 그대로 남아요.')) break;
+      T.paste=''; save(); render(); break;
     case 'copyagree':
       grab();
       (function(tx){
@@ -999,8 +1218,14 @@ document.addEventListener('click', function(e){
       if(!confirm('지금 쓴 내용을 지우고 새 주제로 시작할까요?')) break;
       var nm = S.name;
       S = { mode:S.mode, step:0, topic:null, custom:'', name:nm, first:null, claim:'', claimPick:-1,
-            reason:'', ev:'', evType:-1, who:'', jobs:{}, other:'', still:'', moved:'', last:null, why:'', checked:false };
+            reason:'', ev:'', evType:-1, who:'', jobs:{}, other:'', still:'', moved:'', last:null, why:'', checked:false,
+            customL:'', customR:'' };
       save(); render(); break;
+  }
+});
+document.addEventListener('keydown', function(e){
+  if(e.key==='Enter' && e.target && (e.target.id==='cq' || e.target.id==='cl' || e.target.id==='cr')){
+    e.preventDefault(); var b=document.querySelector('[data-topic="custom"]'); if(b) b.click();
   }
 });
 document.addEventListener('input', function(e){
