@@ -1985,7 +1985,7 @@ const GAME_DATA = {
     rosterTitle: '학생 결과 모으기',
     rosterGuide: '학생이 알려준 별명과 결과 코드를 넣으면 명단에 쌓여요. 이 기기에만 저장되고, 인터넷으로 보내지 않아요.',
     rosterNamePlaceholder: '별명',
-    rosterCodePlaceholder: '결과 코드 8자리 (예: 1234-5678)',
+    rosterCodePlaceholder: '결과 코드 끝까지 (예: 1234-5678-ABCDE)',
     rosterAdd: '명단에 추가',
     rosterNeedName: '별명을 넣어 주세요.',
     rosterInvalid: '결과 코드가 맞지 않아요. 다시 확인해 주세요.',
@@ -3382,7 +3382,12 @@ const GAME_DATA = {
     scrollHint: '▼ 아래로 내려서 결과를 확인해요',
     codeTitle: '📮 선생님께 알려줄 결과 코드',
     modeKeptNote: '📘 이 판은 {모드}로 시작해서 끝까지 같은 조건으로 했어요. 지금 기기 설정과 달라도 결과는 시작한 모드 기준이에요.',
-    codeGuide: '숫자 8자리예요. 선생님께 불러 드리거나 공책에 적어 주세요. 친구와 같은 선택을 했다면 코드도 같을 수 있어요.',
+    codeGuide: '앞 숫자 8자리는 선택 기록이고, 뒤 5글자에는 추가 활동 정보가 담겨요. 표시된 코드를 끝까지 적어 주세요. 친구와 같은 선택을 했다면 코드도 같을 수 있어요.',
+    submitOrder: '제출 순서: ⚖️ 공정성 활동 → 🧪 사후 점검 저장 → 📋 결과 복사·제출. 먼저 제출했더라도 활동을 더 했다면 마지막 결과를 다시 제출해요.',
+    submitFinal: '✅ 마지막 결과예요. 이 코드를 제출하세요.',
+    submitLeft: '⏳ 아직 남은 활동: {남은}. 마치면 코드 뒤 5글자가 바뀌어요.',
+    submitLeftFair: '공정성 활동',
+    submitLeftPost: '사후 점검',
     copyButton: '📋 결과 복사하기',
     copyBoxTitle: '제출용 결과',
     copyDone: '복사했어요! 선생님이 알려준 곳에 붙여넣기 하세요.',
@@ -3922,7 +3927,7 @@ const GAME_DATA = {
   /* 이어 하는 판은 "시작한 모드" 를 그대로 적용합니다.
      기기 설정이 그 사이 바뀌었더라도 판 하나는 끝까지 같은 조건으로 갑니다.
      (다른 모드는 새 게임부터 적용됩니다)                               */
-  function modeLabel(m) { return m === 'quick' ? (D.start.modeBadgeQuick || '간편 모드') : (D.start.modeBadgeFull || '기본 모드'); }
+  function modeLabel(m) { return m === 'quick' ? '간편 모드(40분)' : '기본 모드(80분)'; }
   function applyGameMode(st) {
     st = st || state;
     if (!st.mode) return false;                       // 옛 저장본은 그대로 둡니다
@@ -6358,6 +6363,7 @@ const GAME_DATA = {
 
   // 인증서에서 돌아올 때는 어두운 막·타자 효과 없이 바로 결과 코드 쪽을 보여 줘요
   let endingReturn = false;
+  let refreshSubmit = () => {};   // 엔딩의 제출 카드 새로 고치기
 
   function renderEnding() {
     const back = endingReturn;
@@ -6533,7 +6539,7 @@ const GAME_DATA = {
     );
 
     // 선생님께 알려줄 결과 코드 + 제출용 결과 복사
-    const submitText = resultSummaryText(ending);
+    let submitText = resultSummaryText(ending);
     const copyBox = el('textarea', { className: 'copy-box', readonly: true, rows: '5', 'aria-label': S.copyBoxTitle });
     copyBox.value = submitText;
     const copyMsg = el('p', { className: 'copy-msg', role: 'status' });
@@ -6552,10 +6558,27 @@ const GAME_DATA = {
       copyMsg.textContent = ok ? S.copyDone : S.copyFail;
     });
 
+    // 공정성·사후 점검을 하면 코드 뒤 5글자가 바뀌어요 → 제출 카드를 그때그때 새로 고쳐요
+    const codeLine = el('p', { className: 'code-value submit-code' });
+    const statusLine = el('p', { className: 'save-info submit-status', role: 'status' });
+    refreshSubmit = () => {
+      submitText = resultSummaryText(ending);
+      copyBox.value = submitText;
+      codeLine.textContent = makeResultCode();
+      const left = [];
+      if (D.fairness && !(state.fair === 0 || state.fair)) left.push(S.submitLeftFair);
+      if (D.selfCheck && !Array.isArray(state.post)) left.push(S.submitLeftPost);
+      statusLine.textContent = left.length ? S.submitLeft.replace('{남은}', left.join(', ')) : S.submitFinal;
+      copyMsg.textContent = '';
+    };
+    refreshSubmit();
+
     const submitCard = el('div', { className: 'card submit-card' },
       el('h2', { className: 'section-title', text: S.codeTitle }),
-      el('p', { className: 'code-value submit-code', text: makeResultCode() }),
+      codeLine,
+      statusLine,
       el('p', { className: 'save-info', text: S.codeGuide }),
+      el('p', { className: 'save-info', text: S.submitOrder }),
       state.modeKept && S.modeKeptNote
         ? el('p', { className: 'mode-badge mode-full',
             text: S.modeKeptNote.replace('{모드}', modeLabel(gameMode(state))) }) : null,
@@ -6859,7 +6882,7 @@ const GAME_DATA = {
       box.textContent = '';
       if (state.fair === null || state.fair === undefined) {
         box.appendChild(el('div', { className: 'condition-list' }, F.choices.map((c, i) =>
-          el('button', { type: 'button', className: 'condition-card fair-choice', onClick: guarded(() => { state.fair = i; save(); draw(); }) },
+          el('button', { type: 'button', className: 'condition-card fair-choice', onClick: guarded(() => { state.fair = i; save(); draw(); refreshSubmit(); }) },
             el('span', { className: 'condition-num', 'aria-hidden': 'true', text: String(i + 1) }),
             el('span', { className: 'condition-text', text: c.text })))));
       } else {
@@ -6871,7 +6894,7 @@ const GAME_DATA = {
             el('p', { className: 'fair-more-title', text: F.more.title }),
             el('ul', { className: 'fair-more-list' }, F.more.items.map((t) => el('li', { text: t })))));
         }
-        box.appendChild(button(F.again, 'btn-ghost', () => { state.fair = null; save(); draw(); }));
+        box.appendChild(button(F.again, 'btn-ghost', () => { state.fair = null; save(); draw(); refreshSubmit(); }));
       }
     }
     draw();
