@@ -1851,6 +1851,15 @@ a.btn-link { display: flex; align-items: center; justify-content: center; text-a
 .card.is-step-now { border: 3px solid var(--coral-deep); box-shadow: 0 0 0 4px rgba(240, 112, 90, 0.15); }
 .card.is-step-locked > :not(.step-ribbon) { opacity: 0.4; pointer-events: none; filter: grayscale(0.5); }
 
+/* 🔁 배지 다시 하기 */
+.badge-tile.is-replay { cursor: pointer; border: 2px dashed var(--coral-deep); }
+.badge-tile.is-replay:hover, .badge-tile.is-replay:focus-visible { background: #fff5f2; outline: none; }
+.badge-tile-replay { display: block; margin-top: 6px; font-size: 0.82rem; font-weight: bold; color: var(--coral-deep); }
+.badge-replay-guide { margin: 8px 0; font-weight: bold; color: var(--coral-deep); }
+.replay-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+  margin: 8px auto; max-width: 720px; padding: 10px 14px; border-radius: 14px; background: #fff1e6; border: 2px solid var(--coral-deep); font-weight: bold; }
+.replay-bar .replay-stop { min-height: 40px; padding: 6px 14px; font-size: 0.95rem; }
+
 </style>
 </head>
 <body>
@@ -3632,6 +3641,17 @@ const GAME_DATA = {
     title: '🏅 배지 도감',
     count: '{얻은수} / {전체수}',
     guide: '회색 배지는 아직 못 얻은 배지예요. 얻는 방법을 보고 다시 도전해 보세요!',
+    replayGuide: '🔁 회색 라운드 배지를 누르면 그 라운드만 다시 해 볼 수 있어요. 원래 게임 결과는 그대로 남고, 새로 얻은 배지만 더해져요.',
+    replayTile: '🔁 눌러서 {n}라운드 다시 하기',
+    replayAsk: '{n}라운드({회사})를 다시 해 볼까요? 원래 게임 결과(선택·씨앗·신뢰지수·결과 코드)는 그대로 남고, 다시 하며 얻은 배지만 더해져요.',
+    replayYes: '🔁 다시 하기',
+    replayNo: '그만둘래요',
+    replayLocked: '먼저 위의 필수 단계(공정성 → 사후 점검 → 결과 복사 → 폼 제출)를 다 마쳐요. 그다음에 배지를 모으러 갈 수 있어요.',
+    replayBar: '🔁 배지 모으기 · {n}라운드 다시 하는 중 — 원래 결과는 그대로예요',
+    replayStop: '그만하고 엔딩으로',
+    replayBack: '🏅 엔딩으로 돌아가기',
+    replayListTag: '🔁 배지 모으는 중',
+    replayDone: '{n}라운드 다시 하기 끝! 배지 도감을 확인해 봐요.',
     newTag: 'NEW',
     newThisGame: '이번 판에서 새로 얻은 배지',
     noneThisGame: '이번 판에서 새로 얻은 배지는 없어요. 회색 배지의 얻는 방법을 살펴봐요!',
@@ -4779,6 +4799,11 @@ const GAME_DATA = {
       screens[state.screen]();
     }
     applyReadingChunks(app);
+    if (state.replay && D.collect && ['round', 'condition', 'decision', 'result'].includes(state.screen)) {
+      app.insertBefore(el('div', { className: 'replay-bar' },
+        el('span', { text: D.collect.replayBar.replace('{n}', state.replay.round) }),
+        button(D.collect.replayStop, 'btn-ghost replay-stop', finishBadgeReplay)), app.firstChild);
+    }
     if (!savingEnabled) app.appendChild(el('div', { className: 'test-badge', text: D.ui.testBadge }));
   }
 
@@ -4969,7 +4994,8 @@ const GAME_DATA = {
         el('p', { className: 'save-info', text: S.savedGuide }),
         el('ul', { className: 'save-list' },
           saves.map((s) => {
-            const st = s.state;
+            // 🔁 배지 다시 하기 중이면 원래 판 기준으로 보여 줘요 (결과 코드가 목록에서 사라지지 않게)
+            const st = (s.state.replay && s.state.replay.backup) || s.state;
             const c = D.characters.find((x) => x.id === st.character);
             let progress = S.savedProgressReady;
             if (['round', 'condition', 'decision', 'result', 'event'].includes(st.screen)) progress = S.savedProgress.replace('{번호}', st.round);
@@ -4978,6 +5004,7 @@ const GAME_DATA = {
               // 끝낸 게임은 결과 코드를 목록에서 바로 보여 줘요 (처음으로 눌러도 다시 볼 수 있게)
               try { if (st.choices && st.eventResults) progress += ' · ' + S.savedCode.replace('{코드}', makeResultCode(st)); } catch (e) { /* 옛 저장 형식은 건너뜀 */ }
             }
+            if (s.state.replay && D.collect) progress += ' · ' + D.collect.replayListTag;
             const d = new Date(s.savedAt);
             const date = S.savedDate.replace('{월}', d.getMonth() + 1).replace('{일}', d.getDate());
             const nBadges = D.collect ? badgeCount(s.name) : 0;
@@ -5900,7 +5927,7 @@ const GAME_DATA = {
         whyNote(res.why)
       ),
       learningCard(R.learning, state.round),
-      button(D.ui.nextButton, 'btn-primary btn-block', afterResult),
+      button(state.replay ? D.collect.replayBack : D.ui.nextButton, 'btn-primary btn-block', afterResult),
       button(D.rethink.button, 'btn-ghost btn-block rethink-open', () => showRethink())
     ));
 
@@ -5999,6 +6026,7 @@ const GAME_DATA = {
 
   function afterResult() {
     if (state.screen !== 'result') return;
+    if (state.replay) { finishBadgeReplay(); return; }   // 🔁 배지 다시 하기는 이 라운드만 하고 엔딩으로
     if (state.pendingNews) showNews();
     else afterNews();
   }
@@ -7396,8 +7424,43 @@ const GAME_DATA = {
     }
   }
 
+  /* 🔁 배지 다시 하기 — 못 얻은 라운드 배지를 누르면 그 라운드만 다시 해요.
+     원래 판(선택·씨앗·신뢰지수·결과 코드)은 그대로 두고, 다시 하며 얻은 배지만 남아요. */
+  function badgeRound(id) { const m = /^r(\d)/.exec(id); return m ? Number(m[1]) : 0; }
+  function askBadgeReplay(n) {
+    const C = D.collect;
+    if (!classFlowFinished()) {
+      showModal(el('p', { className: 'modal-text', text: C.replayLocked }), [{ label: C.closeButton, className: 'btn-primary' }]);
+      return;
+    }
+    showModal(el('p', { className: 'modal-text', text: C.replayAsk.replace('{n}', n).replace('{회사}', D.rounds[n - 1].company) }), [
+      { label: C.replayNo, className: 'btn-ghost' },
+      { label: C.replayYes, className: 'btn-primary', onClick: () => startBadgeReplay(n) }
+    ]);
+  }
+  function startBadgeReplay(n) {
+    const backup = JSON.parse(JSON.stringify(state));
+    state.replay = { round: n, backup: backup };
+    state.choices = state.choices.slice();
+    state.choices[n - 1] = null;      // 이 라운드만 새로 골라요
+    state.pendingNews = null;
+    startRound(n);
+  }
+  function finishBadgeReplay() {
+    const r = state.replay;
+    if (!r) return;
+    const fresh = Array.isArray(state.badgesNew) ? state.badgesNew : [];
+    state = Object.assign(freshState(), r.backup);   // 원래 판으로 되돌려요
+    state.badgesNew = Array.from(new Set((state.badgesNew || []).concat(fresh)));
+    save();
+    endingReturn = true;
+    go('ending');
+    later(() => showToast(D.collect.replayDone.replace('{n}', r.round)), 400);
+  }
+
   // 배지 도감 (얻은 배지는 색, 못 얻은 배지는 회색 + 얻는 방법)
-  function badgeBook(name, fresh) {
+  // replay: 엔딩에서 볼 때만 — 못 얻은 라운드 배지를 누르면 그 라운드를 다시 해요
+  function badgeBook(name, fresh, replay) {
     const C = D.collect;
     const got = badgeRecord(name).got;
     fresh = fresh || [];
@@ -7409,11 +7472,14 @@ const GAME_DATA = {
           if (!b) return null;
           const has = !!got[id];
           const isNew = fresh.includes(id);
-          return el('li', { className: 'badge-tile' + (has ? ' is-got' : ' is-locked') + (isNew ? ' is-new' : '') },
+          const again = (replay && !has) ? badgeRound(id) : 0;
+          return el('li', Object.assign({ className: 'badge-tile' + (has ? ' is-got' : ' is-locked') + (isNew ? ' is-new' : '') + (again ? ' is-replay' : '') },
+            again ? { role: 'button', tabindex: '0', onClick: () => askBadgeReplay(again) } : {}),
             isNew ? el('span', { className: 'badge-tile-new', text: C.newTag }) : null,
             el('span', { className: 'badge-tile-icon', 'aria-hidden': 'true', text: b.icon }),
             el('b', { className: 'badge-tile-name', text: b.name }),
             el('small', { className: 'badge-tile-how', text: b.how }),
+            again ? el('span', { className: 'badge-tile-replay', text: C.replayTile.replace('{n}', again) }) : null,
             el('span', { className: 'sr-only', text: has ? '얻음' : '아직 못 얻음' }));
         }))
       ))
@@ -7438,7 +7504,8 @@ const GAME_DATA = {
         el('p', { className: 'badge-new-line', text: fresh.length
           ? C.newThisGame + ': ' + fresh.map((id) => C.items[id].icon + ' ' + C.items[id].name).join(', ')
           : C.noneThisGame }),
-        badgeBook(null, fresh),
+        el('p', { className: 'badge-replay-guide', text: C.replayGuide }),
+        badgeBook(null, fresh, true),
         el('p', { className: 'save-info', text: C.guide }),
         n >= BADGE_IDS.length ? button(C.masterButton, 'btn-yellow btn-block', () => go('badgeCert')) : null
       )
