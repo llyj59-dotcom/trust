@@ -1803,6 +1803,33 @@ a.btn-link { display: flex; align-items: center; justify-content: center; text-a
 .class-form-card .btn-link { margin-top: 10px; }
 .class-form-card .class-form-gap { margin-top: 14px; }
 
+/* ---------- 📮 수업용 마무리 순서 (주소에 폼 코드가 있을 때만) ---------- */
+.flow-banner { font-family: inherit; font-size: 1.05rem; font-weight: bold; width: 100%; padding: 14px 16px; border: none; border-radius: 16px;
+  background: var(--coral-deep); color: #fff; cursor: pointer; text-align: center; box-shadow: 0 4px 0 rgba(0,0,0,0.12); animation: flowPulse 1.6s ease-in-out infinite; }
+.flow-banner.is-done { background: var(--green); animation: none; }
+@keyframes flowPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+@media (prefers-reduced-motion: reduce) { .flow-banner { animation: none; } }
+.class-form-card { border: 3px solid var(--coral-deep); background: #fff5f2; }
+.class-form-card.is-done { border-color: var(--green); background: #f1f9f3; }
+.flow-title { font-size: 1.3rem; color: var(--ink); margin-bottom: 4px; }
+.flow-count { font-weight: bold; color: var(--coral-deep); margin-bottom: 10px; }
+.class-form-card.is-done .flow-count { color: var(--green); }
+.flow-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.flow-step { border-radius: 14px; padding: 12px 14px; background: #fff; border: 2px solid var(--gray); }
+.flow-step.is-now { border-color: var(--coral-deep); box-shadow: 0 0 0 3px rgba(255, 120, 100, 0.18); }
+.flow-step.is-done { border-color: var(--green); background: #f4fbf6; }
+.flow-step.is-locked { opacity: 0.55; }
+.flow-head { display: flex; align-items: center; gap: 10px; }
+.flow-num { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  background: var(--coral-deep); color: #fff; font-weight: bold; }
+.flow-step.is-done .flow-num, .flow-step.is-locked .flow-num { background: transparent; }
+.flow-label { font-size: 1.05rem; }
+.flow-hint { font-size: 0.92rem; color: var(--ink-soft); margin-top: 8px; }
+.flow-step .btn-link, .flow-step .flow-done-btn { margin-top: 10px; }
+.flow-foot { margin-top: 12px; font-weight: bold; }
+.special-slot { display: contents; }
+.special-card.is-locked { opacity: 0.6; }
+
 </style>
 </head>
 <body>
@@ -3400,11 +3427,24 @@ const GAME_DATA = {
     submitLeft: '⏳ 아직 남은 활동: {남은}. 마치면 코드 뒤 5글자가 바뀌어요.',
     submitLeftFair: '공정성 활동',
     submitLeftPost: '사후 점검',
-    formTitle: '✍️ 선생님께 기록 내기',
-    formText: '위에서 ⚖️ 공정성 → 🧪 사후 점검을 마치고 📋 결과 복사하기를 눌렀다면, 아래 단추로 폼을 열어 붙여넣기 해요.',
-    formButton: '✍️ 게임 기록 제출하러 가기',
-    postText: '기록을 내고 나면, 선생님이 말해 줄 때 사례 과제를 한 번 더 해요.',
-    postButton: '📄 사례 과제 열기',
+    flowBanner: '📮 아직 안 낸 것이 {개수}개 있어요! 꼭 내야 해요 — 눌러서 내러 가기 ▼',
+    flowBannerDone: '✅ 선생님께 낼 것을 다 냈어요!',
+    flowTitle: '📮 꼭 내야 하는 것 {개수}가지',
+    flowCount: '{낸} / {전체} 냈어요 — 다 내야 끝나요',
+    flowMust: '(필수)',
+    flowCopy: '📋 결과 복사하기',
+    flowCopyHint: '⚖️ 공정성 → 🧪 사후 점검을 마치고, 위의 📋 결과 복사하기를 누르면 다음 단계가 열려요.',
+    flowForm: '✍️ 게임 기록 제출',
+    flowPost: '📄 사례 과제 한 번 더 쓰기',
+    formButton: '✍️ 게임 기록 폼 열기',
+    postButton: '📄 사례 과제 폼 열기',
+    flowSubmittedHint: '폼을 끝까지 쓰고 [제출]을 누른 뒤, 그 탭을 닫고 돌아와서 아래 단추를 눌러요.',
+    flowSubmitted: '✅ 제출했어요',
+    flowFinished: '🎉 다 냈어요! 이제 ⭐ 스페셜 라운드에 도전해도 돼요.',
+    flowLocked: '🔒 위의 것을 다 내야 ⭐ 스페셜 라운드와 다시 도전하기가 열려요.',
+    flowLockedRetry: '잠깐! 선생님께 낼 것을 먼저 다 내요. 지금 내지 않으면 선생님이 내 결과를 볼 수 없어요.',
+    flowGoButton: '내러 가기',
+    specialLocked: '🔒 선생님께 낼 것을 다 내면 열려요',
     copyButton: '📋 결과 복사하기',
     copyBoxTitle: '제출용 결과',
     copyDone: '복사했어요! 선생님이 알려준 곳에 붙여넣기 하세요.',
@@ -6567,6 +6607,9 @@ const GAME_DATA = {
     copyBox.value = submitText;
     const copyMsg = el('p', { className: 'copy-msg', role: 'status' });
     const copyBtn = button(S.copyButton, 'btn-primary', () => {
+      if (classFlowOn() && !leftActivities(S).length && !classDone().copied) {
+        classDone().copied = true; save(); later(updateFlow, 0);
+      }
       copyBox.focus();
       copyBox.select();
       let ok = false;
@@ -6588,9 +6631,7 @@ const GAME_DATA = {
       submitText = resultSummaryText(ending);
       copyBox.value = submitText;
       codeLine.textContent = makeResultCode();
-      const left = [];
-      if (D.fairness && !(state.fair === 0 || state.fair)) left.push(S.submitLeftFair);
-      if (D.selfCheck && !Array.isArray(state.post)) left.push(S.submitLeftPost);
+      const left = leftActivities(S);
       statusLine.textContent = left.length ? S.submitLeft.replace('{남은}', left.join(', ')) : S.submitFinal;
       copyMsg.textContent = '';
     };
@@ -6611,6 +6652,28 @@ const GAME_DATA = {
       copyMsg
     );
 
+    // ✍️ 수업용 마무리 순서 (주소에 폼 코드가 있을 때만)
+    const flowCard = classFormsCard(S, () => updateFlow());
+    const flowBanner = classFlowOn() ? el('button', { type: 'button', className: 'flow-banner', onClick: () => flowCard.scrollIntoView({ block: 'start', behavior: 'smooth' }) }) : null;
+    const specialSlot = el('div', { className: 'special-slot' });
+    function updateFlow() {
+      if (flowCard) flowCard.redraw();
+      if (flowBanner) {
+        const left = classFlowLeft();
+        flowBanner.textContent = left ? S.flowBanner.replace('{개수}', left) : S.flowBannerDone;
+        flowBanner.classList.toggle('is-done', !left);
+      }
+      specialSlot.textContent = '';
+      const sc = specialCard(!classFlowFinished());
+      if (sc) specialSlot.appendChild(sc);
+    }
+    updateFlow();
+    const guardFlow = (fn) => () => {
+      if (classFlowFinished()) { fn(); return; }
+      showModal(el('p', { className: 'modal-text', text: S.flowLockedRetry }),
+        [{ label: S.flowGoButton, className: 'btn-primary', onClick: () => flowCard.scrollIntoView({ block: 'start', behavior: 'smooth' }) }]);
+    };
+
     const buttons = el('div', { className: 'ending-buttons' },
       ending.best
         ? button(S.certificateButton, 'btn-yellow btn-block ending-cert-btn', () => {
@@ -6618,11 +6681,12 @@ const GAME_DATA = {
         })
         : el('div', { className: 'ending-retry' },
           ending.hint ? el('p', { className: 'ending-hint', text: ending.hint }) : null,
-          button(S.retryButton, 'btn-primary btn-block', retryGame)),
+          button(S.retryButton, 'btn-primary btn-block', guardFlow(retryGame))),
       button(S.homeButton, 'btn-ghost btn-block', goHome)
     );
 
     return [
+      flowBanner,      // 📮 아직 안 낸 것이 몇 개인지 맨 위에 크게
       el('div', { className: 'card ending-stats' },
         el('div', { className: 'stat' }, el('span', { text: D.ui.seedIcon + ' ' + S.finalSeedsLabel }), el('b', { text: formatNum(state.seeds) })),
         el('div', { className: 'stat' }, el('span', { text: D.ui.trustIcon + ' ' + S.finalTrustLabel }), el('b', { className: 'trust-' + trustLevel(state.trust), text: trustText(state.trust) }))
@@ -6638,22 +6702,85 @@ const GAME_DATA = {
       el('div', { className: 'card' }, el('h2', { className: 'section-title', text: S.eventsTitle }), events),
       phoneSummaryCard(),
       submitCard,
-      classFormsCard(S),   // ✍️ 선생님께 기록 내기 · 사후 사례 과제 (주소에 폼 코드가 있을 때만)
+      flowCard,        // ✍️ 마무리 순서: 결과 복사 → 게임 기록 제출 → 사례 과제 (주소에 폼 코드가 있을 때만)
       badgeCard(),     // 배지 도감은 마무리 활동 뒤에 (접어 두었어요)
-      specialCard(),   // 결과 코드를 먼저 적고, 시간이 남으면 도전해요
+      specialSlot,     // 결과를 다 낸 뒤에 열려요
       buttons
     ];
   }
 
-  function classFormsCard(S) {
-    if (!classForms.form && !classForms.post) return null;
-    return el('div', { className: 'card class-form-card' },
-      el('h2', { className: 'section-title', text: S.formTitle }),
-      classForms.form ? el('p', { className: 'save-info', text: S.formText }) : null,
-      classForms.form ? formLink(classForms.form, S.formButton, 'btn-primary') : null,
-      classForms.post ? el('p', { className: 'save-info class-form-gap', text: S.postText }) : null,
-      classForms.post ? formLink(classForms.post, S.postButton, 'btn-ghost') : null
-    );
+  /* ✍️ 수업용 마무리 순서 — 주소에 폼 코드(form/post)가 있을 때만 켜져요.
+     결과 복사 → 게임 기록 제출 → 사례 과제를 차례로 마쳐야 ⭐ 스페셜 라운드와 다시 도전하기가 열려요.
+     폼을 냈는지는 앱이 알 수 없어서, 폼을 연 뒤 [제출했어요]를 눌러야 다음으로 넘어가요. */
+  function leftActivities(S) {
+    const left = [];
+    if (D.fairness && !(state.fair === 0 || state.fair)) left.push(S.submitLeftFair);
+    if (D.selfCheck && !Array.isArray(state.post)) left.push(S.submitLeftPost);
+    return left;
+  }
+  function classFlowOn() { return !!(classForms.form || classForms.post); }
+  function classDone() {
+    if (!state.classDone) state.classDone = { copied: false, form: false, post: false };
+    return state.classDone;
+  }
+  function classFlowSteps() {
+    const S = D.endingScreen;
+    const steps = [{ key: 'copied', label: S.flowCopy }];
+    if (classForms.form) steps.push({ key: 'form', label: S.flowForm, code: classForms.form, button: S.formButton });
+    if (classForms.post) steps.push({ key: 'post', label: S.flowPost, code: classForms.post, button: S.postButton });
+    return steps;
+  }
+  // 아직 안 낸 폼 개수 (복사는 세지 않아요 — 아이들에게는 "낼 것"만 보여 줘요)
+  function classFlowLeft() {
+    const d = classDone();
+    return classFlowSteps().filter((st) => st.key !== 'copied' && !d[st.key]).length;
+  }
+  function classFlowFinished() {
+    if (!classFlowOn()) return true;
+    const d = classDone();
+    return classFlowSteps().every((st) => d[st.key]);
+  }
+
+  function classFormsCard(S, onChange) {
+    if (!classFlowOn()) return null;
+    const card = el('div', { className: 'card class-form-card' });
+    const draw = () => {
+      const d = classDone();
+      const steps = classFlowSteps();
+      const forms = steps.filter((st) => st.key !== 'copied');
+      card.textContent = '';
+      card.classList.toggle('is-done', classFlowFinished());
+      card.appendChild(el('h2', { className: 'flow-title', text: S.flowTitle.replace('{개수}', forms.length) }));
+      card.appendChild(el('p', { className: 'flow-count', text: S.flowCount.replace('{낸}', forms.filter((st) => d[st.key]).length).replace('{전체}', forms.length) }));
+      let open = true;   // 앞 단계를 마쳐야 다음 단계가 열려요
+      const list = el('ol', { className: 'flow-steps' });
+      steps.forEach((st, i) => {
+        const done = !!d[st.key];
+        const now = !done && open;
+        const li = el('li', { className: 'flow-step' + (done ? ' is-done' : now ? ' is-now' : ' is-locked') },
+          el('div', { className: 'flow-head' },
+            el('span', { className: 'flow-num', text: done ? '✅' : now ? String(i + 1) : '🔒' }),
+            el('b', { className: 'flow-label', text: st.label + (st.key === 'copied' ? '' : ' ' + S.flowMust) })
+          ));
+        if (now && st.key === 'copied') li.appendChild(el('p', { className: 'flow-hint', text: S.flowCopyHint }));
+        if (now && st.key !== 'copied') {
+          const doneBtn = button(S.flowSubmitted, 'btn-green btn-block flow-done-btn', () => { d[st.key] = true; save(); onChange(); },
+            { disabled: !d['opened_' + st.key] });
+          const link = formLink(st.code, st.button, 'btn-coral');
+          link.addEventListener('click', () => { d['opened_' + st.key] = true; save(); doneBtn.disabled = false; });
+          li.appendChild(link);
+          li.appendChild(el('p', { className: 'flow-hint', text: S.flowSubmittedHint }));
+          li.appendChild(doneBtn);
+        }
+        list.appendChild(li);
+        if (!done) open = false;
+      });
+      card.appendChild(list);
+      card.appendChild(el('p', { className: 'flow-foot', text: classFlowFinished() ? S.flowFinished : S.flowLocked }));
+    };
+    draw();
+    card.redraw = draw;
+    return card;
   }
 
   // 🧠 깊이 읽기: 심화 확인 문제를 한 번에 맞힌 수 + 진짜 문제를 짚은 근거 문장 수 (점수·엔딩과는 상관없어요)
@@ -7216,15 +7343,17 @@ const GAME_DATA = {
      엔딩 뒤에 해요. 엔딩·결과 코드는 그대로이고 "보너스 신뢰"만 따로 쌓여요.
      기사 3개 모두 읽기 → 🔎 팩트체크(⭕/❌, 한 번만 제출) → 투자 선택 → 결과
      ================================================================== */
-  function specialCard() {
+  function specialCard(locked) {
     const P = D.special;
     if (!P) return null;
     const sp = state.special;
     const done = !!(sp && sp.choice);
-    return el('div', { className: 'card special-card' },
+    return el('div', { className: 'card special-card' + (locked ? ' is-locked' : '') },
       el('h2', { className: 'section-title', text: P.enterTitle }),
       el('p', { className: done ? 'special-done' : 'save-info', text: done ? P.doneText.replace('{점수}', signed(sp.bonus)) : P.enterText }),
-      button(done ? P.reviewButton : sp ? P.continueButton : P.enterButton, 'btn-yellow btn-block', startSpecial)
+      locked
+        ? button(D.endingScreen.specialLocked, 'btn-gray btn-block', () => {}, { disabled: true })
+        : button(done ? P.reviewButton : sp ? P.continueButton : P.enterButton, 'btn-yellow btn-block', startSpecial)
     );
   }
 
