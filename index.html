@@ -1843,6 +1843,14 @@ a.btn-link { display: flex; align-items: center; justify-content: center; text-a
 
 .flow-step .flow-go-btn { margin-top: 10px; }
 
+/* 🪜 필수 단계 띠 (수업용) */
+.step-ribbon { margin: 0 0 12px; padding: 9px 14px; border-radius: 12px; font-weight: bold; font-size: 1.05rem; }
+.step-ribbon.is-now { background: var(--coral-deep); color: #fff; }
+.step-ribbon.is-done { background: #e3f5e8; color: #2c7a45; }
+.step-ribbon.is-locked { background: #ececec; color: #777; }
+.card.is-step-now { border: 3px solid var(--coral-deep); box-shadow: 0 0 0 4px rgba(240, 112, 90, 0.15); }
+.card.is-step-locked > :not(.step-ribbon) { opacity: 0.4; pointer-events: none; filter: grayscale(0.5); }
+
 </style>
 </head>
 <body>
@@ -3469,6 +3477,14 @@ const GAME_DATA = {
     flowLocked: '🔒 위의 것을 다 내야 ⭐ 스페셜 라운드와 다시 도전하기가 열려요.',
     flowLockedRetry: '잠깐! 선생님께 낼 것을 먼저 다 내요. 지금 내지 않으면 선생님이 내 결과를 볼 수 없어요.',
     flowGoButton: '내러 가기',
+    stepRibbon: '필수 {n}단계',
+    stepNowNote: '지금 할 차례예요',
+    stepDoneNote: '했어요',
+    stepLockedNote: '앞 단계를 먼저 해요',
+    stepFair: '⚖️ 공정성 (친구와 이야기하고 고르기)',
+    stepPost: '🧪 사후 점검 저장',
+    stepBanner: '📮 필수 단계 {done}/{all} 했어요 · 다음: {next} — 눌러서 가기 ▼',
+    stepBannerDone: '✅ 필수 단계를 다 했어요! 이제 ⭐ 스페셜 라운드에 도전해도 돼요.',
     flowNeedLeft: '복사는 됐지만 아직 다음 단계가 열리지 않았어요. 남은 것: {남은}. 이것을 마치고 📋 결과 복사하기를 한 번 더 눌러요.',
     flowGoLeft: '남은 것 하러 가기',
     flowLeftNow: '⏳ 아직 남은 것: {남은}',
@@ -6702,14 +6718,49 @@ const GAME_DATA = {
 
     // ✍️ 수업용 마무리 순서 (주소에 폼 코드가 있을 때만)
     const flowCard = classFormsCard(S, () => updateFlow());
-    const flowBanner = classFlowOn() ? el('button', { type: 'button', className: 'flow-banner', onClick: () => flowCard.scrollIntoView({ block: 'start', behavior: 'smooth' }) }) : null;
+    // 🪜 필수 단계 (수업용): ① 공정성 → ② 사후 점검 → ③ 결과 복사 → ④ 게임 기록 → ⑤ 사례 과제
+    const fairEl = fairnessCard();
+    const postEl = postCheckCard();
+    let bannerTarget = flowCard;
+    const flowBanner = classFlowOn() ? el('button', { type: 'button', className: 'flow-banner', onClick: () => { if (bannerTarget) bannerTarget.scrollIntoView({ block: 'start', behavior: 'smooth' }); } }) : null;
+    function requiredSteps() {
+      const d = classDone();
+      const steps = [];
+      if (fairEl) steps.push({ label: S.stepFair, done: state.fair === 0 || !!state.fair, el: fairEl });
+      if (postEl) steps.push({ label: S.stepPost, done: Array.isArray(state.post), el: postEl });
+      steps.push({ label: S.flowCopy, done: !!d.copied, el: submitCard });
+      if (classForms.form) steps.push({ label: S.flowForm, done: !!d.form, el: flowCard });
+      if (classForms.post) steps.push({ label: S.flowPost, done: !!d.post, el: flowCard });
+      return steps;
+    }
+    // 카드 맨 위 띠: 👉 필수 1단계 · 지금 할 차례예요 / ✅ 했어요 / 🔒 앞 단계를 먼저
+    function setRibbon(card, num, status) {
+      let r = card.querySelector(':scope > .step-ribbon');
+      if (!r) { r = el('div', { className: 'step-ribbon' }); card.insertBefore(r, card.firstChild); }
+      r.className = 'step-ribbon is-' + status;
+      r.textContent = (status === 'done' ? '✅ ' : status === 'locked' ? '🔒 ' : '👉 ') + S.stepRibbon.replace('{n}', num)
+        + (status === 'locked' ? ' · ' + S.stepLockedNote : status === 'now' ? ' · ' + S.stepNowNote : ' · ' + S.stepDoneNote);
+      card.classList.toggle('is-step-locked', status === 'locked');
+      card.classList.toggle('is-step-now', status === 'now');
+    }
     const specialSlot = el('div', { className: 'special-slot' });
     function updateFlow() {
       if (flowCard) flowCard.redraw();
-      if (flowBanner) {
-        const left = classFlowLeft();
-        flowBanner.textContent = left ? S.flowBanner.replace('{개수}', left) : S.flowBannerDone;
-        flowBanner.classList.toggle('is-done', !left);
+      if (classFlowOn()) {
+        const steps = requiredSteps();
+        let open = true;
+        steps.forEach((st, i) => {
+          if (st.el !== flowCard) setRibbon(st.el, i + 1, st.done ? 'done' : open ? 'now' : 'locked');
+          if (!st.done) open = false;
+        });
+        // 앞 단계(공정성·사후 점검)를 안 했으면 복사 단추도 잠가요
+        copyBtn.disabled = leftActivities(S).length > 0;
+        const next = steps.find((st) => !st.done);
+        bannerTarget = next ? next.el : null;
+        flowBanner.textContent = next
+          ? S.stepBanner.replace('{done}', steps.length - steps.filter((st) => !st.done).length).replace('{all}', steps.length).replace('{next}', next.label)
+          : S.stepBannerDone;
+        flowBanner.classList.toggle('is-done', !next);
       }
       specialSlot.textContent = '';
       const sc = specialCard(!classFlowFinished());
@@ -6749,9 +6800,9 @@ const GAME_DATA = {
       el('div', { className: 'card' }, el('h2', { className: 'section-title', text: S.eventsTitle }), events),
       phoneSummaryCard(),
       // ── 여기부터 마무리 활동: 차례대로 붙여 두어 찾기 쉽게 ──
-      fairnessCard(),      // ⚖️ 공정성 생각 열기 (공모전판)
-      postCheckCard(),     // 🧪 사후 자기 점검 → 📈 나의 변화 (공모전판)
-      submitCard,
+      fairEl,              // ⚖️ 공정성 생각 열기 (공모전판) — 수업용 필수 1단계
+      postEl,              // 🧪 사후 자기 점검 → 📈 나의 변화 (공모전판) — 필수 2단계
+      submitCard,          // 📋 결과 복사 — 필수 3단계
       flowCard,        // ✍️ 마무리 순서: 결과 복사 → 게임 기록 제출 → 사례 과제 (주소에 폼 코드가 있을 때만)
       badgeCard(),     // 배지 도감은 마무리 활동 뒤에 (접어 두었어요)
       specialSlot,     // 결과를 다 낸 뒤에 열려요
@@ -6837,7 +6888,7 @@ const GAME_DATA = {
         const now = !done && open;
         const li = el('li', { className: 'flow-step' + (done ? ' is-done' : now ? ' is-now' : ' is-locked') },
           el('div', { className: 'flow-head' },
-            el('span', { className: 'flow-num', text: done ? '✅' : now ? String(i + 1) : '🔒' }),
+            el('span', { className: 'flow-num', text: done ? '✅' : now ? String(i + 1 + (D.fairness ? 1 : 0) + (D.selfCheck ? 1 : 0)) : '🔒' }),
             el('b', { className: 'flow-label', text: st.label + (st.key === 'copied' ? '' : ' ' + S.flowMust) })
           ));
         if (now && st.key === 'copied') {
