@@ -1832,6 +1832,13 @@ a.btn-link { display: flex; align-items: center; justify-content: center; text-a
 
 .fair-talk { margin: 10px 0; padding: 10px 12px; border-radius: 12px; background: #fff1e6; border: 2px dashed var(--coral-deep); font-weight: bold; }
 
+/* 🎉 엔딩에 처음 왔을 때 뜨는 "이제 할 일" 창 */
+.ending-guide { text-align: left; }
+.ending-guide-title { font-size: 1.35rem; margin-bottom: 6px; text-align: center; }
+.ending-guide-lead { font-weight: bold; color: var(--coral-deep); margin-bottom: 10px; text-align: center; }
+.ending-guide-list { margin: 0 0 12px; padding-left: 22px; display: flex; flex-direction: column; gap: 8px; line-height: 1.5; }
+.ending-guide-end { font-size: 0.92rem; color: var(--ink-soft); margin-bottom: 8px; }
+
 </style>
 </head>
 <body>
@@ -3429,6 +3436,18 @@ const GAME_DATA = {
     submitLeft: '⏳ 아직 남은 활동: {남은}. 마치면 코드 뒤 5글자가 바뀌어요.',
     submitLeftFair: '공정성 활동',
     submitLeftPost: '사후 점검',
+    guideTitle: '🎉 6라운드까지 다 끝냈어요!',
+    guideLead: '아직 끝이 아니에요. 아래로 내려가면서 이 순서대로 해요.',
+    guideSteps: [
+      '🗣️ 먼저 끝난 친구 2~3명과 모여서, ⚖️ 공정성 생각 열기를 같이 이야기하고 골라요',
+      '🧪 사후 점검을 하고 [저장]을 눌러요',
+      '📋 결과 복사하기를 눌러요'
+    ],
+    guideStepForm: '✍️ 게임 기록 폼을 열어 붙여넣고 내요',
+    guideStepPost: '📄 사례 과제를 한 번 더 써서 내요',
+    guideEnd: '시간이 남으면 ⭐ 스페셜 라운드에 도전해 봐요.',
+    guideEndClass: '다 내면 ⭐ 스페셜 라운드가 열려요. 앞의 것을 하지 않으면 다음 것이 잠겨 있어요.',
+    guideButton: '⚖️ 공정성 카드로 가기',
     flowBanner: '📮 아직 안 낸 것이 {개수}개 있어요! 꼭 내야 해요 — 눌러서 내러 가기 ▼',
     flowBannerDone: '✅ 선생님께 낼 것을 다 냈어요!',
     flowTitle: '📮 꼭 내야 하는 것 {개수}가지',
@@ -6467,6 +6486,8 @@ const GAME_DATA = {
       storyText.textContent = story.join('');
       hint.textContent = S.scrollHint;
       after.hidden = false;
+      // 🎉 6라운드를 마치고 처음 엔딩에 왔을 때 한 번만 — 이제 할 일을 알려 줘요
+      if (!back && !state.endingGuided) { state.endingGuided = true; save(); later(showEndingGuide, 500); }
     }
     function typeNext() {
       if (typingDone) return;
@@ -6712,6 +6733,24 @@ const GAME_DATA = {
       specialSlot,     // 결과를 다 낸 뒤에 열려요
       buttons
     ];
+  }
+
+  // 🎉 엔딩에 처음 왔을 때 뜨는 "이제 할 일" 창
+  function showEndingGuide() {
+    if (state.screen !== 'ending') return;
+    const S = D.endingScreen;
+    const steps = S.guideSteps.slice();
+    if (classForms.form) steps.push(S.guideStepForm);
+    if (classForms.post) steps.push(S.guideStepPost);
+    showModal(el('div', { className: 'ending-guide' },
+      el('h2', { className: 'ending-guide-title', text: S.guideTitle }),
+      el('p', { className: 'ending-guide-lead', text: S.guideLead }),
+      el('ol', { className: 'ending-guide-list' }, steps.map((t) => el('li', { text: t }))),
+      el('p', { className: 'ending-guide-end', text: classFlowOn() ? S.guideEndClass : S.guideEnd })
+    ), [{ label: S.guideButton, className: 'btn-primary', onClick: () => later(() => {
+      const f = app.querySelector('.fair-card');
+      if (f) f.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }, 80) }]);
   }
 
   /* ✍️ 수업용 마무리 순서 — 주소에 폼 코드(form/post)가 있을 때만 켜져요.
