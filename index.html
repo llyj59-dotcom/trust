@@ -1830,6 +1830,8 @@ a.btn-link { display: flex; align-items: center; justify-content: center; text-a
 .special-slot { display: contents; }
 .special-card.is-locked { opacity: 0.6; }
 
+.fair-talk { margin: 10px 0; padding: 10px 12px; border-radius: 12px; background: #fff1e6; border: 2px dashed var(--coral-deep); font-weight: bold; }
+
 </style>
 </head>
 <body>
@@ -3694,6 +3696,7 @@ const GAME_DATA = {
      ================================================================ */
   fairness: {
     title: '⚖️ 공정성 생각 열기',
+    talkFirst: '🗣️ 혼자 고르지 말고, 친구 2~3명과 이야기한 뒤에 골라요. 같은 모둠이 아니어도 괜찮아요 — 먼저 끝난 친구끼리 모여도 돼요. 같이 이야기한 친구 이름과 정한 조건은 게임 기록 폼에 써요.',
     intro: '우리 학교가 얼굴 인식 AI로 출입문을 열려고 해요. 미리 시험해 보니, 어떤 피부색과 얼굴형에서는 자주 알아보지 못했어요. {닉네임} 투자자님이라면 어떻게 할까요? 정답은 하나가 아니에요. 고르고 나서 생기는 새로운 고민도 함께 살펴봐요.',
     choices: [
       { text: '그냥 쓴다. 대부분의 학생은 잘 되니까 괜찮다.',
@@ -7085,6 +7088,7 @@ const GAME_DATA = {
     return el('div', { className: 'card fair-card' },
       el('h2', { className: 'section-title', text: F.title }),
       el('p', { className: 'fair-intro', text: fill(F.intro) }),
+      F.talkFirst ? el('p', { className: 'fair-talk', text: F.talkFirst }) : null,
       box,
       el('p', { className: 'save-info', text: F.note })
     );
