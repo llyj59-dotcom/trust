@@ -1830,7 +1830,7 @@ a.btn-link { display: flex; align-items: center; justify-content: center; text-a
 .special-slot { display: contents; }
 .special-card.is-locked { opacity: 0.6; }
 
-.fair-talk { margin: 10px 0; padding: 10px 12px; border-radius: 12px; background: #fff1e6; border: 2px dashed var(--coral-deep); font-weight: bold; }
+.fair-talk { white-space: pre-line; margin: 10px 0; padding: 10px 12px; border-radius: 12px; background: #fff1e6; border: 2px dashed var(--coral-deep); font-weight: bold; }
 
 /* 🎉 엔딩에 처음 왔을 때 뜨는 "이제 할 일" 창 */
 .ending-guide { text-align: left; }
@@ -3118,7 +3118,7 @@ const GAME_DATA = {
   /* 🔍 근거 문장 고르기 (투자 결정서) */
   evidenceUi: {
     title: '🔍 근거 문장 고르기',
-    requiredNote: '(조건부 투자는 꼭 골라요)',
+    requiredNote: '(투자하지 않기·조건부 투자는 꼭 골라요 — 거절도 까닭이 되는 문장이 있어야 해요)',
     optionalNote: '(근거 문장을 고르면 신뢰지수가 올라가요. 다만 문제를 둔 채 투자하면 내려가요)',
     guide: '아래 기사에서 내 선택의 까닭이 되는 문장을 눌러 골라요.',
     pickGuide: '👆 근거로 쓸 문장을 눌러 골라요. 형광펜이 아닌 문장도 고를 수 있어요.',
@@ -3760,7 +3760,7 @@ const GAME_DATA = {
      ================================================================ */
   fairness: {
     title: '⚖️ 공정성 생각 열기',
-    talkFirst: '🗣️ 혼자 고르지 말고, 친구 2~3명과 이야기한 뒤에 골라요. 같은 모둠이 아니어도 괜찮아요 — 먼저 끝난 친구끼리 모여도 돼요. 같이 이야기한 친구 이름과 정한 조건은 게임 기록 폼에 써요.',
+    talkFirst: '🗣️ 혼자 고르지 말고, 친구 2~3명과 이야기한 뒤에 골라요. 같은 모둠이 아니어도 괜찮아요 — 먼저 끝난 친구끼리 모여도 돼요.\n이야기할 것: 문 앞에서 자주 막히는 친구는 누구일까요? 그 친구도 똑같이, 눈치 보지 않고 들어가려면 어떤 조건이 필요할까요? 정한 조건과 같이 이야기한 친구 이름은 게임 기록 폼에 써요.',
     intro: '우리 학교가 얼굴 인식 AI로 출입문을 열려고 해요. 미리 시험해 보니, 어떤 피부색과 얼굴형에서는 자주 알아보지 못했어요. {닉네임} 투자자님이라면 어떻게 할까요? 정답은 하나가 아니에요. 고르고 나서 생기는 새로운 고민도 함께 살펴봐요.',
     choices: [
       { text: '그냥 쓴다. 대부분의 학생은 잘 되니까 괜찮다.',
@@ -5770,9 +5770,10 @@ const GAME_DATA = {
     const error = el('p', { className: 'decision-error', role: 'alert' });
     const submitBtn = button(X.submitButton, 'btn-primary btn-block', submit);
 
-    // 🔍 근거 문장 고르기 — 조건부 투자는 꼭, 다른 선택은 골라도 되고 안 골라도 돼요
+    // 🔍 근거 문장 고르기 — 기본 모드에서는 조건부 투자와 거절은 꼭, 투자는 골라도 되고 안 골라도 돼요
+    // (2026-10-28 첫 수업: 거절이 69%였고 그중 다수가 근거 없이 넘어가서, 거절도 근거를 대게 했어요)
     const EV = D.evidenceUi;
-    const needEv = pc.type === 'condition' && D.settings.evidenceForCondition;
+    const needEv = (pc.type === 'condition' || pc.type === 'pass') && D.settings.evidenceForCondition;
     const chip = el('div', { className: 'evidence-chip' });
     const evFeedback = el('p', { className: 'evidence-feedback', role: 'status' });
     function drawChip() {
