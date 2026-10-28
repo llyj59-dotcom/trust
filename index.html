@@ -1961,9 +1961,24 @@ const GAME_DATA = {
      선생님이 자유롭게 추가해 주세요. 띄어쓰기는 무시하고 검사해요.
      ---------------------------------------------------------------- */
   bannedWords: [
-    '바보', '멍청', '병신', '븅신', '시발', '씨발', '씨바', 'ㅅㅂ', 'ㅆㅂ', 'ㅂㅅ',
-    '개새', '존나', 'ㅈㄴ', '미친', '꺼져', '닥쳐', '죽어', '찐따', '또라이'
+    // 욕설·비하
+    '바보', '멍청', '병신', '븅신', '빙신', '시발', '씨발', '씨바', '쉬발', '슈발', 'ㅅㅂ', 'ㅆㅂ', 'ㅂㅅ',
+    '개새', '개색', '개쉐', '존나', '졸라', 'ㅈㄴ', '미친', '미쳤', '꺼져', '닥쳐', '죽어', '뒤져', '찐따', '또라이',
+    '지랄', 'ㅈㄹ', '좆', '좃', '썅', '쌍놈', '쌍년', '니애미', '느금', '애미', '애비', '엠창', '등신', 
+    '틀딱', '급식충', '맘충', '장애새',
+    // 성적인 표현
+    '섹스', '섹시', '야동', '야한', '자지', '보지', '꼬추', '고추가', '고추만', '성기', '젖꼭', '젖가슴', '빨통', '딸딸', '자위', '변태', '19금', '알몸', '팬티',
+    // 영어
+    'fuck', 'shit', 'bitch', 'sex', 'porn', 'dick', 'pussy', 'damn', 'asshole'
   ],
+  // 별명 모양 검사에서 보여 줄 말
+  nicknameRules: {
+    jamo: '자음이나 모음만 쓴 별명은 쓸 수 없어요. 글자를 완성해서 지어 볼까요?',
+    repeat: '같은 글자를 세 번 넘게 이어 쓸 수 없어요. 뜻이 있는 별명으로 지어 볼까요?',
+    symbol: '별명은 한글·영어·숫자로만 지어요. 특수문자나 그림 문자는 빼 주세요.',
+    letters: '숫자만으로는 별명을 만들 수 없어요. 한글이나 영어를 넣어 주세요.',
+    mash: '키보드를 막 누른 것 같아요. 뜻이 있는 별명으로 지어 볼까요?'
+  },
 
   /* ----------------------------------------------------------------
      시작 화면 (기획서 3장)
@@ -4368,6 +4383,27 @@ const GAME_DATA = {
     return D.bannedWords.some((w) => w && normalized.includes(String(w).replace(/\s+/g, '').toLowerCase()));
   }
 
+  /* 별명 모양 검사 — 문제가 있으면 보여 줄 말을, 괜찮으면 null
+     자음·모음만 / 같은 글자 3번 넘게 / 특수문자 / 숫자만 / 키보드 막 누르기 */
+  function nicknameProblem(name) {
+    const R = D.nicknameRules;
+    if (!R) return null;
+    const s = name.replace(/\s+/g, '');
+    if (/[ㄱ-ㅎㅏ-ㅣ]/.test(s)) return R.jamo;
+    if (/[^가-힣A-Za-z0-9]/.test(s)) return R.symbol;
+    if (!/[가-힣A-Za-z]/.test(s)) return R.letters;
+    if (/(.)\1\1/.test(s.toLowerCase())) return R.repeat;
+    // 두 글자 묶음을 세 번 (하하하·ㅋ키키 말고 abab ab 처럼) — "뷁뷁뷁", "abababab"
+    if (/(..)\1\1/.test(s.toLowerCase())) return R.repeat;
+    // 영어 자판을 줄지어 누른 것 (asdf, qwer, zxcv …)
+    const rows = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm', '1234567890'];
+    const low = s.toLowerCase();
+    for (const row of rows) for (let i = 0; i + 4 <= row.length; i++) if (low.includes(row.slice(i, i + 4))) return R.mash;
+    // 받침 없는 모음 없이 영어 자음만 5개 넘게 (bcdfgh …)
+    if (/[bcdfghjklmnpqrstvwxz]{5,}/.test(low)) return R.mash;
+    return null;
+  }
+
   function isNicknameLengthOk(name) {
     const len = charLength(name);
     return len >= 1 && len <= D.settings.nicknameMaxLength;
@@ -4967,6 +5003,8 @@ const GAME_DATA = {
       const name = input.value.trim();
       if (!isNicknameLengthOk(name)) { shakeInput(C.needName); return null; }
       if (hasBannedWord(name)) { shakeInput(S.bannedWordMessage); return null; }
+      const shape = nicknameProblem(name);
+      if (shape) { shakeInput(shape); return null; }
       return name;
     }
 
