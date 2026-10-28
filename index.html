@@ -4741,7 +4741,18 @@ const GAME_DATA = {
       badgeCert: renderBadgeCert,
       teacher: renderTeacher
     };
-    (screens[state.screen] || renderStart)();
+    try {
+      (screens[state.screen] || renderStart)();
+    } catch (e) {
+      // 화면을 그리다 멈추면 빈 화면으로 남지 않게 — 끝낸 판은 엔딩으로, 아니면 첫 화면으로 돌려보내요
+      if (window.console) console.error(e);
+      const finished = Array.isArray(state.choices) && state.choices.filter(Boolean).length >= D.rounds.length;
+      if (finished && state.screen !== 'ending') { state.screen = 'ending'; save(); }
+      else if (state.screen !== 'start') state.screen = 'start';
+      else throw e;
+      app.textContent = '';
+      screens[state.screen]();
+    }
     applyReadingChunks(app);
     if (!savingEnabled) app.appendChild(el('div', { className: 'test-badge', text: D.ui.testBadge }));
   }
@@ -6972,7 +6983,7 @@ const GAME_DATA = {
               el('p', {}, el('span', { text: D.ui.seedIcon + ' ' + C.finalSeedsLabel }), el('b', { text: formatNum(state.seeds) })),
               el('p', {}, el('span', { text: D.ui.trustIcon + ' ' + C.finalTrustLabel }), el('b', { text: trustText(state.trust) })),
               el('p', {}, el('span', { text: C.badgesLabel }),
-                el('b', { className: 'cert-badges', text: state.choices.map((c) => (c ? B[c.type].icon : B.none.icon)).join(' ') }))
+                el('b', { className: 'cert-badges', text: state.choices.map((c) => (B[choiceWhy(c)] || B.none).icon).join(' ') }))
             ),
             el('div', { className: 'cert-sign' },
               el('p', { className: 'cert-date', text: C.issuedLabel + ' ' + certificateDate() }),
