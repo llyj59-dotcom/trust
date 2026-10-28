@@ -6430,6 +6430,7 @@ const GAME_DATA = {
   // 인증서에서 돌아올 때는 어두운 막·타자 효과 없이 바로 결과 코드 쪽을 보여 줘요
   let endingReturn = false;
   let refreshSubmit = () => {};   // 엔딩의 제출 카드 새로 고치기
+  let refreshFlow = () => {};     // 엔딩의 ✍️ 마무리 순서 새로 고치기
 
   function renderEnding() {
     const back = endingReturn;
@@ -6671,6 +6672,7 @@ const GAME_DATA = {
       if (sc) specialSlot.appendChild(sc);
     }
     updateFlow();
+    refreshFlow = updateFlow;
     const guardFlow = (fn) => () => {
       if (classFlowFinished()) { fn(); return; }
       showModal(el('p', { className: 'modal-text', text: S.flowLockedRetry }),
@@ -7069,7 +7071,7 @@ const GAME_DATA = {
       box.textContent = '';
       if (state.fair === null || state.fair === undefined) {
         box.appendChild(el('div', { className: 'condition-list' }, F.choices.map((c, i) =>
-          el('button', { type: 'button', className: 'condition-card fair-choice', onClick: guarded(() => { state.fair = i; save(); draw(); refreshSubmit(); }) },
+          el('button', { type: 'button', className: 'condition-card fair-choice', onClick: guarded(() => { state.fair = i; save(); draw(); refreshSubmit(); refreshFlow(); }) },
             el('span', { className: 'condition-num', 'aria-hidden': 'true', text: String(i + 1) }),
             el('span', { className: 'condition-text', text: c.text })))));
       } else {
@@ -7081,7 +7083,11 @@ const GAME_DATA = {
             el('p', { className: 'fair-more-title', text: F.more.title }),
             el('ul', { className: 'fair-more-list' }, F.more.items.map((t) => el('li', { text: t })))));
         }
-        box.appendChild(button(F.again, 'btn-ghost', () => { state.fair = null; save(); draw(); refreshSubmit(); }));
+        box.appendChild(button(F.again, 'btn-ghost', () => {
+          state.fair = null;
+          if (state.classDone) state.classDone.copied = false;   // 코드가 바뀌니 다시 복사해야 해요
+          save(); draw(); refreshSubmit(); refreshFlow();
+        }));
       }
     }
     draw();
