@@ -1920,6 +1920,10 @@ const GAME_DATA = {
     preTitle: '1️⃣ 먼저 사례 과제를 해요',
     preText: '게임을 하기 전에 사례 한 편을 읽고 내 생각을 써요. 다 쓰고 나면 이 화면으로 돌아와서 별명을 정하고 시작해요.',
     preButton: '📄 사례 과제 열기',
+    pre2Title: '1️⃣ 먼저 사례 과제 두 개를 해요',
+    pre2Text: '선생님이 알려 줄 때 하나씩 열어요. 두 개를 다 쓰고 나면 이 화면으로 돌아와서 별명을 정하고 시작해요.',
+    pre2First: '📄 첫 번째 사례 과제',
+    pre2Second: '📄 두 번째 사례 과제',
     nicknamePlaceholder: '별명 (1~8자)',
     startButton: '시작하기',
     continueButton: `이어하기`,
@@ -4983,9 +4987,10 @@ const GAME_DATA = {
         el('p', { className: 'start-subtitle', text: S.subtitle })
       ),
       classForms.pre ? el('div', { className: 'card class-form-card' },
-        el('h2', { className: 'section-title', text: S.preTitle }),
-        el('p', { className: 'save-info', text: S.preText }),
-        formLink(classForms.pre, S.preButton, 'btn-yellow')
+        el('h2', { className: 'section-title', text: classForms.pre2 ? S.pre2Title : S.preTitle }),
+        el('p', { className: 'save-info', text: classForms.pre2 ? S.pre2Text : S.preText }),
+        formLink(classForms.pre, classForms.pre2 ? S.pre2First : S.preButton, 'btn-yellow'),
+        classForms.pre2 ? formLink(classForms.pre2, S.pre2Second, 'btn-yellow') : null
       ) : null,
       el('div', { className: 'card start-card' },
         el('label', { className: 'nickname-label', for: 'nickname', text: S.nicknameLabel }),
@@ -6737,18 +6742,18 @@ const GAME_DATA = {
      해당 자리에 단추가 나와요. 코드가 없으면 아무것도 안 보여서, 공모전 제출본에는 폼 주소가 들어 있지 않아요.
      탭을 닫으면 사라지도록 sessionStorage 에만 둬요. */
   const FORMS_KEY = 'trustGame_forms_v1';
-  let classForms = { pre: '', form: '', post: '' };
+  let classForms = { pre: '', pre2: '', form: '', post: '' };   // pre2: 비교반 — 게임 전에 사례 과제를 두 번
   function cleanFormCode(v) { return /^[A-Za-z0-9_-]{6,80}$/.test(v || '') ? v : ''; }
   function readFormCodes(params) {
-    const got = { pre: cleanFormCode(params.get('pre')), form: cleanFormCode(params.get('form')), post: cleanFormCode(params.get('post')) };
-    if (got.pre || got.form || got.post) {
+    const got = { pre: cleanFormCode(params.get('pre')), pre2: cleanFormCode(params.get('pre2')), form: cleanFormCode(params.get('form')), post: cleanFormCode(params.get('post')) };
+    if (got.pre || got.pre2 || got.form || got.post) {
       classForms = got;
       try { sessionStorage.setItem(FORMS_KEY, JSON.stringify(got)); } catch (e) { /* 무시 */ }
       return;
     }
     try {
       const s = JSON.parse(sessionStorage.getItem(FORMS_KEY) || 'null');
-      if (s) classForms = { pre: cleanFormCode(s.pre), form: cleanFormCode(s.form), post: cleanFormCode(s.post) };
+      if (s) classForms = { pre: cleanFormCode(s.pre), pre2: cleanFormCode(s.pre2), form: cleanFormCode(s.form), post: cleanFormCode(s.post) };
     } catch (e) { /* 무시 */ }
   }
   function formLink(code, label, className) {
