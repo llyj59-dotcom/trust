@@ -1839,6 +1839,10 @@ a.btn-link { display: flex; align-items: center; justify-content: center; text-a
 .ending-guide-list { margin: 0 0 12px; padding-left: 22px; display: flex; flex-direction: column; gap: 8px; line-height: 1.5; }
 .ending-guide-end { font-size: 0.92rem; color: var(--ink-soft); margin-bottom: 8px; }
 
+.flow-left { margin-top: 6px; font-weight: bold; color: var(--coral-deep); }
+
+.flow-step .flow-go-btn { margin-top: 10px; }
+
 </style>
 </head>
 <body>
@@ -3465,6 +3469,11 @@ const GAME_DATA = {
     flowLocked: '🔒 위의 것을 다 내야 ⭐ 스페셜 라운드와 다시 도전하기가 열려요.',
     flowLockedRetry: '잠깐! 선생님께 낼 것을 먼저 다 내요. 지금 내지 않으면 선생님이 내 결과를 볼 수 없어요.',
     flowGoButton: '내러 가기',
+    flowNeedLeft: '복사는 됐지만 아직 다음 단계가 열리지 않았어요. 남은 것: {남은}. 이것을 마치고 📋 결과 복사하기를 한 번 더 눌러요.',
+    flowGoLeft: '남은 것 하러 가기',
+    flowLeftNow: '⏳ 아직 남은 것: {남은}',
+    flowGoFair: '⬆️ ⚖️ 공정성 카드로 가기',
+    flowGoPost: '⬆️ 🧪 사후 점검으로 가기',
     specialLocked: '🔒 선생님께 낼 것을 다 내면 열려요',
     copyButton: '📋 결과 복사하기',
     copyBoxTitle: '제출용 결과',
@@ -3735,7 +3744,7 @@ const GAME_DATA = {
     },
     note: '점수·엔딩과는 상관없어요. 공정성·포용성 원칙과 이어지는 질문이에요.',
     myChoice: '내 선택',
-    again: '다른 선택도 보기'
+    again: '다시 고르기 (고른 것이 지워져요)'
   },
 
   /* ================================================================
@@ -6645,6 +6654,8 @@ const GAME_DATA = {
     const copyBtn = button(S.copyButton, 'btn-primary', () => {
       if (classFlowOn() && !leftActivities(S).length && !classDone().copied) {
         classDone().copied = true; save(); later(updateFlow, 0);
+      } else if (classFlowOn() && leftActivities(S).length) {
+        later(showLeftActivities, 300);
       }
       copyBox.focus();
       copyBox.select();
@@ -6668,6 +6679,7 @@ const GAME_DATA = {
       copyBox.value = submitText;
       codeLine.textContent = makeResultCode();
       const left = leftActivities(S);
+      refreshFlow();
       statusLine.textContent = left.length ? S.submitLeft.replace('{남은}', left.join(', ')) : S.submitFinal;
       copyMsg.textContent = '';
     };
@@ -6733,11 +6745,12 @@ const GAME_DATA = {
       el('div', { className: 'card' }, el('h2', { className: 'section-title', text: S.diaryTitle }), diary),
       ethicsCard(),        // 🧭 오늘 만난 AI 윤리 원칙 (공모전판)
       el('div', { className: 'card promise-card' }, el('h2', { className: 'section-title', text: fill(S.learningTitle) }), learnings),
-      fairnessCard(),      // ⚖️ 공정성 생각 열기 (공모전판)
-      postCheckCard(),     // 🧪 사후 자기 점검 → 📈 나의 변화 (공모전판)
       deepReadingCard(),
       el('div', { className: 'card' }, el('h2', { className: 'section-title', text: S.eventsTitle }), events),
       phoneSummaryCard(),
+      // ── 여기부터 마무리 활동: 차례대로 붙여 두어 찾기 쉽게 ──
+      fairnessCard(),      // ⚖️ 공정성 생각 열기 (공모전판)
+      postCheckCard(),     // 🧪 사후 자기 점검 → 📈 나의 변화 (공모전판)
       submitCard,
       flowCard,        // ✍️ 마무리 순서: 결과 복사 → 게임 기록 제출 → 사례 과제 (주소에 폼 코드가 있을 때만)
       badgeCard(),     // 배지 도감은 마무리 활동 뒤에 (접어 두었어요)
@@ -6774,6 +6787,16 @@ const GAME_DATA = {
     return left;
   }
   function classFlowOn() { return !!(classForms.form || classForms.post); }
+  // 복사를 눌렀는데 아직 남은 활동이 있을 때 — 무엇이 남았는지 알려 주고 그 카드로 데려가요
+  function showLeftActivities() {
+    const S = D.endingScreen;
+    const fairLeft = D.fairness && !(state.fair === 0 || state.fair);
+    showModal(el('p', { className: 'modal-text', text: S.flowNeedLeft.replace('{남은}', leftActivities(S).join(', ')) }),
+      [{ label: S.flowGoLeft, className: 'btn-primary', onClick: () => later(() => {
+        const t = app.querySelector(fairLeft ? '.fair-card' : '.sc-card');
+        if (t) t.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      }, 80) }]);
+  }
   function classDone() {
     if (!state.classDone) state.classDone = { copied: false, form: false, post: false };
     return state.classDone;
@@ -6817,7 +6840,18 @@ const GAME_DATA = {
             el('span', { className: 'flow-num', text: done ? '✅' : now ? String(i + 1) : '🔒' }),
             el('b', { className: 'flow-label', text: st.label + (st.key === 'copied' ? '' : ' ' + S.flowMust) })
           ));
-        if (now && st.key === 'copied') li.appendChild(el('p', { className: 'flow-hint', text: S.flowCopyHint }));
+        if (now && st.key === 'copied') {
+          const left = leftActivities(S);
+          li.appendChild(el('p', { className: 'flow-hint', text: S.flowCopyHint }));
+          if (left.length) {
+            li.appendChild(el('p', { className: 'flow-left', text: S.flowLeftNow.replace('{남은}', left.join(', ')) }));
+            const fairLeft = D.fairness && !(state.fair === 0 || state.fair);
+            li.appendChild(button(fairLeft ? S.flowGoFair : S.flowGoPost, 'btn-yellow btn-block flow-go-btn', () => {
+              const t = app.querySelector(fairLeft ? '.fair-card' : '.sc-card');
+              if (t) t.scrollIntoView({ block: 'start', behavior: 'smooth' });
+            }));
+          }
+        }
         if (now && st.key !== 'copied') {
           const doneBtn = button(S.flowSubmitted, 'btn-green btn-block flow-done-btn', () => { d[st.key] = true; save(); onChange(); },
             { disabled: !d['opened_' + st.key] });
