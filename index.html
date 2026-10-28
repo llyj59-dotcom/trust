@@ -1798,6 +1798,11 @@ h1, h2, h3, .btn, .status-bar, .status-code, .section-title, .screen-title, .sta
   color:#2c4a68;
 }
 
+/* ---------- 수업용 폼 연결 단추 (주소에 pre/form/post 코드가 있을 때만 나와요) ---------- */
+a.btn-link { display: flex; align-items: center; justify-content: center; text-align: center; text-decoration: none; box-sizing: border-box; }
+.class-form-card .btn-link { margin-top: 10px; }
+.class-form-card .class-form-gap { margin-top: 14px; }
+
 </style>
 </head>
 <body>
@@ -1912,6 +1917,9 @@ const GAME_DATA = {
     nicknameGuide: `진짜 이름 말고 게임에서 쓸 별명을 지어주세요! 온라인에서 실명 대신 별명을 쓰는 것도 개인정보를 지키는 방법이에요.`,
     bannedWordMessage: `다른 친구들도 볼 수 있어요. 예쁜 별명으로 바꿔볼까요?`,
     nicknameLabel: '별명',
+    preTitle: '1️⃣ 먼저 사례 과제를 해요',
+    preText: '게임을 하기 전에 사례 한 편을 읽고 내 생각을 써요. 다 쓰고 나면 이 화면으로 돌아와서 별명을 정하고 시작해요.',
+    preButton: '📄 사례 과제 열기',
     nicknamePlaceholder: '별명 (1~8자)',
     startButton: '시작하기',
     continueButton: `이어하기`,
@@ -3388,6 +3396,11 @@ const GAME_DATA = {
     submitLeft: '⏳ 아직 남은 활동: {남은}. 마치면 코드 뒤 5글자가 바뀌어요.',
     submitLeftFair: '공정성 활동',
     submitLeftPost: '사후 점검',
+    formTitle: '✍️ 선생님께 기록 내기',
+    formText: '위에서 ⚖️ 공정성 → 🧪 사후 점검을 마치고 📋 결과 복사하기를 눌렀다면, 아래 단추로 폼을 열어 붙여넣기 해요.',
+    formButton: '✍️ 게임 기록 제출하러 가기',
+    postText: '기록을 내고 나면, 선생님이 말해 줄 때 사례 과제를 한 번 더 해요.',
+    postButton: '📄 사례 과제 열기',
     copyButton: '📋 결과 복사하기',
     copyBoxTitle: '제출용 결과',
     copyDone: '복사했어요! 선생님이 알려준 곳에 붙여넣기 하세요.',
@@ -4969,6 +4982,11 @@ const GAME_DATA = {
         el('h1', { className: 'start-title', text: S.title }),
         el('p', { className: 'start-subtitle', text: S.subtitle })
       ),
+      classForms.pre ? el('div', { className: 'card class-form-card' },
+        el('h2', { className: 'section-title', text: S.preTitle }),
+        el('p', { className: 'save-info', text: S.preText }),
+        formLink(classForms.pre, S.preButton, 'btn-yellow')
+      ) : null,
       el('div', { className: 'card start-card' },
         el('label', { className: 'nickname-label', for: 'nickname', text: S.nicknameLabel }),
         input,
@@ -6615,10 +6633,22 @@ const GAME_DATA = {
       el('div', { className: 'card' }, el('h2', { className: 'section-title', text: S.eventsTitle }), events),
       phoneSummaryCard(),
       submitCard,
+      classFormsCard(S),   // ✍️ 선생님께 기록 내기 · 사후 사례 과제 (주소에 폼 코드가 있을 때만)
       badgeCard(),     // 배지 도감은 마무리 활동 뒤에 (접어 두었어요)
       specialCard(),   // 결과 코드를 먼저 적고, 시간이 남으면 도전해요
       buttons
     ];
+  }
+
+  function classFormsCard(S) {
+    if (!classForms.form && !classForms.post) return null;
+    return el('div', { className: 'card class-form-card' },
+      el('h2', { className: 'section-title', text: S.formTitle }),
+      classForms.form ? el('p', { className: 'save-info', text: S.formText }) : null,
+      classForms.form ? formLink(classForms.form, S.formButton, 'btn-primary') : null,
+      classForms.post ? el('p', { className: 'save-info class-form-gap', text: S.postText }) : null,
+      classForms.post ? formLink(classForms.post, S.postButton, 'btn-ghost') : null
+    );
   }
 
   // 🧠 깊이 읽기: 심화 확인 문제를 한 번에 맞힌 수 + 진짜 문제를 짚은 근거 문장 수 (점수·엔딩과는 상관없어요)
@@ -6701,6 +6731,28 @@ const GAME_DATA = {
     const keep = { nickname: state.nickname, character: state.character };
     state = Object.assign(freshState(), keep);
     startRound(1);
+  }
+
+  /* 🔗 수업 운영: 주소 끝에 &pre= &form= &post= 로 구글 폼 코드(forms.gle/ 뒤의 글자)를 붙이면
+     해당 자리에 단추가 나와요. 코드가 없으면 아무것도 안 보여서, 공모전 제출본에는 폼 주소가 들어 있지 않아요.
+     탭을 닫으면 사라지도록 sessionStorage 에만 둬요. */
+  const FORMS_KEY = 'trustGame_forms_v1';
+  let classForms = { pre: '', form: '', post: '' };
+  function cleanFormCode(v) { return /^[A-Za-z0-9_-]{6,80}$/.test(v || '') ? v : ''; }
+  function readFormCodes(params) {
+    const got = { pre: cleanFormCode(params.get('pre')), form: cleanFormCode(params.get('form')), post: cleanFormCode(params.get('post')) };
+    if (got.pre || got.form || got.post) {
+      classForms = got;
+      try { sessionStorage.setItem(FORMS_KEY, JSON.stringify(got)); } catch (e) { /* 무시 */ }
+      return;
+    }
+    try {
+      const s = JSON.parse(sessionStorage.getItem(FORMS_KEY) || 'null');
+      if (s) classForms = { pre: cleanFormCode(s.pre), form: cleanFormCode(s.form), post: cleanFormCode(s.post) };
+    } catch (e) { /* 무시 */ }
+  }
+  function formLink(code, label, className) {
+    return el('a', { className: 'btn btn-block btn-link ' + className, href: 'https://forms.gle/' + code, target: '_blank', rel: 'noopener noreferrer', text: label });
   }
 
   // 처음으로: 닉네임부터 새로 (저장된 게임은 목록에 남아요)
@@ -7885,6 +7937,7 @@ const GAME_DATA = {
 
   function startFromUrl() {
     const params = new URLSearchParams(window.location.search);
+    readFormCodes(params);
     // ⏱ 수업 운영 모드: ?quick=1 (40분 간편) / ?quick=0 (80분 기본)
     const q = params.get('quick');
     if (q === '1') { try { localStorage.setItem(MODE_KEY, 'quick'); } catch (e) { /* 무시 */ } }
