@@ -106,6 +106,7 @@ textarea{min-height:76px}
 .tline .s{flex:0 0 auto;font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:999px;height:fit-content;margin-top:2px}
 .tline .s.y{background:var(--blue-l);color:var(--blue)}
 .tline .s.n{background:var(--amber-l);color:var(--amber)}
+.tline .s.q{background:var(--green-l);color:var(--green-d)}
 .chk{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;display:flex;gap:11px}
 .chk .m{flex:0 0 auto;font-size:19px;line-height:1.3}
 .chk .b{flex:1}
@@ -332,29 +333,28 @@ var TOPICS = [
          '양을 줄이고 꼭 필요한 것만 내야 한다',
          '스스로 고르는 숙제가 좋다']},
 
- {id:'upload3', band:'56', std:['6국01-06','6실04-03'], ic:'⏱️', cat:'디지털 시민',
-  cards:{ lbl:'규칙', verb:'규칙 카드', min:5,
-    keys:['꼭 넣자','고쳐서 넣자','빼거나 합치자'],
+ {id:'upload3', band:'56', std:['6국01-06','6실04-03'], ic:'⏱️', cat:'디지털 시민', noLine:true,
+  cards:{ lbl:'모둠 기준', verb:'모둠 기준 카드', min:5,
+    keys:['꼭 넣자','고치거나 합쳐서 넣자','빼도 된다'],
     list:[
-     ['1. 개인정보 확인','나와 친구의 이름·얼굴·학교·주소·전화번호가 보이지 않나요?'],
-     ['2. 동의 확인','함께 나온 사람에게 올려도 되는지 허락을 받았나요?'],
-     ['3. 출처 확인','내가 만들지 않은 그림·사진·글의 출처를 밝혔나요? 믿을 수 있는 곳인가요?'],
-     ['4. 사실 확인','거짓 정보, 딥페이크, 확인되지 않은 소문은 아닌가요?'],
-     ['5. 말과 표현 확인','욕설·비속어·비하하는 말, 폭력적인 이미지는 없나요?']]},
-  q:'우리 반 「업로드 전 3초」에 다섯 가지 규칙을 모두 넣어야 할까?',
-  sub:'2차시에 다섯 모둠이 고른 기준을 모으니 다섯 가지가 되었어요. 3초 안에 확인할 수 있을까요?',
+     ['1모둠 · 출처가 정확한지','함께 고른 기준: 개인정보가 들어 있지 않은지, 글이나 그림의 출처가 정확한지'],
+     ['2모둠 · 폭력적이지 않은지','함께 고른 기준: 부적절한 이미지나 글, 욕설이 들어 있지 않은지, 출처는 어떤지'],
+     ['3모둠 · 개인정보와 보기 좋은지','함께 고른 기준: 개인정보나 딥페이크를 쓰지 않았는지, 욕설·비속어·비하하는 말이 없는지'],
+     ['4모둠 · 출처를 믿을 수 있는지','함께 고른 기준: 출처가 믿을 만한 곳인지, 다른 사람의 개인정보가 들어 있지 않은지'],
+     ['5모둠 · 다른 사람의 개인정보','함께 고른 기준: 나와 다른 사람의 개인정보가 들어 있지 않은지, 욕설·비속어 같은 폭력적인 말이 없는지']]},
+  q:'우리 반 「업로드 전 3초」 규칙을 함께 정해요',
+  sub:'2차시에 다섯 모둠이 고른 핵심 기준을 비교하고, 우리 반이 모두 지킬 규칙을 정해 봐요.',
   think:[
-   ['y','모둠마다 가장 중요하게 본 것이 달랐어요. 하나를 빼면 그 모둠의 생각이 빠져요.'],
-   ['n','3초 안에 다섯 가지를 다 떠올리기는 어려울 수 있어요. 짧아야 몸에 익어요.'],
-   ['y','딥페이크나 거짓 소문은 한 번 퍼지면 되돌리기 어려워요. 「타워를 지켜라!」에서도 그랬죠.'],
-   ['n','개인정보와 동의는 둘 다 "다른 사람을 지키는 것"이에요. 합칠 수 있지 않을까요?'],
-   ['y','욕설이나 비하하는 말은 보는 사람이 바로 상처받아요. 개인정보만큼 중요해요.'],
-   ['n','규칙이 많으면 오히려 하나도 안 지키게 될 수도 있어요.']],
-  stems:['다섯 가지 모두 넣어야 한다',
-         '세 가지 정도로 줄여야 3초 안에 확인할 수 있다',
-         '비슷한 것끼리 합쳐서 줄이면 된다',
-         '다섯 가지를 넣되 외우기 쉬운 말로 바꿔야 한다']},
-
+   ['q','다섯 모둠의 기준에서 겹치는 것은 무엇인가요? 합치면 몇 가지가 될까요?'],
+   ['q','2차시 개인 기준에는 "같이 찍은 사진은 친구의 동의를 얻는다"도 있었어요. 모둠 기준에는 없는데, 넣어야 할까요?'],
+   ['q','"사실인지 확인하고 올린다"는 어떤가요? 거짓 정보나 딥페이크도 올리면 안 되는 걸까요?'],
+   ['q','규칙이 너무 많으면 3초 안에 떠올리기 어려워요. 짧게 말하려면 어떻게 할까요?'],
+   ['q','「타워를 지켜라!」에서 가장 위험했던 장면은 어떤 규칙이 있었다면 막을 수 있었을까요?']],
+  stems:['올리기 전에 나와 친구의 개인정보가 보이지 않는지 확인한다',
+         '함께 나온 사람에게 올려도 되는지 먼저 허락을 받는다',
+         '내가 만들지 않은 그림·사진·글은 출처를 밝힌다',
+         '사실인지 확인하고, 확인되지 않은 소문은 올리지 않는다',
+         '보는 사람이 상처받는 말이나 그림은 올리지 않는다']},
  {id:'classpet', band:'34', std:['4국01-06','4도04-02'], ic:'🐹', cat:'학교생활',
   q:'교실에서 동물을 길러도 될까?',
   sub:'햄스터, 물고기, 달팽이… 함께 살면 좋은 점과 걱정되는 점을 떠올려 봐요.',
@@ -539,7 +539,7 @@ var ENDS = {
   sns:['하면 안 된다','해도 된다'],
   meatfree:['만들 필요 없다','만들어야 한다'],
   studentrule:['어른이 정해야 한다','학생이 정해도 된다'],
-  upload3:['줄여서 꼭 필요한 것만','다섯 가지 모두 넣자']
+  upload3:['빼도 된다','꼭 넣자']
 };
 for(var _i=0;_i<TOPICS.length;_i++) TOPICS[_i].ends = ENDS[TOPICS[_i].id] || ['아니다','그렇다'];
 
@@ -604,7 +604,7 @@ var BANDS = {
      n:['친구의 다른 생각을 듣고 자기 생각도 다시 말했어요','친구의 다른 생각은 적었지만 그에 대한 내 생각은 비어 있어요','친구의 다른 생각을 적는 칸이 비어 있어요']},
     {k:'돌아보기', s:'[4국01-06] 생각을 나눈 뒤 자기 생각 점검',
      d:['나중 자리를 찍고 까닭(또는 움직인 말)을 씀','둘 중 하나만','없음'],
-     f:function(L,r){ return (r.last!==null && (L('why')>=4 || L('moved')>=4)) ? 2 : (r.last!==null || L('moved')>=4) ? 1 : 0; }}
+     f:function(L,r){ return (hasAfter(r) && (L('why')>=4 || L('moved')>=4)) ? 2 : (hasAfter(r) || L('moved')>=4) ? 1 : 0; }}
    ]},
  '56': { name:'5~6학년', pre:'6',
    core:['6국01-07','6국01-06'],
@@ -628,9 +628,10 @@ var BANDS = {
      n:['반대 의견을 듣고도 자기 생각을 설명했어요','반대 의견은 찾았지만 그에 대한 자기 생각은 비어 있어요','반대 의견을 찾아보는 단계가 비어 있어요']},
     {k:'돌아보기', s:'[6국01-06] 의견 조정 뒤 자기 생각 점검',
      d:['나중 자리를 찍고 까닭(또는 움직인 말)을 씀','둘 중 하나만','없음'],
-     f:function(L,r){ return (r.last!==null && (L('why')>=6 || L('moved')>=6)) ? 2 : (r.last!==null || L('moved')>=6) ? 1 : 0; }}
+     f:function(L,r){ return (hasAfter(r) && (L('why')>=6 || L('moved')>=6)) ? 2 : (hasAfter(r) || L('moved')>=6) ? 1 : 0; }}
    ]}
 };
+function hasAfter(r){ return r.last!==null || !!r.cards2; }
 function bandOf(){ return BANDS[T.band] || BANDS['56']; }
 function bandTopics(b){ var out=[]; for(var i=0;i<TOPICS.length;i++) if(TOPICS[i].band==='all' || TOPICS[i].band===b) out.push(TOPICS[i]); return out; }
 function bandChips(cur){
@@ -703,7 +704,7 @@ var S = {
   mode:'student', step:0, topic:null, custom:'',
   name:'', first:null, claim:'', claimPick:-1, reason:'', ev:'', evType:-1,
   who:'', jobs:{}, other:'', still:'', moved:'', last:null, why:'', checked:false,
-  customL:'', customR:'', band:'56', send:'', lastSent:''
+  customL:'', customR:'', band:'56', send:'', lastSent:'', jobs2:{}
 };
 function save(){
   try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
@@ -779,13 +780,14 @@ function okCount(){ var c=checks(), n=0; for(var i=0;i<c.length;i++) if(c[i].ok)
 /* ===================== 공통 조각 ===================== */
 var STEPNAMES = ['주제 고르기','처음 내 자리','생각 세우기','스스로 다듬기','반대편 보기','나눌 준비','듣고 나서'];
 function bar(){
-  var h = '<div class="stepname">'+(S.step+1)+'. '+STEPNAMES[S.step]+'</div><div class="steps">';
+  var tt = topic(), nm = (tt && tt.noLine && S.step===1) ? '처음 내 생각' : STEPNAMES[S.step];
+  var h = '<div class="stepname">'+(S.step+1)+'. '+nm+'</div><div class="steps">';
   for(var i=0;i<STEPNAMES.length;i++)
     h += '<i class="'+(i<S.step?'done':i===S.step?'on':'')+'"></i>';
   return h+'</div>';
 }
 function canGoNext(){
-  if(S.step===1) return S.first!==null;
+  if(S.step===1){ var t1=topic(); return (t1 && t1.noLine) ? countPicks(S.jobs)>0 : S.first!==null; }
   if(S.step===2) return (S.claim||'').trim().length>0 && (S.reason||'').trim().length>0;
   if(S.step===4) return (S.other||'').trim().length>0;
   return true;
@@ -794,11 +796,13 @@ function refreshNext(){
   var b = document.querySelector('[data-go="next"]');
   if(b) b.disabled = !canGoNext();
 }
+function countPicks(o){ var n=0; for(var k in o) if(o[k]) n++; return n; }
 var NEEDMSG = {1:'선 위에서 내 자리를 먼저 골라 주세요.',
   2:'주장과 이유를 적어야 다음으로 갈 수 있어요.',
   4:'반대편에서 가장 일리 있던 말을 한 줄 적어 주세요.'};
 function nav(backLabel, nextLabel, canNext){
-  return (!canNext && NEEDMSG[S.step] ? '<p class="hint noprint" style="text-align:right;margin-top:14px">'+NEEDMSG[S.step]+'</p>' : '')
+  var tn = topic(), msg = (S.step===1 && tn && tn.noLine) ? '카드를 하나 이상 눌러 나눠 주세요.' : NEEDMSG[S.step];
+  return (!canNext && msg ? '<p class="hint noprint" style="text-align:right;margin-top:14px">'+msg+'</p>' : '')
     + '<div class="nav noprint">'
     + (S.step>0 ? '<button class="btn sec" data-go="back">'+(backLabel||'이전')+'</button>' : '')
     + '<button class="btn" data-go="next"'+(canNext?'':' disabled')+'>'+(nextLabel||'다음')+'</button></div>';
@@ -816,6 +820,29 @@ function lineRow(sel, attr, t){
      + '</div></div>';
   return h;
 }
+
+/* 카드 나누기 칸. attr 이 'job' 이면 처음 선택(S.jobs), 'job2' 면 토의 뒤 선택(S.jobs2). */
+function cardGrid(CD, picks, attr){
+  var KC = [['#fcefee','#c98f8f'],['#fbf0dd','#c9a85f'],['#dff0e6','#7fae8e']];
+  /* 넣을지 정하는 카드는 첫 칸('꼭 넣자')이 초록이 되도록 색 순서를 뒤집어요. */
+  var order = CD.list===JOBS ? [0,1,2] : [2,1,0];
+  var h = '<div class="fh">카드를 누를 때마다 <b>'+esc(CD.keys.join(' → '))+' → 처음으로</b> 순서로 바뀌어요.</div>'
+    + '<div class="jobkey">';
+  for(var q=0;q<3;q++){ var kc=KC[order[q]];
+    h += '<span><i style="background:'+kc[0]+';border:1.5px solid '+kc[1]+'"></i>'+esc(CD.keys[q])+'</span>'; }
+  h += '</div><div class="jobgrid'+(CD.list===JOBS?'':' wide')+'">';
+  for(var a=0;a<CD.list.length;a++){
+    var p = picks[a]||0, shown = p ? (order[p-1]+1) : 0;
+    h += '<button class="job" data-'+attr+'="'+a+'" data-pick="'+shown+'">'
+       + '<span class="nm">'+esc(CD.list[a][0])+'</span><span class="ds">'+esc(CD.list[a][1])+'</span>'
+       + (p ? '<span class="ds" style="font-weight:700;color:var(--ink)">→ '+esc(CD.keys[p-1])+'</span>' : '')
+       + '</button>';
+  }
+  return h + '</div>';
+}
+function cardCode0(CD, picks){ return cardCode(CD, picks); }
+function cardCode(CD, picks){ var c=''; for(var i=0;i<CD.list.length;i++) c += String(picks[i]||0); return c; }
+function cardsChanged(a, b){ var n=0; for(var i=0;i<Math.max(a.length,b.length);i++) if((a.charAt(i)||'0')!==(b.charAt(i)||'0')) n++; return n; }
 
 /* ===================== 학생 화면 ===================== */
 function viewStudent(){
@@ -851,16 +878,25 @@ function viewStudent(){
   /* --- 1. 처음 내 자리 --- */
   if(S.step===1){
     h += '<div class="card"><h2>'+t.ic+' '+esc(t.q)+'</h2>'
-      + (t.sub?'<p class="lead">'+esc(t.sub)+'</p>':'')
-      + '<p style="font-weight:700;margin:14px 0 0">아직 아무 이야기도 듣기 전, 지금 나는 이 선 위 어디쯤인가요?</p>'
-      + '<div class="fh">가운데(5)에 서도 괜찮아요. "아직 잘 모르겠다"도 훌륭한 자리예요.</div>'
-      + lineRow(S.first, 'first', t)
-      + '<div class="note">이 자리를 적어 두는 까닭이 있어요. 토론이 끝난 뒤 다시 물어볼 거예요. '
-      + '<b>생각이 움직였다면 그게 바로 오늘 잘한 일</b>이거든요.</div>';
+      + (t.sub?'<p class="lead">'+esc(t.sub)+'</p>':'');
+    if(t.noLine){
+      var CD1 = cardsOf(t);
+      h += '<p style="font-weight:700;margin:14px 0 0">아직 아무 이야기도 듣기 전, 지금 내 생각은 어떤가요? '+esc(CD1.verb)+'를 나누어 봐요.</p>'
+        + cardGrid(CD1, S.jobs, 'job')
+        + '<div class="note">처음 나눈 카드를 적어 두는 까닭이 있어요. 토의가 끝난 뒤 한 번 더 나눠 볼 거예요. '
+        + '<b>카드가 바뀌었다면 그게 바로 오늘 잘 들은 거예요.</b></div>';
+    } else {
+      h += '<p style="font-weight:700;margin:14px 0 0">아직 아무 이야기도 듣기 전, 지금 나는 이 선 위 어디쯤인가요?</p>'
+        + '<div class="fh">가운데(5)에 서도 괜찮아요. "아직 잘 모르겠다"도 훌륭한 자리예요.</div>'
+        + lineRow(S.first, 'first', t)
+        + '<div class="note">이 자리를 적어 두는 까닭이 있어요. 토론이 끝난 뒤 다시 물어볼 거예요. '
+        + '<b>생각이 움직였다면 그게 바로 오늘 잘한 일</b>이거든요.</div>';
+    }
     if(t.think && t.think.length){
-      h += '<details class="think"><summary>🔎 생각할 거리 보기 (양쪽 이야기가 다 있어요)</summary><div class="in">';
+      var TAG = {y:'그렇다', n:'아니다', q:'생각해 봐요'};
+      h += '<details class="think"><summary>🔎 생각할 거리 보기'+(t.noLine?'':' (양쪽 이야기가 다 있어요)')+'</summary><div class="in">';
       for(var j=0;j<t.think.length;j++)
-        h += '<div class="tline"><span class="s '+t.think[j][0]+'">'+(t.think[j][0]==='y'?'그렇다':'아니다')+'</span>'
+        h += '<div class="tline"><span class="s '+t.think[j][0]+'">'+(TAG[t.think[j][0]]||'')+'</span>'
            + '<span>'+esc(t.think[j][1])+'</span></div>';
       h += '</div></details>';
     }
@@ -874,31 +910,19 @@ function viewStudent(){
       + '<p class="lead">주장 → 이유 → 근거 순서로 쌓으면 흔들리지 않아요.</p>';
 
     var CD = cardsOf(t);
-    if(CD){
-      var picked=0; for(var k in S.jobs) if(S.jobs[k]) picked++;
-      var KC = [['#fcefee','#c98f8f'],['#fbf0dd','#c9a85f'],['#dff0e6','#7fae8e']];
-      /* 규칙 카드는 '꼭 넣자'가 초록이 되도록 색 순서를 뒤집어요. */
-      var order = CD.lbl==='규칙' ? [2,1,0] : [0,1,2];
+    if(CD && !t.noLine){
       h += '<label class="f"><span class="n">0</span>먼저, '+esc(CD.verb)+'를 나누어 볼까요?</label>'
-        + '<div class="fh">카드를 누를 때마다 <b>'+esc(CD.keys.join(' → '))+' → 처음으로</b> 순서로 바뀌어요.</div>'
-        + '<div class="jobkey">';
-      for(var q=0;q<3;q++){ var kc=KC[order[q]];
-        h += '<span><i style="background:'+kc[0]+';border:1.5px solid '+kc[1]+'"></i>'+esc(CD.keys[q])+'</span>'; }
-      h += '</div><div class="jobgrid'+(CD.lbl==='규칙'?' wide':'')+'">';
-      for(var a=0;a<CD.list.length;a++){
-        var p = S.jobs[a]||0, shown = p ? (order[p-1]+1) : 0;
-        h += '<button class="job" data-job="'+a+'" data-pick="'+shown+'">'
-           + '<span class="nm">'+esc(CD.list[a][0])+'</span><span class="ds">'+esc(CD.list[a][1])+'</span>'
-           + (p ? '<span class="ds" style="font-weight:700;color:var(--ink)">→ '+esc(CD.keys[p-1])+'</span>' : '')
-           + '</button>';
-      }
-      h += '</div><p class="hint">나눈 '+picked+'개 가운데 하나를 아래 근거로 써도 좋아요.'
-        + (CD.lbl==='규칙' ? ' "고쳐서 넣자"를 골랐다면 어떻게 고치면 좋을지 이유에 적어 볼까요?' : '') + '</p>';
+        + cardGrid(CD, S.jobs, 'job')
+        + '<p class="hint">나눈 '+countPicks(S.jobs)+'개 가운데 하나를 아래 근거로 써도 좋아요.</p>';
     }
 
-    h += '<label class="f"><span class="n">1</span>주장 — 나는 무엇을 말하고 싶나요?</label>'
-      + '<div class="fh">한 문장으로. 아래 보기를 눌러 고친 뒤 써도 돼요.</div>'
-      + '<textarea id="claim" placeholder="나는 ~라고 생각한다.">'+esc(S.claim)+'</textarea>';
+    h += (t.noLine
+        ? '<label class="f"><span class="n">1</span>주장 — 내가 제안하는 우리 반 규칙은?</label>'
+          + '<div class="fh">한두 문장으로. 카드를 합치거나 고쳐 써도 좋아요. 아래 보기를 눌러 고친 뒤 써도 돼요.</div>'
+          + '<textarea id="claim" placeholder="올리기 전에 ~을 확인한다.">'+esc(S.claim)+'</textarea>'
+        : '<label class="f"><span class="n">1</span>주장 — 나는 무엇을 말하고 싶나요?</label>'
+          + '<div class="fh">한 문장으로. 아래 보기를 눌러 고친 뒤 써도 돼요.</div>'
+          + '<textarea id="claim" placeholder="나는 ~라고 생각한다.">'+esc(S.claim)+'</textarea>');
     if(t.stems && t.stems.length){
       h += '<div class="chips">';
       for(var b=0;b<t.stems.length;b++)
@@ -1014,10 +1038,23 @@ function viewStudent(){
       + '<label class="f"><span class="n">1</span>나를 움직인 친구의 말</label>'
       + '<div class="fh">생각이 바뀌지 않았어도, 마음에 남은 말 한마디를 적어요.</div>'
       + '<textarea id="moved" placeholder="예: ○○가 말한 ~라는 말이 계속 생각났다.">'+esc(S.moved)+'</textarea>'
-      + '<label class="f"><span class="n">2</span>이야기를 다 듣고 난 지금, 내 자리는?</label>'
-      + '<div class="fh">같은 선이에요. 조금이라도 옮겨졌다면 그대로 찍어 주세요.</div>'
-      + lineRow(S.last, 'last', t);
-    if(S.first!==null && S.last!==null){
+      ;
+    if(t.noLine){
+      var CD6 = cardsOf(t), c1 = cardCode(CD6, S.jobs), c2 = cardCode(CD6, S.jobs2), ch = cardsChanged(c1, c2);
+      h += '<label class="f"><span class="n">2</span>이야기를 다 듣고 난 지금, 카드를 다시 나눠 볼까요?</label>'
+        + '<div class="fh">처음 나눈 그대로 놓여 있어요. 생각이 바뀐 카드만 눌러 바꿔요.</div>'
+        + cardGrid(CD6, S.jobs2, 'job2')
+        + '<div class="movecard"><span class="t">'
+        + (ch ? '🔄 카드 '+ch+'장을 바꿨어요' : '🪨 처음과 같이 나눴어요')
+        + '</span><div class="mini" style="margin-top:4px">'
+        + (ch ? '생각이 움직였어요. 이건 진 게 아니라 <b>들은</b> 거예요.' : '처음 생각을 지켰네요. 그 까닭이 처음보다 단단해졌는지 아래에 적어 봐요.')
+        + '</div></div>';
+    } else {
+      h += '<label class="f"><span class="n">2</span>이야기를 다 듣고 난 지금, 내 자리는?</label>'
+        + '<div class="fh">같은 선이에요. 조금이라도 옮겨졌다면 그대로 찍어 주세요.</div>'
+        + lineRow(S.last, 'last', t);
+    }
+    if(!t.noLine && S.first!==null && S.last!==null){
       var dist = Math.abs(S.last - S.first);
       h += '<div class="movecard"><span class="t">'
         + (moved ? '🔄 ' + S.first + '번 자리 → ' + S.last + '번 자리 (' + dist + '칸 ' + (S.last>S.first?'오른쪽':'왼쪽') + '으로)'
@@ -1028,7 +1065,7 @@ function viewStudent(){
         + '</div></div>';
     }
     h += '<label class="f"><span class="n">3</span>그렇게 된 까닭</label>'
-      + '<textarea id="why" placeholder="예: ~라는 근거를 듣고 ~ 쪽으로 옮겼다. / 반대 의견을 들었지만 ~ 때문에 그대로다.">'+esc(S.why)+'</textarea>'
+      + '<textarea id="why" placeholder="'+(t.noLine ? '예: ~라는 말을 듣고 ~ 카드를 바꿨다. / 다른 의견을 들었지만 ~ 때문에 그대로다.' : '예: ~라는 근거를 듣고 ~ 쪽으로 옮겼다. / 반대 의견을 들었지만 ~ 때문에 그대로다.')+'">'+esc(S.why)+'</textarea>'
       + '<pre class="plain printonly">'+esc(resultText())+'</pre>'
       + '<div class="row noprint" style="margin-top:16px">'
       + (S.send ? '<button class="btn" data-go="send" style="flex:1">📨 선생님께 보내기</button>' : '')
@@ -1049,9 +1086,11 @@ function resultText(){
   L.push('이름/코드: ' + (S.name||'(안 적음)'));
   L.push('주제: ' + (t?t.q:''));
   L.push('');
-  L.push('[가치 수직선 — 양 끝] ◀ ' + (t?t.ends[0]:'') + '  /  ' + (t?t.ends[1]:'') + ' ▶');
-  L.push('[처음 내 자리] ' + (S.first!==null ? S.first + '번 (' + posLabel(S.first,t) + ')' : '-'));
-  L.push('');
+  if(!(t && t.noLine)){
+    L.push('[가치 수직선 — 양 끝] ◀ ' + (t?t.ends[0]:'') + '  /  ' + (t?t.ends[1]:'') + ' ▶');
+    L.push('[처음 내 자리] ' + (S.first!==null ? S.first + '번 (' + posLabel(S.first,t) + ')' : '-'));
+    L.push('');
+  }
   L.push('[주장] ' + (S.claim||''));
   L.push('[이유] ' + (S.reason||''));
   L.push('[근거] ' + (S.ev||'') + (S.evType>=0 ? ' (' + EVTYPE[S.evType][0] + ')' : ''));
@@ -1068,15 +1107,27 @@ function resultText(){
       var v=S.jobs[k]; if(!v || !CD.list[k]) continue;
       g[v-1].push(CD.list[k][0]);
     }
-    for(var q=0;q<3;q++) L.push('['+CD.lbl+' — '+CD.keys[q]+'] ' + (g[q].join(', ')||'-'));
-    for(var ci=0;ci<CD.list.length;ci++) cardCode += String(S.jobs[ci]||0);
+    for(var q=0;q<3;q++) L.push('['+(t.noLine?'처음 ':'')+CD.lbl+' — '+CD.keys[q]+'] ' + (g[q].join(', ')||'-'));
+    cardCode = cardCode0(CD, S.jobs);
   }
-  if(S.moved || S.last!==null || S.why){
+  var after = (t && t.noLine && countPicks(S.jobs2)) ? cardCode0(CD, S.jobs2) : '';
+  if(S.moved || S.last!==null || S.why || after){
     L.push('');
     L.push('[나를 움직인 말] ' + (S.moved||''));
-    L.push('[나중 내 자리] ' + (S.last!==null ? S.last + '번 (' + posLabel(S.last,t) + ')' : '-'));
-    if(S.first!==null && S.last!==null)
-      L.push('[움직임] ' + (S.first===S.last ? '그대로' : (S.last-S.first>0?'+':'') + (S.last-S.first) + '칸'));
+    if(t && t.noLine){
+      var g2=[[],[],[]], chg=[];
+      for(var k2=0;k2<CD.list.length;k2++){
+        var v2=S.jobs2[k2]||0, v1=S.jobs[k2]||0;
+        if(v2) g2[v2-1].push(CD.list[k2][0]);
+        if(v1!==v2) chg.push(CD.list[k2][0]+' ('+(v1?CD.keys[v1-1]:'안 고름')+' → '+(v2?CD.keys[v2-1]:'안 고름')+')');
+      }
+      for(var q2=0;q2<3;q2++) L.push('[토의 뒤 '+CD.lbl+' — '+CD.keys[q2]+'] ' + (g2[q2].join(', ')||'-'));
+      L.push('[바꾼 카드] ' + (chg.length ? chg.length+'장 — '+chg.join(', ') : '없음'));
+    } else {
+      L.push('[나중 내 자리] ' + (S.last!==null ? S.last + '번 (' + posLabel(S.last,t) + ')' : '-'));
+      if(S.first!==null && S.last!==null)
+        L.push('[움직임] ' + (S.first===S.last ? '그대로' : (S.last-S.first>0?'+':'') + (S.last-S.first) + '칸'));
+    }
     L.push('[그 까닭] ' + (S.why||''));
   }
   L.push('');
@@ -1084,7 +1135,7 @@ function resultText(){
   L.push('@@' + [ cell(S.name), (t?t.id:''),
     (S.first===null?'':S.first), (S.last===null?'':S.last),
     (S.evType<0?'':EVTYPE[S.evType][0]), n[0]+'/'+n[1],
-    cell(t?t.ends[0]:''), cell(t?t.ends[1]:''), cell(t&&t.id==='custom'?t.q:''), cardCode ].join('|') + '@@');
+    cell(t?t.ends[0]:''), cell(t?t.ends[1]:''), cell(t&&t.id==='custom'?t.q:''), cardCode ].concat(after ? [after] : []).join('|') + '@@');
   return L.join('\n');
 }
 function sendOut(){
@@ -1138,7 +1189,8 @@ function parsePastes(){
     var row = { name:(p[0]||'').trim()||'(이름없음)', topic:(p[1]||'').trim(), first:num(p[2]),
       last:num(p[3]), evt:(p[4]||'').trim()||'-', score:(p[5]||'').trim(),
       endL:(p[6]||'').trim(), endR:(p[7]||'').trim(), q:(p[8]||'').trim(),
-      cards:/^[0-3]+$/.test((p[9]||'').trim()) ? (p[9]||'').trim() : '', dup:false,
+      cards:/^[0-3]+$/.test((p[9]||'').trim()) ? (p[9]||'').trim() : '',
+      cards2:/^[0-3]+$/.test((p[10]||'').trim()) ? (p[10]||'').trim() : '', dup:false,
       text:readFields(blocks[i-1]||'') };
     /* 같은 이름이 같은 주제로 두 번 들어오면(토론 전·후 두 번 복사) 뒤의 것을 씁니다. */
     var key = row.name==='(이름없음)' ? null : row.name+'\u0001'+row.topic;
@@ -1172,7 +1224,7 @@ function evaluate(r){
     c.push({ k:B.crit[0].k, v: ratio>=0.8 ? 2 : ratio>=0.5 ? 1 : 0 });
     c.push({ k:B.crit[1].k, v: T.band==='34' ? (r.evt!=='-' ? 2 : 0) : (STRONG_EV[r.evt] ? 2 : r.evt!=='-' ? 1 : 0) });
     c.push({ k:B.crit[2].k, v: ratio>=0.8 ? 1 : 0 });
-    c.push({ k:B.crit[3].k, v: r.last!==null ? 1 : 0 });
+    c.push({ k:B.crit[3].k, v: hasAfter(r) ? 1 : 0 });
   }
   var sum = 0; for(var i=0;i<c.length;i++) sum += c[i].v;
   var grade = sum>=7 ? '상' : sum>=4 ? '중' : '하';
@@ -1193,10 +1245,13 @@ function autoNote(r){
     var txt = (typeof n==='function') ? n(v, r) : n[2-v];
     s.push(txt.replace('{evt}', r.evt==='-' ? '겪은 일' : r.evt));
   }
-  if(r.first!==null && r.last!==null){
+  if(r.cards2){
+    var nch = cardsChanged(r.cards||'', r.cards2);
+    s.push((nch ? '토의 뒤 카드 '+nch+'장을 바꾸며' : '토의 뒤에도 처음 생각을 지켰고')+(c[3].v===2?' 그 까닭을 적었어요':' 까닭은 적지 않았어요'));
+  } else if(r.first!==null && r.last!==null){
     if(r.first!==r.last) s.push('토론 뒤 자리를 '+r.first+'에서 '+r.last+'로 옮기며'+(c[3].v===2?' 까닭을 적었어요':' 까닭은 적지 않았어요'));
     else s.push('자리를 지켰고'+(c[3].v===2?' 그 까닭을 적었어요':' 까닭은 적지 않았어요'));
-  } else s.push('토론 뒤 자리는 아직 없어요');
+  } else s.push(r.cards ? '토의 뒤 카드는 아직 없어요' : '토론 뒤 자리는 아직 없어요');
   return s.join('. ') + '.';
 }
 function gradesText(rows){
@@ -1207,7 +1262,8 @@ function gradesText(rows){
   for(var i=0;i<rows.length;i++){
     var r = rows[i], e = evaluate(r);
     L.push([r.name, gradeOf(r), e.c[0].v, e.c[1].v, e.c[2].v, e.c[3].v,
-      (r.first===null?'-':r.first)+'→'+(r.last===null?'-':r.last), noteOf(r).replace(/\t/g,' ')].join('\t'));
+      r.cards2 ? ('카드 '+cardsChanged(r.cards||'',r.cards2)+'장 바꿈') : (r.first===null?'-':r.first)+'→'+(r.last===null?'-':r.last),
+      noteOf(r).replace(/\t/g,' ')].join('\t'));
   }
   return L.join('\n');
 }
@@ -1277,19 +1333,19 @@ function viewTeacher(){
     if(T.band==='56'){
       h += '<div class="card"><h2>📘 수업 꾸러미 — 「업로드 전 3초」 3차시 · 약속을 만드는 3초</h2>'
         + '<p class="lead">디지털시민교육 「업로드 전 3초」(1차시 「타워를 지켜라!」 체험 → 2차시 모둠 기준) 다음 시간입니다. '
-        + '2차시 다섯 모둠의 핵심 기준을 모은 <b>규칙 다섯 가지</b>를 학급 전체에서 비교·조정해 「우리 반 업로드 전 3초」를 만듭니다.</p>'
+        + '2차시 다섯 모둠의 핵심 기준을 학급 전체에서 비교·조정해 <b>「우리 반 업로드 전 3초」 규칙을 함께 정하는 토의</b>입니다.</p>'
         + '<p class="mini">닿는 성취기준: [6국01-06] 토의에 협력적으로 참여하며 서로의 의견을 비교하고 조정한다. · [6실04-03] 건전한 정보기기의 활용을 실천한다.</p>'
         + '<table style="margin-top:10px"><tr><th style="width:110px">때</th><th>하는 일</th><th style="width:30%">앱에서</th></tr>'
-        + '<tr><td><b>도입</b> 5분</td><td>노션 갤러리의 모둠 핵심 기준 다섯 개를 다시 봅니다. "모두 넣으면 3초 안에 확인할 수 있을까?"</td><td class="mini">학생용 주소를 열면 이 주제가 바로 열려요.</td></tr>'
-        + '<tr><td><b>전개 1</b> 10분</td><td>교실 바닥 수직선에 섭니다(줄여서 꼭 필요한 것만 ↔ 다섯 가지 모두). 자리에 돌아와 규칙 카드 다섯 장을 나누고 주장·이유를 씁니다.</td><td class="mini">② 처음 자리 → ③ 규칙 카드·주장·이유 → ④ 스스로 다듬기 → ⑤ 반대편 → ⑥ [📨 선생님께 보내기]</td></tr>'
-        + '<tr><td><b>전개 2</b> 13분</td><td>[결과 모아 보기]를 화면에 띄웁니다. 분포를 보고 양 끝과 가운데 한 명씩 묻습니다. <b>규칙 카드 표에서 생각이 갈린 규칙</b>부터 이야기합니다. "고쳐서 넣자" → 어떻게 고칠까? "빼거나 합치자" → 무엇과 합칠까?</td><td class="mini">[⬇ 시트에서 불러오기] 한 번이면 표가 채워져요.</td></tr>'
-        + '<tr><td><b>전개 3</b> 4분</td><td>다시 줄을 서 봅니다. 옮긴 아이에게 "무엇이 움직이게 했니?"를 먼저 묻습니다.</td><td class="mini">⑦ 나중 자리 · 나를 움직인 말 → 한 번 더 보내기</td></tr>'
-        + '<tr><td><b>정리</b> 8분</td><td>합의문 네 칸을 함께 채웁니다. ③에 최종 「우리 반 업로드 전 3초」를 <b>조건까지</b> 적습니다. 포스터는 이 ③을 그대로 옮겨 모둠별로 만듭니다.</td><td class="mini">[마무리 — 합의문] → 복사·인쇄</td></tr></table>'
+        + '<tr><td><b>도입</b> 5분</td><td>노션 갤러리의 모둠 핵심 기준 다섯 개를 다시 봅니다. "오늘은 이 기준들로 우리 반 모두가 지킬 규칙을 정해요."</td><td class="mini">학생용 주소를 열면 이 주제가 바로 열려요.</td></tr>'
+        + '<tr><td><b>전개 1</b> 10분</td><td>혼자서 다섯 모둠의 기준 카드를 "꼭 넣자 / 고치거나 합쳐서 넣자 / 빼도 된다"로 나누고, <b>내가 제안하는 우리 반 규칙</b>을 이유와 함께 씁니다.</td><td class="mini">② 처음 카드 → ③ 제안하는 규칙·이유 → ④ 다듬기 → ⑤ 다른 의견 → ⑥ [📨 선생님께 보내기]</td></tr>'
+        + '<tr><td><b>전개 2</b> 15분</td><td>[결과 모아 보기]를 화면에 띄웁니다. <b>표에서 생각이 갈린 기준</b>부터 이야기합니다. "고치거나 합쳐서 넣자" → 어떻게 고치고 무엇과 합칠까? 아이들이 제안한 규칙 문장을 비교해 겹치는 것은 묶고, 빠진 것(동의, 사실 확인 등)이 있는지 묻습니다.</td><td class="mini">[⬇ 시트에서 불러오기] 한 번이면 표가 채워져요.</td></tr>'
+        + '<tr><td><b>전개 3</b> 3분</td><td>토의를 듣고 카드를 다시 나눕니다. 바꾼 아이에게 "무엇이 생각을 바꿨니?"를 먼저 묻습니다.</td><td class="mini">⑦ 나를 움직인 말 · 카드 다시 나누기 → 한 번 더 보내기</td></tr>'
+        + '<tr><td><b>정리</b> 7분</td><td>합의문 네 칸을 함께 채웁니다. ③에 <b>「우리 반 업로드 전 3초」 규칙</b>을 적습니다. 포스터는 이 ③을 옮겨 모둠별로 만듭니다.</td><td class="mini">[마무리 — 합의문] → 복사·인쇄</td></tr></table>'
         + '<div class="note" style="margin-top:12px"><b>2차시 모둠 핵심 기준</b> (노션 「모둠 기준 올리기」)<br>'
         + '1모둠 출처가 정확한지 · 2모둠 폭력적이지 않은지 · 3모둠 개인정보와 보기 좋은지(딥페이크, 비하하는 말) · '
         + '4모둠 출처가 믿을 만한지와 다른 사람의 개인정보 · 5모둠 다른 사람의 개인정보</div>'
         + '<div class="warn"><b>다수결로 정하지 않아요.</b> 표의 숫자는 "어디서 생각이 갈리는지" 보는 데만 씁니다. '
-        + '"동의 확인"처럼 소수만 고른 규칙도, 사례집 우수 사례처럼 이유가 설득되면 들어갈 수 있어요. 끝까지 갈리면 "오늘의 잠정 약속"이라 부르고 소수 의견을 ④에 남깁니다.</div>'
+        + '모둠 기준에 없던 생각("같이 찍은 사진은 동의를 얻는다")도 이유가 설득되면 들어갈 수 있어요. 끝까지 갈리면 "오늘의 잠정 약속"이라 부르고 소수 의견을 ④에 남깁니다.</div>'
         + '<div class="row noprint" style="margin-top:12px"><button class="btn sm" data-go="copylesson">🔗 이 수업 학생용 주소 복사</button>'
         + '<span class="mini">주제가 바로 열리는 주소예요.'+(sheetUrl()?' 시트 주소도 함께 들어가요.':'')+'</span></div></div>';
     }
@@ -1438,6 +1494,45 @@ function viewTeacher(){
         return hh + '</div></div>';
       }
 
+      var TCD0 = cardsOf(tp);
+      if(tp && tp.noLine && TCD0){
+        h += '<div class="card"><h2>'+esc(TCD0.verb)+' — 토의 전과 토의 뒤</h2>'
+          + '<p class="lead">주제: '+esc(tq)+' · '+rows.length+'명</p>'
+          + '<table><tr><th>'+esc(TCD0.lbl)+'</th>';
+        for(var qa=0;qa<3;qa++) h += '<th style="width:17%">'+esc(TCD0.keys[qa])+'<br><span class="mini">처음 → 뒤</span></th>';
+        h += '</tr>';
+        var nAfter=0; for(i=0;i<rows.length;i++) if(rows[i].cards2) nAfter++;
+        for(var cb=0;cb<TCD0.list.length;cb++){
+          var b4=[0,0,0,0], af=[0,0,0,0];
+          for(i=0;i<rows.length;i++){
+            if(rows[i].cards) b4[+(rows[i].cards.charAt(cb)||0)]++;
+            if(rows[i].cards2) af[+(rows[i].cards2.charAt(cb)||0)]++;
+          }
+          h += '<tr><td><b>'+esc(TCD0.list[cb][0])+'</b></td>';
+          for(qa=1;qa<=3;qa++)
+            h += '<td>'+b4[qa]+(nAfter ? ' → <b'+(af[qa]!==b4[qa]?' style="color:var(--purple)"':'')+'>'+af[qa]+'</b>' : '')+'명</td>';
+          h += '</tr>';
+        }
+        h += '</table>';
+        var chgRows=[]; for(i=0;i<rows.length;i++) if(rows[i].cards2 && rows[i].cards && rows[i].cards2!==rows[i].cards) chgRows.push(rows[i]);
+        h += '<div class="movecard" style="margin-top:14px"><span class="t">🔄 카드를 바꾼 사람 '+chgRows.length+'명'
+          + (nAfter ? ' · 그대로인 사람 '+(nAfter-chgRows.length)+'명' : '')+'</span>'
+          + '<div class="mini" style="margin-top:4px">숫자가 고르게 나뉜 기준부터 이야기해 보세요. 표의 숫자는 다수결이 아니라 <b>어디서 생각이 갈리는지</b> 보는 데만 써요. '
+          + '마무리에서는 <b>카드를 바꾼 아이를 먼저 불러</b> "무엇이 생각을 바꿨니?"를 물어보세요.</div></div>';
+        if(chgRows.length){
+          h += '<table style="margin-top:12px"><tr><th>바꾼 사람</th><th>무엇을 어떻게</th></tr>';
+          for(i=0;i<chgRows.length;i++){
+            var parts=[];
+            for(var cc=0;cc<TCD0.list.length;cc++){
+              var x1=+(chgRows[i].cards.charAt(cc)||0), x2=+(chgRows[i].cards2.charAt(cc)||0);
+              if(x1!==x2) parts.push(esc(TCD0.list[cc][0])+': '+(x1?esc(TCD0.keys[x1-1]):'안 고름')+' → '+(x2?esc(TCD0.keys[x2-1]):'안 고름'));
+            }
+            h += '<tr><td>'+esc(chgRows[i].name)+'</td><td class="mini">'+parts.join('<br>')+'</td></tr>';
+          }
+          h += '</table>';
+        }
+        h += '<p class="mini" style="margin-top:10px">아이들이 제안한 규칙 문장은 위 붙여넣기 칸의 [주장] 줄에 있어요. 비슷한 것끼리 묶어 합의문 ③에 옮기면 됩니다.</p>';
+      } else {
       h += '<div class="card"><h2>가치 수직선 — 우리 반이 어디에 서 있나</h2>'
         + (tq ? '<p class="lead">주제: '+esc(tq)+' · '+rows.length+'명</p>' : '');
       h += '<h3 style="font-size:15.5px;margin:6px 0 2px">토론 전</h3>' + mapHtml(fc,'a');
@@ -1456,11 +1551,12 @@ function viewTeacher(){
              + ' <span class="mini">('+(movers[i].last-movers[i].first>0?'+':'')+(movers[i].last-movers[i].first)+'칸)</span></td></tr>';
         h += '</table>';
       }
+      }
 
       /* 카드 나누기 분포 — 다수결이 아니라 "어디서 생각이 갈리는지" 보려는 표예요. */
       var TCD = cardsOf(tp), withCards = 0;
       for(i=0;i<rows.length;i++) if(rows[i].cards) withCards++;
-      if(TCD && withCards){
+      if(TCD && withCards && !tp.noLine){
         h += '<h3 style="font-size:16px;margin:18px 0 6px">'+esc(TCD.verb)+'를 어떻게 나누었나 <span class="mini">('+withCards+'명)</span></h3>'
           + '<table><tr><th>'+esc(TCD.lbl)+'</th>';
         for(var qk=0;qk<3;qk++) h += '<th style="width:16%">'+esc(TCD.keys[qk])+'</th>';
@@ -1491,8 +1587,11 @@ function viewTeacher(){
       for(var y=0;y<rows.length;y++){
         var rr=rows[y];
         h += '<tr><td>'+esc(rr.name)+'</td>'
-          + '<td>'+(rr.first!==null?rr.first:'-')+'</td>'
-          + '<td>'+(rr.last!==null?rr.last:'-')+(rr.first!==null&&rr.last!==null&&rr.first!==rr.last?' 🔄':'')+'</td>'
+          + (tp && tp.noLine
+             ? '<td>카드 '+(rr.cards?rr.cards.replace(/0/g,'').length:0)+'장</td>'
+               + '<td>'+(rr.cards2 ? (cardsChanged(rr.cards||'',rr.cards2) ? cardsChanged(rr.cards||'',rr.cards2)+'장 바꿈 🔄' : '그대로') : '-')+'</td>'
+             : '<td>'+(rr.first!==null?rr.first:'-')+'</td>'
+               + '<td>'+(rr.last!==null?rr.last:'-')+(rr.first!==null&&rr.last!==null&&rr.first!==rr.last?' 🔄':'')+'</td>')
           + '<td>'+esc(rr.evt)+'</td><td>'+esc(rr.score)+'</td></tr>';
       }
       h += '</table>';
@@ -1607,7 +1706,7 @@ function grab(){
   save();
 }
 document.addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('[data-go],[data-topic],[data-first],[data-last],[data-stem],[data-evt],[data-job],[data-tab],[data-tpick],[data-grade],[data-band]') : null;
+  var el = e.target.closest ? e.target.closest('[data-go],[data-topic],[data-first],[data-last],[data-stem],[data-evt],[data-job],[data-tab],[data-tpick],[data-grade],[data-band],[data-job2]') : null;
   if(!el) return;
   var d = el.dataset;
 
@@ -1624,7 +1723,7 @@ document.addEventListener('click', function(e){
       if(!(S.custom||'').trim()){ alert('주제를 적어 주세요.'); return; }
       S.topic='custom';
     } else S.topic=d.topic;
-    if(prevTopic!==S.topic) S.jobs={};
+    if(prevTopic!==S.topic){ S.jobs={}; S.jobs2={}; }
     S.step=1; save(); render(); return;
   }
   if(d.first!==undefined){ S.first=+d.first; save(); render(); return; }
@@ -1636,10 +1735,16 @@ document.addEventListener('click', function(e){
     save(); render(); return;
   }
   if(d.evt!==undefined){ grab(); S.evType = (S.evType===+d.evt)?-1:+d.evt; save(); render(); return; }
+  if(d.job2!==undefined){ grab(); var j2=+d.job2; S.jobs2[j2] = ((S.jobs2[j2]||0)+1) % 4; save(); render(); return; }
   if(d.job!==undefined){ grab(); var j=+d.job; S.jobs[j] = ((S.jobs[j]||0)+1) % 4; save(); render(); return; }
 
   switch(d.go){
-    case 'next': grab(); if(!canGoNext()){ refreshNext(); break; } if(S.step<6){ S.step++; save(); render(); } break;
+    case 'next': grab(); if(!canGoNext()){ refreshNext(); break; }
+      if(S.step<6){ S.step++;
+        var tn = topic();
+        if(S.step===6 && tn && tn.noLine && !countPicks(S.jobs2)){ S.jobs2={}; for(var kj in S.jobs) S.jobs2[kj]=S.jobs[kj]; }
+        save(); render(); }
+      break;
     case 'back': grab(); if(S.step>0){ S.step--; save(); render(); } break;
     case 'fix':  grab(); S.step=2; save(); render(); break;
     case 'copy': grab(); copyOut(); break;
@@ -1693,7 +1798,7 @@ document.addEventListener('click', function(e){
       var nm = S.name;
       S = { mode:S.mode, step:0, topic:null, custom:'', name:nm, first:null, claim:'', claimPick:-1,
             reason:'', ev:'', evType:-1, who:'', jobs:{}, other:'', still:'', moved:'', last:null, why:'', checked:false,
-            customL:'', customR:'', band:S.band, send:S.send, lastSent:'' };
+            customL:'', customR:'', band:S.band, send:S.send, lastSent:'', jobs2:{} };
       save(); render(); break;
   }
 });
@@ -1720,7 +1825,7 @@ var _qt = /[?&]topic=([a-z0-9]+)/.exec(location.search);
 if(_qt && location.search.indexOf('teacher')<0){
   var _tt = null; for(var _j=0;_j<TOPICS.length;_j++) if(TOPICS[_j].id===_qt[1]) _tt=TOPICS[_j];
   /* 이미 그 주제로 쓰던 아이는 그대로 두고, 처음 들어오는 아이만 그 주제로 엽니다. */
-  if(_tt && S.topic!==_tt.id){ S.topic=_tt.id; S.step=1; S.jobs={}; if(_tt.band!=='all') S.band=_tt.band; save(); }
+  if(_tt && S.topic!==_tt.id){ S.topic=_tt.id; S.step=1; S.jobs={}; S.jobs2={}; if(_tt.band!=='all') S.band=_tt.band; save(); }
 }
 var _qs = /[?&]send=([^&#]+)/.exec(location.search);
 if(_qs){
