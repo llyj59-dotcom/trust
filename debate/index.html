@@ -711,7 +711,10 @@ function save(){
   try{ localStorage.setItem(TKEY, JSON.stringify(T)); }catch(e){}
 }
 function load(){
-  try{ var r=localStorage.getItem(KEY); if(r){ var o=JSON.parse(r); for(var k in o) if(k in S) S[k]=o[k]; } }catch(e){}
+  try{ var r=localStorage.getItem(KEY); if(r){ var o=JSON.parse(r); for(var k in o) if(k in S) S[k]=o[k];
+    /* 10-29 오전 판(규칙 다섯 가지 찬반)으로 upload3을 열었던 기기: 카드 뜻이 바뀌었으니 처음부터 다시 엽니다. */
+    if(o.topic==='upload3' && !('jobs2' in o)){ S.jobs={}; S.jobs2={}; S.first=null; S.last=null; S.claim=''; S.claimPick=-1; if(S.step>1) S.step=1; }
+  } }catch(e){}
   try{ var tr=localStorage.getItem(TKEY); if(tr){ var to=JSON.parse(tr); for(var tk in to) if(tk in T) T[tk]=to[tk]; } }catch(e){}
 }
 function topic(){
