@@ -1992,6 +1992,8 @@ const GAME_DATA = {
     preTitle: '1️⃣ 먼저 사례 과제를 해요',
     preText: '게임을 하기 전에 사례 한 편을 읽고 내 생각을 써요. 다 쓰고 나면 이 화면으로 돌아와서 별명을 정하고 시작해요.',
     preButton: '📄 사례 과제 열기',
+    preLaterTitle: '📄 게임 전 사례 과제 (아직 안 쓴 사람만)',
+    preLaterNote: '⚠️ 게임을 시작하기 전에 쓰는 과제예요. 이미 썼거나 게임을 끝냈다면 열지 마세요 — 게임 뒤에 쓰는 사례 과제는 엔딩 화면에 따로 있어요.',
     pre2Title: '1️⃣ 먼저 사례 과제 두 개를 해요',
     pre2Text: '선생님이 알려 줄 때 하나씩 열어요. 두 개를 다 쓰고 나면 이 화면으로 돌아와서 별명을 정하고 시작해요.',
     pre2First: '📄 첫 번째 사례 과제',
@@ -5152,12 +5154,22 @@ const GAME_DATA = {
         el('h1', { className: 'start-title', text: S.title }),
         el('p', { className: 'start-subtitle', text: S.subtitle })
       ),
-      classForms.pre ? el('div', { className: 'card class-form-card' },
-        el('h2', { className: 'section-title', text: classForms.pre2 ? S.pre2Title : S.preTitle }),
-        el('p', { className: 'save-info', text: classForms.pre2 ? S.pre2Text : S.preText }),
-        formLink(classForms.pre, classForms.pre2 ? S.pre2First : S.preButton, 'btn-yellow'),
-        classForms.pre2 ? formLink(classForms.pre2, S.pre2Second, 'btn-yellow') : null
-      ) : null,
+      // 사전 사례 과제 — 이 기기에 이미 시작한 게임이 있으면 접어 두고 '게임 전에만'이라고 알려요
+      // (2026-10-29: 게임을 마친 뒤 이 단추로 같은 형을 또 쓴 학생이 있었어요. 사후 과제는 엔딩에 따로 있어요)
+      classForms.pre ? (function () {
+        const inner = [
+          el('p', { className: 'save-info', text: classForms.pre2 ? S.pre2Text : S.preText }),
+          formLink(classForms.pre, classForms.pre2 ? S.pre2First : S.preButton, 'btn-yellow'),
+          classForms.pre2 ? formLink(classForms.pre2, S.pre2Second, 'btn-yellow') : null
+        ];
+        if (!saves.length) {
+          return el('div', { className: 'card class-form-card' },
+            el('h2', { className: 'section-title', text: classForms.pre2 ? S.pre2Title : S.preTitle }), inner);
+        }
+        return el('details', { className: 'card class-form-card pre-later' },
+          el('summary', { className: 'code-summary', text: S.preLaterTitle }),
+          el('p', { className: 'flow-left', text: S.preLaterNote }), inner);
+      })() : null,
       el('div', { className: 'card start-card' },
         el('label', { className: 'nickname-label', for: 'nickname', text: S.nicknameLabel }),
         input,
