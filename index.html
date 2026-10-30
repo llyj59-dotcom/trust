@@ -691,6 +691,9 @@ h1, h2, h3, p { margin: 0; }
 .choice-label { text-align: center; margin-bottom: 10px; font-size: 1.05rem; }
 .choice-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
 .choice-buttons .btn { flex: 1 1 150px; }
+/* 아직 열리지 않은 조건부 투자 — 보이되 흐리게 (누르면 무엇이 남았는지 알려 줘요) */
+.choice-buttons .btn.is-locked { background: #dfe6e1; color: #5d6b62; box-shadow: none; cursor: help; }
+.cond-lock-note { margin: 8px 0 0; text-align: center; font-size: 0.9rem; color: #4d5a52; }
 .sparkle-in { animation: sparkleIn 0.9s ease; }
 @keyframes sparkleIn {
   0% { transform: scale(0.3); opacity: 0; box-shadow: 0 0 0 0 rgba(79, 191, 106, 0.8); }
@@ -1891,7 +1894,7 @@ const GAME_DATA = {
     nicknameMaxLength: 8,       // 닉네임 최대 글자 수
     articlesForCondition: 2,    // 조건부 투자가 열리는 읽은 기사 수
     deepForCondition: true,     // true 이면 📊 심화 자료를 읽고 확인 문제까지 풀어야 조건부 투자가 열려요 (false 로 바꾸면 선택)
-    evidenceForCondition: true, // true 이면 조건부 투자 결정서에 기사 속 근거 문장을 꼭 골라야 해요
+    evidenceForCondition: true, // true 이면 투자 결정서(투자·거절·조건부 모두)에 기사 속 근거 문장을 꼭 골라야 해요
     articlesBeforeInvest: 2,    // 이보다 적게 읽고 "투자한다"를 누르면 확인 창
     // 기사를 펼쳤다 바로 닫으면 '읽음'이 되지 않아요. 1초에 몇 글자를 기준으로 할지(10 = 1분에 600자, 빠르게 읽는 속도)
     readFloor: { charsPerSec: 10, minSec: 8, maxSec: 40 },
@@ -2139,7 +2142,7 @@ const GAME_DATA = {
       `화면 위의 🌱 신뢰지수는 정답 점수가 아니에요! 투자한다·투자하지 않는다·조건부 투자 가운데 무엇이 정답인지는 정해져 있지 않아요. 신뢰지수는 게임에서 고른 근거 문장과 해결 조건, 읽기 완료 표시에 따라 달라져요. 기사에서 근거 문장을 골라 두면 올라가지만, 문제를 해결하지 않은 채 투자하면 내려갈 수도 있어요. 씨앗이 많다고 꼭 좋은 투자자는 아니랍니다!`,
       `한 가지 알아 둘 것이 있어요. 결정서에 직접 쓴 글은 컴퓨터가 잘 썼는지 못 썼는지 채점하지 않아요. 쓴 글은 엔딩의 "나의 투자 일기"에 그대로 모이고, 선생님과 친구들이 함께 읽어요. 그러니 점수를 올리려고 쓰지 말고, 내 생각이 잘 전해지도록 써 주세요.`,
       `회사마다 기사가 3개씩 있어요. 기사를 2개 이상 읽으면 '조건부 투자'가 열려요. 조건부 투자는 '이 문제를 고치면 투자할게요'라고 제안하는 거예요.`,
-      '하나 더! 기사 아래에 조금 어려운 "📊 심화 자료"가 있어요. 끝까지 읽고 확인 문제를 풀어야 조건부 투자가 열려요. 투자 결정서에는 내 주장(선택)과 이유를 쓰고, 기사 속에서 근거 문장을 직접 골라 붙여요. 주장·이유·근거가 서로 잘 맞는지 살펴보는 것이 "타당성"을 따지는 거예요.'
+      '하나 더! 기사 아래에 조금 어려운 "📊 심화 자료"가 있어요. 끝까지 읽고 확인 문제를 풀어야 조건부 투자가 열려요. 투자 결정서에는 어떤 선택이든 기사 속 근거 문장을 직접 골라 붙이고, 내 선택의 이유와 누구에게 어떤 영향이 있을지를 써요. 주장·이유·근거가 서로 잘 맞는지 살펴보는 것이 "타당성"을 따지는 거예요.'
     ],
     prevButton: '이전',
     nextButton: '다음',
@@ -2171,6 +2174,10 @@ const GAME_DATA = {
     investButton: `투자한다`,
     passButton: `투자하지 않는다`,
     conditionButton: `조건부 투자`,
+    condLockArticles: '🔒 조건부 투자는 기사를 {편}편 더 읽으면 열려요.',
+    condLockDeep: '🔒 조건부 투자는 심화 자료 확인 문제를 풀면 열려요.',
+    condLockBoth: '🔒 조건부 투자는 기사를 {편}편 더 읽고, 심화 자료 확인 문제를 풀면 열려요.',
+    condLockTip: '기사는 "읽는 중" 막대가 다 차야 읽은 기사로 세어요.',
     readMoreButton: `기사 더 읽기`,
     investAnywayButton: `그래도 투자하기`,
     articlesReadCount: '읽은 기사 {읽은수}/{전체수}',
@@ -3135,7 +3142,7 @@ const GAME_DATA = {
   /* 🔍 근거 문장 고르기 (투자 결정서) */
   evidenceUi: {
     title: '🔍 근거 문장 고르기',
-    requiredNote: '(투자하지 않기·조건부 투자는 꼭 골라요 — 거절도 까닭이 되는 문장이 있어야 해요)',
+    requiredNote: '(어떤 선택이든 꼭 골라요 — 투자도, 거절도 까닭이 되는 문장이 있어야 해요)',
     optionalNote: '(근거 문장을 고르면 신뢰지수가 올라가요. 다만 문제를 둔 채 투자하면 내려가요)',
     guide: '아래 기사에서 내 선택의 까닭이 되는 문장을 눌러 골라요.',
     pickGuide: '👆 근거로 쓸 문장을 눌러 골라요. 형광펜이 아닌 문장도 고를 수 있어요.',
@@ -3144,6 +3151,7 @@ const GAME_DATA = {
     clearButton: '다시 고르기',
     good: '👍 이 회사의 "진짜 문제"를 짚은 좋은 근거예요!',
     check: '🤔 이 문장도 기사 내용이지만, 이 회사의 "진짜 문제"가 잘 드러나나요? 다른 문장을 골라도 돼요.',
+    investOnProblem: '🤔 이 문장은 이 회사의 문제를 보여 주는 것 같아요. 그래도 투자한다면, 그 까닭을 함께 써 볼까요?',
     need: '기사에서 근거 문장을 하나 골라 주세요.',
     articlesTitle: '📰 기사에서 근거 문장 찾기',
     diaryLabel: '🔍 근거'
@@ -3167,17 +3175,18 @@ const GAME_DATA = {
     title: '📝 투자 결정서',
     myChoiceLabel: '내 선택',
     choiceNames: { invest: `투자한다`, pass: `투자하지 않는다`, condition: `조건부 투자` },
-    question: '내 주장(선택)에 맞는 이유와, 기사에서 찾은 근거를 한두 문장으로 써 보세요.',
+    question: '내 선택의 이유를 기사 속 근거와 함께 쓰고, 누구에게 어떤 영향이 있을지도 써 보세요.',
     placeholder: '예) 세 번째 기사에서 "…"라고 했기 때문에 투자하지 않기로 했어요.',
     // 고른 것에 맞는 예시 (학생 설문: "뭘 써야 할지 모르겠다") — 모두 "기사 근거 + 까닭" 모양
     placeholders: {
-      invest: '예) 첫 번째 기사에서 "…"라는 내용을 보고, 앞으로 잘될 것 같아서 투자하기로 했어요.',
-      pass: '예) 세 번째 기사에서 "…"라는 문제를 보고, 아직 믿기 어려워서 투자하지 않기로 했어요.',
-      condition: '예) 두 번째 기사에서 "…"라는 문제를 찾았어요. 이 문제를 고치면 믿을 수 있어서 이 조건을 골랐어요.'
+      invest: '예) 첫 번째 기사에서 "…"라는 내용을 봤어요. 쓰는 사람들에게 …한 도움이 될 것 같아 투자해요. …이 지켜지는지 계속 살펴볼게요.',
+      pass: '예) 세 번째 기사에서 "…"라는 문제를 봤어요. 이대로면 …에게 …한 피해가 생길 수 있어 투자하지 않아요. …을 고쳤는지 확인되면 다시 생각해 볼게요.',
+      condition: '예) 두 번째 기사에서 "…"라는 문제를 찾았어요. 이 문제로 …이 피해를 입을 수 있어요. 이 조건을 지키면 믿을 수 있고, …을 보면 지켜졌는지 알 수 있어요.'
     },
-    frameHint: '✍️ 주장(내 선택) → 이유(왜 그렇게 골랐나요?) → 근거(몇 번째 기사에서 찾은 내용)',
+    // 2026-10 사례 과제: 가장 약했던 칸이 "영향"과 "확인 방법"이라, 쓰기 틀에 두 가지를 넣었어요
+    frameHint: '✍️ 근거(몇 번째 기사에서 찾은 내용) → 영향(누구에게 어떤 일이 생길까요?) → 확인(무엇을 보면 알 수 있을까요?)',
     autoNote: '📌 여기에 쓴 글은 컴퓨터가 채점하지 않아요. 게임을 마친 뒤 엔딩의 "나의 투자 일기"에 그대로 모여서 선생님과 친구들이 읽어요.',
-    checkHint: '✅ 쓰고 나서 살펴봐요: ① 이유가 내 선택을 뒷받침하나요? ② 근거가 이유와 관련 있나요? ③ 근거가 기사 속 사실인가요? ④ 이 선택으로 영향을 받는 사람(쓰는 사람·만든 사람·피해를 입은 사람)을 떠올렸나요?',
+    checkHint: '✅ 쓰고 나서 살펴봐요: ① 이유가 내 선택을 뒷받침하나요? ② 근거가 이유와 관련 있나요? ③ 근거가 기사 속 사실인가요? ④ 영향을 받는 사람(쓰는 사람·만든 사람·피해를 입은 사람)과, 그 사람에게 생길 일을 썼나요? ⑤ 내 판단이 맞는지 무엇으로 확인할 수 있을까요?',
     minLength: 10,              // 최소 글자 수
     maxLength: 200,             // 최대 글자 수
     count: '{글자수}자 / {최소}자 이상',
@@ -5440,8 +5449,19 @@ const GAME_DATA = {
     // 선택 버튼
     const investBtn = button(U.investButton, 'btn-coral', chooseInvest);
     const passBtn = button(U.passButton, 'btn-gray', choosePass);
+    // 조건부 투자는 열리기 전에도 잠긴 채로 보여 주고, 무엇이 남았는지 아래에 적어요
+    // (2026-10 설문: "추가 기사까지 읽었는데 조건부 투자가 안 떴다" — 숨어 있으면 왜 없는지 몰라요)
     const condBtn = button(U.conditionButton, 'btn-green', chooseCondition);
-    if (!conditionReady()) condBtn.classList.add('hidden');
+    const lockNote = el('p', { className: 'cond-lock-note', role: 'status' });
+    function updateLock() {
+      const locked = !conditionReady();
+      condBtn.classList.toggle('is-locked', locked);
+      condBtn.setAttribute('aria-disabled', locked ? 'true' : 'false');
+      condBtn.textContent = (locked ? '🔒 ' : '') + U.conditionButton;
+      lockNote.hidden = !locked;
+      lockNote.textContent = locked ? conditionLockText() : '';
+    }
+    updateLock();
 
     // 기사를 다 읽었는데 심화 자료가 남았으면 알려 줘요
     const deepHint = el('p', { className: 'deep-hint', text: D.deepUi.needDeep, hidden: true });
@@ -5450,8 +5470,9 @@ const GAME_DATA = {
     }
     function tryUnlock() {
       updateDeepHint();
-      if (conditionReady() && condBtn.classList.contains('hidden')) {
-        condBtn.classList.remove('hidden');
+      const wasLocked = condBtn.classList.contains('is-locked');
+      updateLock();
+      if (conditionReady() && wasLocked) {
         condBtn.classList.add('sparkle-in');
         fitSpacer();
         if (!state.conditionToastShown) {
@@ -5464,7 +5485,8 @@ const GAME_DATA = {
     const panel = el('div', { className: 'choice-panel' },
       el('div', { className: 'choice-inner' },
         el('p', { className: 'choice-label', text: fill(D.lines.beforeChoice) }),
-        el('div', { className: 'choice-buttons' }, investBtn, passBtn, condBtn)
+        el('div', { className: 'choice-buttons' }, investBtn, passBtn, condBtn),
+        lockNote
       )
     );
     const spacer = el('div', { className: 'choice-spacer' });
@@ -5515,6 +5537,15 @@ const GAME_DATA = {
   function deepRequired() { const R = roundData(); return !!(D.settings.deepForCondition && R && R.deep); }
   function conditionReady() {
     return state.readArticles.length >= D.settings.articlesForCondition && (!deepRequired() || state.deep.answered);
+  }
+  // 조건부 투자가 열리려면 무엇이 남았는지 (예: 기사 1편 더 읽으면 열려요)
+  function conditionLockText() {
+    const U = D.ui;
+    const left = Math.max(0, D.settings.articlesForCondition - state.readArticles.length);
+    const deepLeft = deepRequired() && !state.deep.answered;
+    if (left > 0 && deepLeft) return U.condLockBoth.replace('{편}', left);
+    if (left > 0) return U.condLockArticles.replace('{편}', left);
+    return U.condLockDeep;
   }
 
   /* ---------- 📊 심화 자료 카드 (조금 어려운 기사 + 확인 문제 1개) ----------
@@ -5747,7 +5778,7 @@ const GAME_DATA = {
 
   function chooseCondition() {
     if (state.screen !== 'round') return;
-    if (!conditionReady()) return;
+    if (!conditionReady()) { showToast(conditionLockText() + ' ' + D.ui.condLockTip); return; }
     // 한 라운드 안에서는 같은 순서 유지(다른 선택 하기 후 다시 와도 헷갈리지 않게)
     if (!state.conditionOrder) state.conditionOrder = shuffle(roundData().conditions.map((_, i) => i));
     go('condition');
@@ -5823,10 +5854,11 @@ const GAME_DATA = {
     const error = el('p', { className: 'decision-error', role: 'alert' });
     const submitBtn = button(X.submitButton, 'btn-primary btn-block', submit);
 
-    // 🔍 근거 문장 고르기 — 기본 모드에서는 조건부 투자와 거절은 꼭, 투자는 골라도 되고 안 골라도 돼요
-    // (2026-10-28 첫 수업: 거절이 69%였고 그중 다수가 근거 없이 넘어가서, 거절도 근거를 대게 했어요)
+    // 🔍 근거 문장 고르기 — 기본 모드에서는 어떤 선택이든 꼭 골라요 (간편 모드는 골라도 되고 안 골라도 돼요)
+    // (2026-10-28 첫 수업: 거절이 69%였고 그중 다수가 근거 없이 넘어가서 거절도 근거를 대게 했어요.
+    //  그 뒤 설문에 "빨리 끝내려고 투자만 누른다"는 답이 나와 투자도 근거를 대게 했어요)
     const EV = D.evidenceUi;
-    const needEv = (pc.type === 'condition' || pc.type === 'pass') && D.settings.evidenceForCondition;
+    const needEv = D.settings.evidenceForCondition;
     const chip = el('div', { className: 'evidence-chip' });
     const evFeedback = el('p', { className: 'evidence-feedback', role: 'status' });
     function drawChip() {
@@ -5844,9 +5876,11 @@ const GAME_DATA = {
           save(); drawChip();
         }));
         // 조건부 투자뿐 아니라 투자·거절에서도 근거가 알맞은지 알려 줘요
+        // 투자하면서 "진짜 문제" 문장을 골랐으면, 칭찬 대신 한 번 더 생각해 보게 해요(점수는 그대로)
         const ok = evidenceOk(R, t);
-        evFeedback.textContent = ok ? EV.good : EV.check;
-        evFeedback.className = 'evidence-feedback ' + (ok ? 'is-good' : 'is-check');
+        const investOnProblem = ok && pc.type === 'invest';
+        evFeedback.textContent = investOnProblem ? EV.investOnProblem : ok ? EV.good : EV.check;
+        evFeedback.className = 'evidence-feedback ' + (ok && !investOnProblem ? 'is-good' : 'is-check');
       }
       if (typeof update === 'function') update();
     }
