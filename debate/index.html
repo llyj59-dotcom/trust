@@ -7,178 +7,275 @@
 <meta name="description" content="내 생각을 주장·이유·근거로 세우고, 스스로 다듬고, 친구들과 나누고, 함께 결론을 짓는 초등 토의·토론 도우미">
 <style>
 :root{
-  --bg:#f3f7f4; --card:#fff; --ink:#1f2a24; --sub:#5b6b62;
-  --line:#dce5df; --soft:#eef4ef;
-  --green:#2f7d5d; --green-d:#245f47; --green-l:#dff0e6;
-  --blue:#2e6ea8; --blue-l:#e2eef9;
-  --amber:#a8762e; --amber-l:#fbf0dd;
-  --purple:#6b4a9c; --purple-l:#efe8f9;
-  --r:16px; --sh:0 2px 10px rgba(31,42,36,.07);
+  /* 면과 글자 */
+  --bg:#f2f4f6; --card:#fff; --fill:#f6f7f9; --fill-2:#eef0f3;
+  --ink:#191f28; --sub:#4e5968; --mute:#8b95a1; --line:#e5e8eb; --soft:#f6f7f9;
+  /* 강조색은 초록 하나 */
+  --green:#0b8a5c; --green-d:#077049; --green-l:#e6f5ee;
+  /* 상태를 알리는 옅은 면 */
+  --blue:#2272eb; --blue-l:#ebf3fe;
+  --amber:#b45f06; --amber-l:#fff4e3;
+  --purple:#6248e5; --purple-l:#f1eefe;
+  --red-l:#fff0f0;
+  --r:24px; --r-sm:14px;
+  --sh:0 1px 2px rgba(25,31,40,.04);
+  --ease:cubic-bezier(.2,.7,.2,1);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
 body{background:var(--bg);color:var(--ink);
-  font-family:Pretendard,"Apple SD Gothic Neo","맑은 고딕","Malgun Gothic",system-ui,sans-serif;
-  font-size:17px;line-height:1.65;word-break:keep-all;overflow-wrap:break-word}
-.wrap{max-width:860px;margin:0 auto;padding:16px 16px 80px}
-h1,h2,h3{line-height:1.35;margin:0}
-button{font-family:inherit;font-size:inherit;cursor:pointer;border:0;background:none;color:inherit}
-textarea,input,select{font-family:inherit;font-size:inherit;color:inherit}
-.top{display:flex;align-items:center;gap:10px;padding:14px 2px 10px;flex-wrap:wrap}
-.top h1{font-size:21px;font-weight:800;letter-spacing:-.02em}
-.top .tag{font-size:13px;color:var(--sub);font-weight:600}
+  font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic","맑은 고딕",system-ui,sans-serif;
+  font-size:16px;line-height:1.6;letter-spacing:-.01em;word-break:keep-all;overflow-wrap:break-word;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px 96px}
+h1,h2,h3{line-height:1.35;margin:0;letter-spacing:-.03em}
+button{font-family:inherit;font-size:inherit;cursor:pointer;border:0;background:none;color:inherit;letter-spacing:inherit}
+textarea,input,select{font-family:inherit;font-size:inherit;color:inherit;letter-spacing:inherit}
+:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+b,strong{font-weight:700}
+
+/* 머리 — 반투명 유리 막대 */
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;
+  margin:0 -20px 8px;padding:12px 20px;
+  background:rgba(242,244,246,.86);-webkit-backdrop-filter:saturate(180%) blur(16px);backdrop-filter:saturate(180%) blur(16px);
+  box-shadow:0 0 0 100vmax rgba(242,244,246,.86);clip-path:inset(0 -100vmax)}
+.brand{display:flex;align-items:center;gap:9px;min-width:0}
+.logo{flex:0 0 auto;width:30px;height:30px;border-radius:9px;background:var(--green);display:grid;place-items:center;
+  box-shadow:inset 0 -2px 0 rgba(0,0,0,.08)}
+.logo svg{width:17px;height:17px;display:block}
+.top h1{font-size:18px;font-weight:700;letter-spacing:-.03em;white-space:nowrap}
+.top .tag{font-size:13px;color:var(--mute);font-weight:500;white-space:nowrap}
 .top .sp{flex:1}
-.ghost{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600;color:var(--sub)}
-.ghost:hover{background:var(--soft)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--sh);margin-bottom:14px}
-.card h2{font-size:19px;font-weight:800;margin-bottom:6px}
-.card .lead{color:var(--sub);font-size:15px;margin:0 0 14px}
-.hint{color:var(--sub);font-size:14px;margin:6px 0 0}
-.steps{display:flex;gap:6px;margin:4px 2px 16px}
-.steps i{flex:1;height:6px;border-radius:999px;background:var(--line);transition:background .25s}
+.ghost{background:#fff;border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600;color:var(--sub);
+  box-shadow:0 0 0 1px var(--line) inset;transition:background .15s}
+.ghost:hover{background:var(--fill)}
+
+/* 카드 */
+.card{background:var(--card);border-radius:var(--r);padding:28px;box-shadow:var(--sh);margin-bottom:12px}
+.card h2{font-size:22px;font-weight:700;margin-bottom:8px;letter-spacing:-.035em}
+.card .lead{color:var(--sub);font-size:15.5px;margin:0 0 18px;line-height:1.6}
+.card h3{letter-spacing:-.03em}
+.hint{color:var(--mute);font-size:14px;margin:8px 0 0;line-height:1.55}
+.mini{font-size:13px;color:var(--mute);line-height:1.55}
+
+/* 단계 */
+.stepname{font-size:13px;font-weight:600;color:var(--green);margin:6px 2px 8px;letter-spacing:-.01em}
+.steps{display:flex;gap:4px;margin:0 2px 16px}
+.steps i{flex:1;height:4px;border-radius:999px;background:#dde1e6;transition:background .3s var(--ease)}
 .steps i.on{background:var(--green)}
-.steps i.done{background:var(--green-l)}
-.stepname{font-size:13px;font-weight:700;color:var(--green);letter-spacing:.02em;margin:0 2px 4px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--green);color:#fff;
-  border-radius:12px;padding:13px 20px;font-weight:700;font-size:16px;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.steps i.done{background:#8fd0b3}
+
+/* 단추 */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:54px;padding:0 22px;
+  background:var(--green);color:#fff;border-radius:16px;font-weight:600;font-size:16.5px;letter-spacing:-.02em;
+  transition:background .15s,transform .1s var(--ease)}
 .btn:hover{background:var(--green-d)}
-.btn:disabled{background:#c3d2c9;box-shadow:none;cursor:not-allowed}
-.btn.sec{background:#fff;color:var(--green);border:1.5px solid var(--green)}
-.btn.sec:hover{background:var(--green-l)}
-.btn.sm{padding:9px 14px;font-size:14px;border-radius:10px}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn:active{transform:scale(.98)}
+.btn:disabled{background:var(--fill-2);color:#b0b8c1;cursor:not-allowed;transform:none}
+.btn.sec{background:var(--fill-2);color:var(--ink)}
+.btn.sec:hover{background:#e3e6ea}
+.btn.sm{min-height:40px;padding:0 14px;font-size:14.5px;border-radius:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .row.between{justify-content:space-between}
-.nav{display:flex;gap:10px;margin-top:16px}
+.nav{display:flex;gap:8px;margin:24px -4px 0;padding:12px 4px 4px;position:sticky;bottom:0;z-index:5;
+  background:linear-gradient(to bottom,rgba(255,255,255,0),#fff 22%)}
 .nav .btn{flex:1}
-.nav .btn.sec{flex:0 0 auto;min-width:92px}
-.topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
-.topic{text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:13px 14px;transition:.15s}
-.topic:hover{border-color:var(--green);background:var(--green-l)}
-.topic .ic{font-size:22px;display:block;margin-bottom:4px}
-.topic .q{display:block;font-weight:700;font-size:15.5px;line-height:1.45}
-.topic .c{font-size:12.5px;color:var(--sub);font-weight:600;margin-top:5px}
+.nav .btn.sec{flex:0 0 auto;min-width:96px}
+
+/* 주제 고르기 */
+.topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.topic{text-align:left;background:var(--fill);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:2px;
+  transition:background .15s,transform .1s var(--ease)}
+.topic:hover{background:var(--fill-2)}
+.topic:active{transform:scale(.985)}
+.topic .ic{font-size:22px;width:42px;height:42px;border-radius:12px;background:#fff;display:grid;place-items:center;margin-bottom:10px;
+  box-shadow:0 1px 2px rgba(25,31,40,.05)}
+.topic .q{display:block;font-weight:600;font-size:15.5px;line-height:1.45;letter-spacing:-.025em}
+.topic .c{font-size:12.5px;color:var(--mute);font-weight:500;margin-top:6px}
+
 /* 가치 수직선 */
-.vl{margin:16px 0 4px}
-.vl-ends{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;font-weight:700;color:var(--sub);margin-bottom:7px}
-.vl-ends span{flex:1;line-height:1.35}
+.vl{margin:22px 0 6px}
+.vl-ends{display:flex;justify-content:space-between;gap:12px;font-size:13.5px;font-weight:600;color:var(--sub);margin-bottom:6px}
+.vl-ends span{flex:1;line-height:1.4}
 .vl-ends span:last-child{text-align:right}
-.vl-line{position:relative;display:flex;justify-content:space-between;align-items:center;padding:12px 0 4px}
-.vl-line::before{content:"";position:absolute;left:10px;right:10px;top:50%;height:3px;border-radius:2px;background:var(--line);transform:translateY(-8px)}
-.vl-line button{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;padding:9px 0;touch-action:manipulation}
-.vl-line .dot{width:17px;height:17px;border-radius:50%;background:#fff;border:2.5px solid #c3d2c9;transition:.15s}
-.vl-line button:hover .dot{border-color:var(--green);transform:scale(1.15)}
-.vl-line .num{font-size:11px;font-weight:700;color:#aab6ae}
-.vl-line button[aria-pressed=true] .dot{width:25px;height:25px;border-color:var(--green);background:var(--green);
-  box-shadow:0 0 0 5px var(--green-l)}
-.vl-line button[aria-pressed=true] .num{color:var(--green-d);font-size:12.5px}
-.vl-now{text-align:center;font-weight:700;font-size:15.5px;color:var(--green-d);margin-top:12px;min-height:24px}
-.vl-now.none{color:var(--sub);font-weight:600}
-/* 교사용 분포 수직선 */
-.vlmap{margin:10px 0 18px}
-.vlmap .lab{display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:var(--sub);margin-bottom:4px}
+.vl-line{position:relative;display:flex;justify-content:space-between;align-items:center;padding:12px 0 2px}
+.vl-line::before{content:"";position:absolute;left:12px;right:12px;top:50%;height:4px;border-radius:2px;background:var(--fill-2);transform:translateY(-9px)}
+.vl-line button{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;padding:8px 0;touch-action:manipulation}
+.vl-line .dot{width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px #cfd5db inset;transition:all .18s var(--ease)}
+.vl-line button:hover .dot{box-shadow:0 0 0 2px var(--green) inset;transform:scale(1.12)}
+.vl-line .num{font-size:11px;font-weight:600;color:#b0b8c1;font-variant-numeric:tabular-nums}
+.vl-line button[aria-pressed=true] .dot{width:28px;height:28px;background:var(--green);box-shadow:0 0 0 6px var(--green-l),0 4px 10px rgba(11,138,92,.25)}
+.vl-line button[aria-pressed=true] .num{color:var(--green);font-weight:700;font-size:12.5px}
+.vl-now{display:table;margin:16px auto 0;padding:8px 16px;border-radius:999px;background:var(--green-l);
+  font-weight:600;font-size:15px;color:var(--green-d);text-align:center}
+.vl-now.none{background:var(--fill);color:var(--mute);font-weight:500}
+
+/* 교사용 분포 */
+.vlmap{margin:10px 0 20px}
+.vlmap .lab{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--sub);margin-bottom:6px}
 .vlmap .lab span:last-child{text-align:right}
-.vlmap .cols{display:flex;align-items:flex-end;gap:3px;border-bottom:3px solid var(--line);padding-bottom:2px;min-height:60px}
-.vlmap .col{flex:1;display:flex;flex-direction:column-reverse;align-items:center;gap:2px}
+.vlmap .cols{display:flex;align-items:flex-end;gap:4px;border-bottom:2px solid var(--line);padding-bottom:4px;min-height:64px}
+.vlmap .col{flex:1;display:flex;flex-direction:column-reverse;align-items:center;gap:3px}
 .vlmap .pip{width:13px;height:13px;border-radius:50%}
-.vlmap .pip.a{background:#b9ccc0}
+.vlmap .pip.a{background:#c8d0d8}
 .vlmap .pip.b{background:var(--green)}
-.vlmap .nums{display:flex;gap:3px;margin-top:3px}
-.vlmap .nums span{flex:1;text-align:center;font-size:11px;color:#aab6ae;font-weight:700}
-.vlkey{display:flex;gap:14px;font-size:13px;color:var(--sub);margin-top:6px}
-.vlkey i{width:11px;height:11px;border-radius:50%;display:inline-block;margin-right:4px}
-label.f{display:block;font-weight:700;font-size:15.5px;margin:16px 0 5px}
-label.f .n{display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:50%;
-  background:var(--green);color:#fff;font-size:12.5px;margin-right:7px;vertical-align:1px}
-.fh{font-size:13.5px;color:var(--sub);margin:-2px 0 7px}
-textarea,input[type=text]{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:11px 13px;background:#fff;resize:vertical;line-height:1.6}
-textarea:focus,input[type=text]:focus{outline:none;border-color:var(--green)}
-textarea{min-height:76px}
-.chips{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 0}
-.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 13px;font-size:14px;font-weight:600;color:var(--sub);text-align:left}
-.chip:hover{border-color:var(--green);color:var(--green-d)}
-.chip[aria-pressed=true]{background:var(--green-l);border-color:var(--green);color:var(--green-d)}
-.think{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:12px 0}
-.think summary{padding:11px 14px;font-weight:700;font-size:15px;cursor:pointer;background:var(--soft);list-style:none}
+.vlmap .nums{display:flex;gap:4px;margin-top:4px}
+.vlmap .nums span{flex:1;text-align:center;font-size:11px;color:var(--mute);font-weight:600}
+.vlkey{display:flex;gap:16px;font-size:13px;color:var(--sub);margin-top:6px}
+.vlkey i{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px}
+
+/* 입력 */
+label.f{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;margin:26px 0 6px;letter-spacing:-.03em}
+label.f .n{flex:0 0 auto;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;
+  background:var(--green-l);color:var(--green);font-size:12.5px;font-weight:700}
+.fh{font-size:14px;color:var(--mute);margin:0 0 10px;line-height:1.55}
+textarea,input[type=text]{width:100%;border:0;border-radius:var(--r-sm);padding:14px 16px;background:var(--fill);resize:none;line-height:1.6;
+  box-shadow:0 0 0 1px transparent inset;transition:background .15s,box-shadow .15s}
+textarea::placeholder,input::placeholder{color:#b0b8c1}
+textarea:hover,input[type=text]:hover{background:var(--fill-2)}
+textarea:focus,input[type=text]:focus{outline:none;background:#fff;box-shadow:0 0 0 2px var(--green) inset}
+textarea{min-height:96px;overflow:hidden}
+
+/* 고르기 칩 */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 0}
+.chip{background:var(--fill);border-radius:12px;padding:9px 14px;font-size:14.5px;font-weight:500;color:var(--sub);text-align:left;line-height:1.45;
+  transition:background .15s,color .15s}
+.chip:hover{background:var(--fill-2);color:var(--ink)}
+.chip[aria-pressed=true]{background:var(--green-l);color:var(--green-d);font-weight:600;box-shadow:0 0 0 1.5px var(--green) inset}
+
+/* 생각할 거리 */
+.think{background:var(--fill);border-radius:18px;overflow:hidden;margin:16px 0}
+.think summary{padding:15px 18px;font-weight:600;font-size:15px;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px}
 .think summary::-webkit-details-marker{display:none}
-.think .in{padding:4px 14px 12px}
-.tline{display:flex;gap:9px;padding:8px 0;border-top:1px dashed var(--line);font-size:15px}
+.think summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--mute);border-bottom:2px solid var(--mute);transform:rotate(45deg);margin-top:-4px;transition:transform .2s var(--ease)}
+.think[open] summary::after{transform:rotate(-135deg);margin-top:4px}
+.think .in{padding:0 18px 14px}
+.tline{display:flex;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:15px;line-height:1.55}
 .tline:first-child{border-top:0}
-.tline .s{flex:0 0 auto;font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:999px;height:fit-content;margin-top:2px}
+.tline .s{flex:0 0 auto;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:7px;height:fit-content;margin-top:1px}
 .tline .s.y{background:var(--blue-l);color:var(--blue)}
 .tline .s.n{background:var(--amber-l);color:var(--amber)}
 .tline .s.q{background:var(--green-l);color:var(--green-d)}
-.chk{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;display:flex;gap:11px}
-.chk .m{flex:0 0 auto;font-size:19px;line-height:1.3}
+
+/* 스스로 다듬기 */
+.chk{background:var(--fill);border-radius:16px;padding:14px 16px;margin:8px 0;display:flex;gap:12px;align-items:flex-start}
+.chk .m{flex:0 0 auto;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:0;margin-top:1px}
+.chk.ok .m{background:var(--green)}
+.chk.ok .m::before{content:"";width:10px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px)}
+.chk.no .m{background:#f5a524}
+.chk.no .m::before{content:"";width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:-6px 0 0 #fff,6px 0 0 #fff}
 .chk .b{flex:1}
-.chk .t{font-weight:700;font-size:15px}
-.chk .d{font-size:14px;color:var(--sub);margin-top:2px}
-.chk.ok{border-color:#bcdcc9;background:#f3faf5}
-.chk.no{border-color:#e8cfa9;background:var(--amber-l)}
+.chk .t{display:block;font-weight:600;font-size:15px;line-height:1.5}
+.chk .d{display:block}
+.chk .d{font-size:14px;color:var(--sub);margin-top:2px;line-height:1.55}
+.chk.ok{background:var(--fill)}
+.chk.no{background:var(--amber-l)}
 .chk.no .t{color:var(--amber)}
-.score{display:flex;align-items:center;gap:12px;background:var(--soft);border-radius:12px;padding:12px 14px;margin-bottom:4px}
-.score .big{font-size:26px;font-weight:800;color:var(--green-d)}
-.score .tx{font-size:14.5px;color:var(--sub);font-weight:600}
-.speech{border:2px solid var(--green);border-radius:14px;padding:16px;background:#fbfdfb}
-.speech .ln{margin:0 0 10px;font-size:16.5px;line-height:1.7}
-.speech .ln:last-child{margin-bottom:0}
+.score{display:flex;align-items:center;gap:14px;background:var(--fill);border-radius:18px;padding:16px 18px;margin-bottom:8px}
+.score .big{font-size:28px;font-weight:800;color:var(--green);letter-spacing:-.03em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.score .tx{font-size:15px;color:var(--sub);font-weight:500}
+
+/* 발표 카드 */
+.speech{background:var(--fill);border-radius:20px;padding:20px 22px}
+.speech .ln{margin:0;padding:10px 0 10px 64px;font-size:16px;line-height:1.65;position:relative;border-top:1px solid var(--line)}
+.speech .ln:first-child{border-top:0;padding-top:2px}
+.speech .ln:last-child{padding-bottom:2px}
 .speech b{color:var(--green-d)}
-.speech .k{display:inline-block;font-size:12px;font-weight:800;color:#fff;background:var(--green);border-radius:999px;padding:1px 9px;margin-right:7px;vertical-align:2px}
-.out{width:100%;min-height:200px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.55}
-.note{background:var(--blue-l);border-radius:12px;padding:12px 14px;font-size:14.5px;color:#23527c;margin:12px 0}
-.warn{background:var(--amber-l);border-radius:12px;padding:12px 14px;font-size:14.5px;color:#7d5a21;margin:12px 0}
-.tabs{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap}
-.tab{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 15px;font-size:14.5px;font-weight:700;color:var(--sub)}
-.tab[aria-pressed=true]{background:var(--green);border-color:var(--green);color:#fff}
+.speech .k{position:absolute;left:0;top:12px;width:52px;text-align:center;font-size:12.5px;font-weight:700;color:var(--green-d);background:var(--green-l);border-radius:8px;padding:2px 0;line-height:1.5}
+.speech .ln:first-child .k{top:4px}
+
+.out{width:100%;min-height:220px;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:13px;line-height:1.6;overflow:auto;resize:vertical}
+
+/* 알림 면 */
+.note{background:var(--blue-l);border-radius:var(--r-sm);padding:14px 16px;font-size:14.5px;color:#26476f;margin:14px 0;line-height:1.6}
+.warn{background:var(--amber-l);border-radius:var(--r-sm);padding:14px 16px;font-size:14.5px;color:#7a4206;margin:14px 0;line-height:1.6}
+.movecard{background:var(--purple-l);border-radius:18px;padding:16px 18px;margin:12px 0}
+.movecard .t{font-weight:700;color:var(--purple);font-size:15.5px}
+
+/* 선생님 탭 — 세그먼트 */
+.tabs{display:flex;gap:2px;margin:0 0 14px;padding:4px;background:#e4e7eb;border-radius:14px;width:fit-content;max-width:100%;overflow-x:auto}
+.tab{white-space:nowrap;border-radius:10px;padding:8px 16px;font-size:14.5px;font-weight:600;color:var(--sub);transition:background .15s,color .15s}
+.tab:hover{color:var(--ink)}
+.tab[aria-pressed=true]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(25,31,40,.12)}
+
+/* 표 */
 table{width:100%;border-collapse:collapse;font-size:14.5px}
-th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
-th{background:var(--soft);font-weight:700;font-size:13.5px}
+th,td{border:0;border-bottom:1px solid var(--line);padding:11px 10px;text-align:left;vertical-align:top;line-height:1.55}
+th{color:var(--mute);font-weight:600;font-size:13px;background:none;border-bottom:1px solid #d9dde2}
+tr:last-child td{border-bottom:0}
+td b{font-weight:700}
 .bar{height:22px;border-radius:6px;background:var(--green);min-width:3px}
-.mini{font-size:13px;color:var(--sub)}
-ul.std{margin:4px 0 0 18px;padding:0;font-size:14.5px;line-height:1.6}
-ul.std li{margin:3px 0}
-code{font-family:inherit;background:var(--green-l);padding:1px 5px;border-radius:5px;font-size:12.5px}
-.gchip{padding:5px 10px;font-size:13px}
-.gchip[aria-pressed=true]{background:var(--green);color:#fff}
+ul.std{margin:6px 0 0 18px;padding:0;font-size:14.5px;line-height:1.65}
+ul.std li{margin:4px 0}
+code{font-family:inherit;background:var(--fill-2);padding:1px 6px;border-radius:6px;font-size:12.5px}
+.gchip{padding:5px 11px;font-size:13px;border-radius:9px}
+.gchip[aria-pressed=true]{background:var(--green);color:#fff;box-shadow:none}
 .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .grades{min-width:640px}
 .grades td{vertical-align:middle}
-.grades input.gnote{font-size:13.5px;padding:7px 9px;border-radius:8px;min-width:220px}
-@media print{.grades input.gnote{border:0;padding:0;min-width:0}}
-.movecard{border:1.5px solid var(--purple);background:var(--purple-l);border-radius:12px;padding:12px 14px;margin:10px 0}
-.movecard .t{font-weight:800;color:var(--purple);font-size:15px}
-.jobgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:10px 0}
-.job{border:1.5px solid var(--line);background:#fff;border-radius:11px;padding:9px 11px;text-align:left;font-size:14px;line-height:1.4}
-.job .nm{display:block;font-weight:700}
-.job .ds{display:block;font-size:12.5px;color:var(--sub);margin-top:2px}
-.job[data-pick="1"]{border-color:#c98f8f;background:#fcefee}
-.job[data-pick="2"]{border-color:#c9a85f;background:var(--amber-l)}
-.job[data-pick="3"]{border-color:#7fae8e;background:var(--green-l)}
-.jobgrid.wide{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
-.jobkey{display:flex;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--sub);margin-top:4px}
-.jobkey span{display:inline-flex;align-items:center;gap:5px}
-.jobkey i{width:13px;height:13px;border-radius:4px;display:inline-block}
+.grades .chips{flex-wrap:nowrap}
+.grades input.gnote{font-size:13.5px;padding:8px 10px;border-radius:10px;min-width:220px}
+@media print{.grades input.gnote{border:0;padding:0;min-width:0;background:none}}
+
+/* 카드 나누기 */
+.jobgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:12px 0}
+.jobgrid.wide{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.job{background:#fff;border-radius:16px;padding:14px 15px;text-align:left;font-size:14px;line-height:1.45;
+  box-shadow:0 0 0 1.5px var(--line) inset;transition:background .15s,box-shadow .15s,transform .1s var(--ease)}
+.job:hover{box-shadow:0 0 0 1.5px #c9cfd6 inset}
+.job:active{transform:scale(.985)}
+.job .nm{display:block;font-weight:700;font-size:15px;letter-spacing:-.025em}
+.job .ds{display:block;font-size:13px;color:var(--sub);margin-top:4px}
+.job .ds:last-child{margin-top:8px}
+.job[data-pick="1"]{background:var(--red-l);box-shadow:0 0 0 1.5px #f2b8b8 inset}
+.job[data-pick="2"]{background:var(--amber-l);box-shadow:0 0 0 1.5px #f3c47c inset}
+.job[data-pick="3"]{background:var(--green-l);box-shadow:0 0 0 1.5px #7fcfa9 inset}
+.jobkey{display:flex;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--sub);margin-top:4px}
+.jobkey span{display:inline-flex;align-items:center;gap:6px}
+.jobkey i{width:12px;height:12px;border-radius:4px;display:inline-block}
+
 .printonly{display:none}
 pre.plain{white-space:pre-wrap;font-family:inherit;font-size:15px;line-height:1.7;margin:0}
-@media print{body{background:#fff}.noprint{display:none!important}.printonly{display:block}.card{box-shadow:none;break-inside:avoid}
-  .card.hasprint textarea{display:none}}
-@media (max-width:520px){
-  body{font-size:16px}
-  .vl-line .dot{width:19px;height:19px}
-  .vl-line button[aria-pressed=true] .dot{width:26px;height:26px;box-shadow:0 0 0 4px var(--green-l)}
-  .vl-ends{font-size:12.5px}
-  .vl-now{font-size:15px}
+@media (hover:none){.topic:hover,.chip:hover,.job:hover,textarea:hover,input[type=text]:hover{background:inherit}
+  .topic:hover{background:var(--fill)} .chip:hover{background:var(--fill);color:var(--sub)}
+  textarea:hover,input[type=text]:hover{background:var(--fill)} .job:hover{box-shadow:0 0 0 1.5px var(--line) inset}
+  .chip[aria-pressed=true]{background:var(--green-l);color:var(--green-d)}
+  .job[data-pick="1"]{background:var(--red-l)} .job[data-pick="2"]{background:var(--amber-l)} .job[data-pick="3"]{background:var(--green-l)}}
+@media print{body{background:#fff}.noprint{display:none!important}.printonly{display:block}.card{box-shadow:none;break-inside:avoid;padding:12px 0}
+  .card.hasprint textarea{display:none}.nav{position:static}}
+@media (max-width:560px){
+  .wrap{padding:0 12px 88px}
+  .top{margin:0 -12px 6px;padding:10px 14px}
+  .top .tag{display:none}
+  .card{padding:22px 20px;border-radius:22px}
+  .card h2{font-size:20px}
   .topics{grid-template-columns:1fr}
+  .topic{display:grid;grid-template-columns:42px 1fr;column-gap:14px;row-gap:0;align-items:center;padding:14px}
+  .topic .ic{grid-row:1 / 3;margin:0}
+  .topic .q,.topic .c{grid-column:2}
+  .topic .q{font-size:15px}
+  .topic .c{margin-top:2px}
+  .vl-line .dot{width:18px;height:18px}
+  .vl-line button[aria-pressed=true] .dot{width:26px;height:26px;box-shadow:0 0 0 5px var(--green-l)}
+  .vl-ends{font-size:12.5px}
+  .nav{margin:20px -20px -22px;padding:14px 20px calc(14px + env(safe-area-inset-bottom));border-radius:0 0 22px 22px}
+  .tabs{width:100%}
+  .tab{flex:1;padding:8px 10px}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="top noprint">
-    <h1 id="appName">🌱 생각 모으기</h1>
-    <span class="tag">우리 반 토의·토론</span>
+  <header class="top noprint">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21v-7.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M12 13.5C12 9 8.6 6 4.5 6c0 4.4 3.1 7.5 7.5 7.5Z" fill="#fff"/><path d="M12 11.2C12 6.8 15.2 3.5 19.5 3.5c0 4.5-3.1 7.7-7.5 7.7Z" fill="#fff" fill-opacity=".72"/></svg></span>
+      <h1 id="appName">생각 모으기</h1>
+      <span class="tag">우리 반 토의·토론</span>
+    </div>
     <span class="sp"></span>
     <button class="ghost" id="btnMode">선생님용</button>
-  </div>
+  </header>
   <main id="app"></main>
 </div>
 <script>
@@ -188,7 +285,7 @@ pre.plain{white-space:pre-wrap;font-family:inherit;font-size:15px;line-height:1.
 /* 앱 이름은 여기 한 곳만 바꾸면 제목·머리글·결과 글에 모두 반영됩니다. */
 var APP_NAME = '생각 모으기';
 document.title = APP_NAME + ' — 우리 반 토의·토론';
-document.getElementById('appName').textContent = '🌱 ' + APP_NAME;
+document.getElementById('appName').textContent = APP_NAME;
 
 /* ===================== 주제 ===================== */
 var TOPICS = [
@@ -726,7 +823,8 @@ function topic(){
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){
   return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 var $ = function(id){ return document.getElementById(id); };
-function app(h){ $('app').innerHTML = h; }
+function grow(el){ if(!el || el.classList.contains('out')) return; el.style.height='auto'; el.style.height=(el.scrollHeight+2)+'px'; }
+function app(h){ $('app').innerHTML = h; var ts=document.querySelectorAll('#app textarea'); for(var i=0;i<ts.length;i++) grow(ts[i]); }
 
 /* ===================== 스스로 점검 규칙 ===================== */
 var VAGUE = ['것 같','아마','그냥','들은 것','대충','뭔가','어디서'];
@@ -808,7 +906,8 @@ function nav(backLabel, nextLabel, canNext){
   return (!canNext && msg ? '<p class="hint noprint" style="text-align:right;margin-top:14px">'+msg+'</p>' : '')
     + '<div class="nav noprint">'
     + (S.step>0 ? '<button class="btn sec" data-go="back">'+(backLabel||'이전')+'</button>' : '')
-    + '<button class="btn" data-go="next"'+(canNext?'':' disabled')+'>'+(nextLabel||'다음')+'</button></div>';
+    /* ⑥단계에서 보내기 단추가 있으면 초록 단추는 보내기 하나만 둡니다. */
+    + '<button class="btn'+(S.step===5 && S.send ? ' sec' : '')+'" data-go="next"'+(S.step===5 && S.send ? ' style="flex:1"' : '')+(canNext?'':' disabled')+'>'+(nextLabel||'다음')+'</button></div>';
 }
 function lineRow(sel, attr, t){
   var L = (t && t.ends) ? t.ends : ['아니다','그렇다'];
@@ -826,7 +925,7 @@ function lineRow(sel, attr, t){
 
 /* 카드 나누기 칸. attr 이 'job' 이면 처음 선택(S.jobs), 'job2' 면 토의 뒤 선택(S.jobs2). */
 function cardGrid(CD, picks, attr){
-  var KC = [['#fcefee','#c98f8f'],['#fbf0dd','#c9a85f'],['#dff0e6','#7fae8e']];
+  var KC = [['#fff0f0','#f2b8b8'],['#fff4e3','#f3c47c'],['#e6f5ee','#7fcfa9']];
   /* 넣을지 정하는 카드는 첫 칸('꼭 넣자')이 초록이 되도록 색 순서를 뒤집어요. */
   var order = CD.list===JOBS ? [0,1,2] : [2,1,0];
   var h = '<div class="fh">카드를 누를 때마다 <b>'+esc(CD.keys.join(' → '))+' → 처음으로</b> 순서로 바뀌어요.</div>'
@@ -897,7 +996,7 @@ function viewStudent(){
     }
     if(t.think && t.think.length){
       var TAG = {y:'그렇다', n:'아니다', q:'생각해 봐요'};
-      h += '<details class="think"><summary>🔎 생각할 거리 보기'+(t.noLine?'':' (양쪽 이야기가 다 있어요)')+'</summary><div class="in">';
+      h += '<details class="think"><summary>생각할 거리 보기'+(t.noLine?'':' (양쪽 이야기가 다 있어요)')+'</summary><div class="in">';
       for(var j=0;j<t.think.length;j++)
         h += '<div class="tline"><span class="s '+t.think[j][0]+'">'+(TAG[t.think[j][0]]||'')+'</span>'
            + '<span>'+esc(t.think[j][1])+'</span></div>';
@@ -951,7 +1050,7 @@ function viewStudent(){
       + '<textarea id="who" placeholder="예: ~에게는 도움이 되지만, ~은 어려워질 수 있다.">'+esc(S.who)+'</textarea>';
 
     if(t.think && t.think.length){
-      h += '<details class="think"><summary>🔎 막히면 생각할 거리 다시 보기</summary><div class="in">';
+      h += '<details class="think"><summary>막히면 생각할 거리 다시 보기</summary><div class="in">';
       for(var d=0;d<t.think.length;d++)
         h += '<div class="tline"><span class="s '+t.think[d][0]+'">'+(t.think[d][0]==='y'?'그렇다':'아니다')+'</span>'
            + '<span>'+esc(t.think[d][1])+'</span></div>';
@@ -973,13 +1072,13 @@ function viewStudent(){
       + '<div class="score"><span class="big">'+n[0]+' / '+n[1]+'</span>'
       + '<span class="tx">'+msg+'</span></div>';
     for(var e=0;e<cs.length;e++)
-      h += '<div class="chk '+(cs[e].ok?'ok':'no')+'"><span class="m">'+(cs[e].ok?'✅':'✏️')+'</span>'
+      h += '<div class="chk '+(cs[e].ok?'ok':'no')+'"><span class="m" aria-label="'+(cs[e].ok?'통과':'다듬을 곳')+'"></span>'
          + '<span class="b"><span class="t">'+cs[e].t+'</span><span class="d">'+esc(cs[e].d)+'</span></span></div>';
     h += '<div class="warn"><b>노란 칸이 있어도 넘어갈 수 있어요.</b> 다만 친구들이 그 자리를 먼저 물어볼 거예요. '
        + '지금 고치면 토론할 때 훨씬 편해요.</div>'
       + '<div class="note">글을 더 다듬고 싶으면 아래 단추로 복사한 글을 <a href="https://www.jajakjajak.com/" target="_blank" rel="noopener" style="color:inherit;font-weight:700">자작자작</a>에 붙여 넣어 보세요. '
        + '어디가 어색한지 한 번 더 짚어 줘요. 다만 고쳐 준 글을 그대로 가져오지 말고, 내 말로 다시 써야 내 생각이 돼요.</div>'
-      + '<div class="row noprint" style="margin-bottom:10px"><button class="btn sec sm" data-go="copy">📋 지금까지 쓴 글 복사하기</button></div>'
+      + '<div class="row noprint" style="margin-bottom:10px"><button class="btn sec sm" data-go="copy">지금까지 쓴 글 복사하기</button></div>'
       + '<div class="row noprint"><button class="btn sec" data-go="fix">돌아가서 고치기</button>'
       + '<button class="btn" data-go="next" style="flex:1">반대편 생각 보러 가기</button></div></div>';
     return h;
@@ -993,7 +1092,7 @@ function viewStudent(){
       + '<div class="fh">약한 말 말고 <b>가장 센 말</b>을 골라야 해요. 그래야 내 생각도 세져요.</div>'
       + '<textarea id="other" placeholder="예: 새로 생기는 일도 있다는 말은 맞는 것 같다.">'+esc(S.other)+'</textarea>';
     if(t.think && t.think.length){
-      h += '<details class="think" open><summary>🔎 반대편 이야기 보기</summary><div class="in">';
+      h += '<details class="think" open><summary>반대편 이야기 보기</summary><div class="in">';
       for(var f=0;f<t.think.length;f++)
         h += '<div class="tline"><span class="s '+t.think[f][0]+'">'+(t.think[f][0]==='y'?'그렇다':'아니다')+'</span>'
            + '<span>'+esc(t.think[f][1])+'</span></div>';
@@ -1022,9 +1121,9 @@ function viewStudent(){
       + '<div class="note"><b>이야기할 때 세 가지만 지켜요.</b><br>'
       + '① 사람이 아니라 생각에 반대하기 &nbsp; ② 끝까지 듣고 말하기 &nbsp; ③ "왜 그렇게 생각했어?"라고 먼저 묻기</div>'
       + '<div class="row noprint">'
-      + (S.send ? '<button class="btn" data-go="send">📨 선생님께 보내기</button>' : '')
-      + '<button class="btn sec" data-go="copy">📋 결과 복사하기</button>'
-      + '<button class="btn sec" data-go="print">🖨 인쇄하기</button></div>'
+      + (S.send ? '<button class="btn" data-go="send">선생님께 보내기</button>' : '')
+      + '<button class="btn sec" data-go="copy">결과 복사하기</button>'
+      + '<button class="btn sec" data-go="print">인쇄하기</button></div>'
       + (S.send
           ? '<p class="hint">[선생님께 보내기]를 누르면 선생님 화면으로 바로 가요. 토론이 끝난 뒤에 한 번 더 보낼 거예요.'
             + (S.lastSent ? ' <b>마지막으로 보낸 때: '+esc(S.lastSent)+'</b>' : '') + '</p>'
@@ -1048,7 +1147,7 @@ function viewStudent(){
         + '<div class="fh">처음 나눈 그대로 놓여 있어요. 생각이 바뀐 카드만 눌러 바꿔요.</div>'
         + cardGrid(CD6, S.jobs2, 'job2')
         + '<div class="movecard"><span class="t">'
-        + (ch ? '🔄 카드 '+ch+'장을 바꿨어요' : '🪨 처음과 같이 나눴어요')
+        + (ch ? '카드 '+ch+'장을 바꿨어요' : '처음과 같이 나눴어요')
         + '</span><div class="mini" style="margin-top:4px">'
         + (ch ? '생각이 움직였어요. 이건 진 게 아니라 <b>들은</b> 거예요.' : '처음 생각을 지켰네요. 그 까닭이 처음보다 단단해졌는지 아래에 적어 봐요.')
         + '</div></div>';
@@ -1060,8 +1159,8 @@ function viewStudent(){
     if(!t.noLine && S.first!==null && S.last!==null){
       var dist = Math.abs(S.last - S.first);
       h += '<div class="movecard"><span class="t">'
-        + (moved ? '🔄 ' + S.first + '번 자리 → ' + S.last + '번 자리 (' + dist + '칸 ' + (S.last>S.first?'오른쪽':'왼쪽') + '으로)'
-                 : '🪨 처음과 같은 ' + S.first + '번 자리')
+        + (moved ? '' + S.first + '번 자리 → ' + S.last + '번 자리 (' + dist + '칸 ' + (S.last>S.first?'오른쪽':'왼쪽') + '으로)'
+                 : '처음과 같은 ' + S.first + '번 자리')
         + '</span><div class="mini" style="margin-top:4px">'
         + (moved ? '생각이 움직였어요. 이건 진 게 아니라 <b>들은</b> 거예요. 한 칸이라도 대단한 거예요.'
                  : '자리를 지켰네요. 그 까닭이 처음보다 단단해졌는지 아래에 적어 봐요.')
@@ -1071,9 +1170,9 @@ function viewStudent(){
       + '<textarea id="why" placeholder="'+(t.noLine ? '예: ~라는 말을 듣고 ~ 카드를 바꿨다. / 다른 의견을 들었지만 ~ 때문에 그대로다.' : '예: ~라는 근거를 듣고 ~ 쪽으로 옮겼다. / 반대 의견을 들었지만 ~ 때문에 그대로다.')+'">'+esc(S.why)+'</textarea>'
       + '<pre class="plain printonly">'+esc(resultText())+'</pre>'
       + '<div class="row noprint" style="margin-top:16px">'
-      + (S.send ? '<button class="btn" data-go="send" style="flex:1">📨 선생님께 보내기</button>' : '')
-      + '<button class="btn'+(S.send?' sec':'')+'" data-go="copy" style="flex:1">📋 결과 복사하기</button>'
-      + '<button class="btn sec" data-go="print">🖨 인쇄</button></div>'
+      + (S.send ? '<button class="btn" data-go="send" style="flex:1">선생님께 보내기</button>' : '')
+      + '<button class="btn'+(S.send?' sec':'')+'" data-go="copy" style="flex:1">결과 복사하기</button>'
+      + '<button class="btn sec" data-go="print">인쇄</button></div>'
       + (S.send && S.lastSent ? '<p class="hint">마지막으로 보낸 때: '+esc(S.lastSent)+'</p>' : '')
       + '<div class="nav noprint"><button class="btn sec" data-go="back">이전</button>'
       + '<button class="btn sec" data-go="reset" style="flex:1">새 주제로 다시 하기</button></div></div>';
@@ -1153,7 +1252,7 @@ function sendOut(){
   for(var i=0;i<btns.length;i++){ btns[i].disabled=true; btns[i].textContent='보내는 중…'; }
   function stamp(){ var d=new Date(); return d.getHours()+'시 '+(d.getMinutes()<10?'0':'')+d.getMinutes()+'분'; }
   function ok(){ S.lastSent=stamp(); save(); render(); alert('선생님께 보냈어요. 토론이 끝나면 한 번 더 보내요.'); }
-  function fail(){ render(); alert('보내지 못했어요. 인터넷이 되는지 보고, 안 되면 [📋 결과 복사하기]로 선생님이 알려 주신 곳에 붙여 넣어 주세요.'); }
+  function fail(){ render(); alert('보내지 못했어요. 인터넷이 되는지 보고, 안 되면 [결과 복사하기]로 선생님이 알려 주신 곳에 붙여 넣어 주세요.'); }
   if(!window.fetch){ fail(); return; }
   fetch(S.send, { method:'POST', body:body, headers:{'Content-Type':'text/plain;charset=utf-8'} })
     .then(function(r){ return r.json(); })
@@ -1306,7 +1405,7 @@ function viewTeacher(){
 
   if(T.tab==='guide'){
     var ci;
-    h += '<div class="card"><h2>📚 교육과정과 이어지는 곳 — '+B.name+'</h2>'
+    h += '<div class="card"><h2>교육과정과 이어지는 곳 — '+B.name+'</h2>'
       + '<p class="lead">이 수업이 2022 개정 초등학교 교육과정(별책2)의 어디에 닿는지입니다. [결과 모아 보기]의 상·중·하 기준도 여기에 맞춰 두었어요.</p>'
       + '<h3 style="font-size:15.5px;margin:10px 0 4px">핵심 성취기준</h3><ul class="std">';
     for(ci=0;ci<B.core.length;ci++) h += stdLine(B.core[ci]);
@@ -1318,7 +1417,7 @@ function viewTeacher(){
     h += '</table></div>';
 
     var rt = bandTopics(T.band);
-    h += '<div class="card"><h2>💡 '+B.name+'에 어울리는 주제 '+rt.length+'가지</h2>'
+    h += '<div class="card"><h2>'+B.name+'에 어울리는 주제 '+rt.length+'가지</h2>'
       + '<p class="lead">아이들 화면에는 고른 학년군의 주제만 보여요. 아래 단추로 학생용 주소를 복사해 주면 아이들이 학년군을 고를 필요가 없어요.</p>'
       + '<table><tr><th>주제</th><th style="width:38%">닿는 성취기준</th></tr>';
     for(ci=0;ci<rt.length;ci++){
@@ -1327,21 +1426,21 @@ function viewTeacher(){
       h += '<tr><td>'+tx.ic+' <b>'+esc(tx.q)+'</b><br><span class="mini">'+esc(tx.cat)+(tx.sub?' · '+esc(tx.sub):'')+'</span></td>'
          + '<td class="mini">'+codes.join('<br>')+'</td></tr>';
     }
-    h += '</table><div class="row noprint" style="margin-top:12px"><button class="btn sm" data-go="copylink">🔗 '+B.name+' 학생용 주소 복사</button>'
+    h += '</table><div class="row noprint" style="margin-top:12px"><button class="btn sm" data-go="copylink">'+B.name+' 학생용 주소 복사</button>'
       + '<span class="mini">주소 뒤에 <code>?band='+T.band+'</code>가 붙어요. 아이들 화면이 이 학년군으로 열립니다.'
-      + (sheetUrl() ? ' 구글 시트 주소도 함께 들어가서 아이들 화면에 [📨 선생님께 보내기] 단추가 생겨요.' : '') + '</span></div>'
+      + (sheetUrl() ? ' 구글 시트 주소도 함께 들어가서 아이들 화면에 [선생님께 보내기] 단추가 생겨요.' : '') + '</span></div>'
       + '<p class="mini" style="margin-top:8px">여기 없는 주제는 아이들이 ①단계 맨 아래 "우리 반이 정한 주제"에 직접 적으면 돼요. 성취기준 글자 위에 마우스를 올리면 전체 문장이 보여요.</p></div>';
 
     /* 수업 꾸러미 — 이 학년군에서 쓸 수 있는 묶음 수업 */
     if(T.band==='56'){
-      h += '<div class="card"><h2>📘 수업 꾸러미 — 「업로드 전 3초」 3차시 · 약속을 만드는 3초</h2>'
+      h += '<div class="card"><h2>수업 꾸러미 — 「업로드 전 3초」 3차시 · 약속을 만드는 3초</h2>'
         + '<p class="lead">디지털시민교육 「업로드 전 3초」(1차시 「타워를 지켜라!」 체험 → 2차시 모둠 기준) 다음 시간입니다. '
         + '2차시 다섯 모둠의 핵심 기준을 학급 전체에서 비교·조정해 <b>「우리 반 업로드 전 3초」 규칙을 함께 정하는 토의</b>입니다.</p>'
         + '<p class="mini">닿는 성취기준: [6국01-06] 토의에 협력적으로 참여하며 서로의 의견을 비교하고 조정한다. · [6실04-03] 건전한 정보기기의 활용을 실천한다.</p>'
         + '<table style="margin-top:10px"><tr><th style="width:110px">때</th><th>하는 일</th><th style="width:30%">앱에서</th></tr>'
         + '<tr><td><b>도입</b> 5분</td><td>노션 갤러리의 모둠 핵심 기준 다섯 개를 다시 봅니다. "오늘은 이 기준들로 우리 반 모두가 지킬 규칙을 정해요."</td><td class="mini">학생용 주소를 열면 이 주제가 바로 열려요.</td></tr>'
-        + '<tr><td><b>전개 1</b> 10분</td><td>혼자서 다섯 모둠의 기준 카드를 "꼭 넣자 / 고치거나 합쳐서 넣자 / 빼도 된다"로 나누고, <b>내가 제안하는 우리 반 규칙</b>을 이유와 함께 씁니다.</td><td class="mini">② 처음 카드 → ③ 제안하는 규칙·이유 → ④ 다듬기 → ⑤ 다른 의견 → ⑥ [📨 선생님께 보내기]</td></tr>'
-        + '<tr><td><b>전개 2</b> 15분</td><td>[결과 모아 보기]를 화면에 띄웁니다. <b>표에서 생각이 갈린 기준</b>부터 이야기합니다. "고치거나 합쳐서 넣자" → 어떻게 고치고 무엇과 합칠까? 아이들이 제안한 규칙 문장을 비교해 겹치는 것은 묶고, 빠진 것(동의, 사실 확인 등)이 있는지 묻습니다.</td><td class="mini">[⬇ 시트에서 불러오기] 한 번이면 표가 채워져요.</td></tr>'
+        + '<tr><td><b>전개 1</b> 10분</td><td>혼자서 다섯 모둠의 기준 카드를 "꼭 넣자 / 고치거나 합쳐서 넣자 / 빼도 된다"로 나누고, <b>내가 제안하는 우리 반 규칙</b>을 이유와 함께 씁니다.</td><td class="mini">② 처음 카드 → ③ 제안하는 규칙·이유 → ④ 다듬기 → ⑤ 다른 의견 → ⑥ [선생님께 보내기]</td></tr>'
+        + '<tr><td><b>전개 2</b> 15분</td><td>[결과 모아 보기]를 화면에 띄웁니다. <b>표에서 생각이 갈린 기준</b>부터 이야기합니다. "고치거나 합쳐서 넣자" → 어떻게 고치고 무엇과 합칠까? 아이들이 제안한 규칙 문장을 비교해 겹치는 것은 묶고, 빠진 것(동의, 사실 확인 등)이 있는지 묻습니다.</td><td class="mini">[시트에서 불러오기] 한 번이면 표가 채워져요.</td></tr>'
         + '<tr><td><b>전개 3</b> 3분</td><td>토의를 듣고 카드를 다시 나눕니다. 바꾼 아이에게 "무엇이 생각을 바꿨니?"를 먼저 묻습니다.</td><td class="mini">⑦ 나를 움직인 말 · 카드 다시 나누기 → 한 번 더 보내기</td></tr>'
         + '<tr><td><b>정리</b> 7분</td><td>합의문 네 칸을 함께 채웁니다. ③에 <b>「우리 반 업로드 전 3초」 규칙</b>을 적습니다. 포스터는 이 ③을 옮겨 모둠별로 만듭니다.</td><td class="mini">[마무리 — 합의문] → 복사·인쇄</td></tr></table>'
         + '<div class="note" style="margin-top:12px"><b>2차시 모둠 핵심 기준</b> (노션 「모둠 기준 올리기」)<br>'
@@ -1349,10 +1448,10 @@ function viewTeacher(){
         + '4모둠 출처가 믿을 만한지와 다른 사람의 개인정보 · 5모둠 다른 사람의 개인정보</div>'
         + '<div class="warn"><b>다수결로 정하지 않아요.</b> 표의 숫자는 "어디서 생각이 갈리는지" 보는 데만 씁니다. '
         + '모둠 기준에 없던 생각("같이 찍은 사진은 동의를 얻는다")도 이유가 설득되면 들어갈 수 있어요. 끝까지 갈리면 "오늘의 잠정 약속"이라 부르고 소수 의견을 ④에 남깁니다.</div>'
-        + '<div class="row noprint" style="margin-top:12px"><button class="btn sm" data-go="copylesson">🔗 이 수업 학생용 주소 복사</button>'
+        + '<div class="row noprint" style="margin-top:12px"><button class="btn sm" data-go="copylesson">이 수업 학생용 주소 복사</button>'
         + '<span class="mini">주제가 바로 열리는 주소예요.'+(sheetUrl()?' 시트 주소도 함께 들어가요.':'')+'</span></div></div>';
     }
-    h += '<div class="card"><h2>📏 가치 수직선, 이렇게 씁니다</h2>'
+    h += '<div class="card"><h2>가치 수직선, 이렇게 씁니다</h2>'
       + '<p class="lead">앱의 0~10 선은 <b>교실 바닥의 선을 그대로 옮긴 것</b>입니다. 몸으로 서 보고, 앱에 남기세요.</p>'
       + '<table><tr><th style="width:36px">　</th><th style="width:140px">언제</th><th>어떻게</th></tr>'
       + '<tr><td><b>1</b></td><td>줄 긋기</td><td>교실 한쪽 벽에서 반대쪽 벽까지 선을 정합니다. 양 끝에 종이를 붙여요.<br>'
@@ -1368,7 +1467,7 @@ function viewTeacher(){
       + '선 위에 서면 <b>"나는 7인데 너는 왜 9야?"</b> 같은 대화가 생겨요. 같은 편 안에서도 다름을 보게 되는 것이 수직선의 힘입니다.</div>'
       + '<div class="warn">교실이 좁거나 움직이기 어려우면 <b>칠판에 선을 긋고 이름표를 붙이는 것</b>으로도 됩니다. '
       + '앱만 쓰셔도 되지만, 한 번은 몸으로 서 보게 하는 쪽이 훨씬 기억에 남습니다.</div></div>';
-    h += '<div class="card"><h2>⏱ 80분 진행 순서</h2>'
+    h += '<div class="card"><h2>80분 진행 순서</h2>'
       + '<p class="lead">앱은 ①③⑦에서만 씁니다. 가운데는 아이들끼리 말하는 시간이에요.</p>'
       + '<table><tr><th style="width:70px">시간</th><th style="width:130px">무엇을</th><th>어떻게</th></tr>'
       + '<tr><td>5분</td><td>주제 열기</td><td>질문만 던지고 손들기. 까닭은 아직 묻지 않습니다.</td></tr>'
@@ -1380,7 +1479,7 @@ function viewTeacher(){
       + '<tr><td>15분</td><td>⑥ 모둠·전체</td><td>아래 네 단계로 좁혀 갑니다.</td></tr>'
       + '<tr><td>15분</td><td>⑦ 마무리</td><td><b>수직선에 다시 서 보기</b> → 합의문 쓰기 → 앱에 나중 자리 찍기.</td></tr></table></div>';
 
-    h += '<div class="card"><h2>🎯 토론을 어떻게 끝낼까 — 다수결 말고</h2>'
+    h += '<div class="card"><h2>토론을 어떻게 끝낼까 — 다수결 말고</h2>'
       + '<p class="lead">초등 토론이 거수로 끝나는 까닭은 <b>끝내는 절차가 없어서</b>입니다. 절차가 있으면 다수결까지 가지 않아요.</p>'
       + '<table><tr><th style="width:36px">　</th><th style="width:150px">단계</th><th>교사가 던질 말</th></tr>'
       + '<tr><td><b>0</b></td><td>다시 서 보기</td><td>"지금 생각하는 자리로 다시 가 서 보세요."<br>'
@@ -1399,18 +1498,18 @@ function viewTeacher(){
       + '"오늘 <b>생각이 움직인 사람</b> 손들어 볼까요? 무엇이 움직이게 했나요?"<br>'
       + '움직인 아이를 칭찬하면, 다음 토론부터 아이들이 이기려 들지 않고 듣기 시작합니다.</div></div>';
 
-    h += '<div class="card"><h2>📥 아이들 결과를 모으는 방법</h2>'
+    h += '<div class="card"><h2>아이들 결과를 모으는 방법</h2>'
       + '<p class="lead">앱은 서버가 없어서 결과가 저절로 모이지 않아요. 아이들이 복사한 글을 한곳에 모았다가 여기 붙여 넣습니다.</p>'
       + '<table><tr><th style="width:36px">　</th><th style="width:140px">언제</th><th>어떻게</th></tr>'
       + '<tr><td><b>1</b></td><td>수업 전</td><td>패들렛에 오늘 토론용 담벼락을 하나 만들고 링크를 아이들에게 줍니다. 구글 문서 하나를 공유해도 됩니다.</td></tr>'
-      + '<tr><td><b>2</b></td><td>⑤ 나눌 준비</td><td>아이들이 [📋 결과 복사하기]를 눌러 담벼락에 글 하나로 붙여 넣습니다. (토론 전 자리)</td></tr>'
+      + '<tr><td><b>2</b></td><td>⑤ 나눌 준비</td><td>아이들이 [결과 복사하기]를 눌러 담벼락에 글 하나로 붙여 넣습니다. (토론 전 자리)</td></tr>'
       + '<tr><td><b>3</b></td><td>⑦ 듣고 나서</td><td>같은 단추를 한 번 더 눌러 다시 올립니다. (나중 자리까지 들어 있음)</td></tr>'
       + '<tr><td><b>4</b></td><td>집계</td><td>담벼락 글을 모두 긁어 복사해서 [결과 모아 보기] 칸에 붙여 넣고 [집계하기]. '
       + '<span class="mini">앞뒤에 다른 글이 섞여 있어도 괜찮아요. @@ 표시 사이의 줄만 읽습니다. 같은 아이가 두 번 올렸으면 뒤의 것만 셉니다.</span></td></tr></table>'
       + '<div class="note">패들렛은 [공유 → 내보내기]로 전체 글을 한 번에 받을 수도 있습니다. 받은 글을 통째로 붙여 넣어도 됩니다.<br>'
       + '붙여 넣는 걸음을 없애고 싶으면 [결과 모아 보기] 맨 위에서 <b>구글 시트</b>를 연결하세요. 아이들이 [선생님께 보내기]를 누르면 시트에 쌓이고, 여기서 한 번에 불러옵니다.</div></div>';
 
-    h += '<div class="card"><h2>💬 막힐 때 쓰는 말</h2><table>'
+    h += '<div class="card"><h2>막힐 때 쓰는 말</h2><table>'
       + '<tr><th style="width:200px">이럴 때</th><th>이렇게</th></tr>'
       + '<tr><td>같은 말만 되풀이할 때</td><td>"그 말을 <b>다른 말로</b> 한 번 더 해 줄래요?"</td></tr>'
       + '<tr><td>근거 없이 우길 때</td><td>"어디서 알게 되었는지 알려 줄 수 있어요?"</td></tr>'
@@ -1424,21 +1523,21 @@ function viewTeacher(){
 
   if(T.tab==='gather'){
     var rows = parsePastes();
-    h += '<div class="card noprint"><h2>📡 구글 시트에서 바로 모으기 <span class="mini" style="font-weight:600">(선택)</span></h2>'
-      + '<p class="lead">시트를 연결해 두면 아이들이 [📨 선생님께 보내기]를 누른 글이 시트에 쌓이고, 여기서 한 번에 불러올 수 있어요. '
+    h += '<div class="card noprint"><h2>구글 시트에서 바로 모으기 <span class="mini" style="font-weight:600">(선택)</span></h2>'
+      + '<p class="lead">시트를 연결해 두면 아이들이 [선생님께 보내기]를 누른 글이 시트에 쌓이고, 여기서 한 번에 불러올 수 있어요. '
       + '연결하지 않으면 지금처럼 복사·붙여넣기로 모읍니다.</p>'
       + '<label class="f" for="sheet">웹 앱 주소 (Apps Script 배포 URL)</label>'
       + '<div class="fh">만드는 법은 안내 문서 「02_구글시트_연결하기」에 화면 순서대로 있어요. 처음 한 번만 15분쯤 걸립니다.</div>'
       + '<input type="text" id="sheet" value="'+esc(T.sheet)+'" placeholder="https://script.google.com/macros/s/…/exec">'
       + '<div class="row" style="margin-top:10px">'
-      + '<button class="btn sm" data-go="loadsheet">⬇ 시트에서 불러오기</button>'
+      + '<button class="btn sm" data-go="loadsheet">시트에서 불러오기</button>'
       + '<button class="btn sm sec" data-go="testsheet">연결 확인</button>'
       + '<span class="mini" id="sheetmsg"></span></div>'
       + '<p class="mini" style="margin-top:8px">불러오면 아래 붙여넣기 칸이 시트 내용으로 바뀌어요. 주소를 넣은 뒤 [진행 순서]의 [학생용 주소 복사]를 누르면 '
       + '시트 주소가 함께 들어가서, 그 주소로 들어온 아이 화면에만 보내기 단추가 생깁니다.</p></div>';
     h += '<div class="card noprint"><h2>학생 결과 모아 보기</h2>'
       + '<p class="lead">아이들이 복사한 글을 모두 아래에 붙여 넣으세요. 여러 명을 한꺼번에 붙여도 됩니다.</p>'
-      + '<textarea class="out" id="paste" placeholder="학생들의 [📋 결과 복사하기] 내용을 그대로 붙여 넣으세요.">'+esc(T.paste)+'</textarea>'
+      + '<textarea class="out" id="paste" placeholder="학생들의 [결과 복사하기] 내용을 그대로 붙여 넣으세요.">'+esc(T.paste)+'</textarea>'
       + '<div class="row" style="margin-top:10px"><button class="btn sm" data-go="agg">집계하기</button>'
       + '<span class="mini">읽은 사람: <b>'+rows.length+'명</b></span>'
       + (T.paste ? '<button class="btn sm sec" data-go="clearpaste">붙여 넣은 내용 비우기</button>' : '')
@@ -1518,7 +1617,7 @@ function viewTeacher(){
         }
         h += '</table>';
         var chgRows=[]; for(i=0;i<rows.length;i++) if(rows[i].cards2 && rows[i].cards && rows[i].cards2!==rows[i].cards) chgRows.push(rows[i]);
-        h += '<div class="movecard" style="margin-top:14px"><span class="t">🔄 카드를 바꾼 사람 '+chgRows.length+'명'
+        h += '<div class="movecard" style="margin-top:14px"><span class="t">카드를 바꾼 사람 '+chgRows.length+'명'
           + (nAfter ? ' · 그대로인 사람 '+(nAfter-chgRows.length)+'명' : '')+'</span>'
           + '<div class="mini" style="margin-top:4px">숫자가 고르게 나뉜 기준부터 이야기해 보세요. 표의 숫자는 다수결이 아니라 <b>어디서 생각이 갈리는지</b> 보는 데만 써요. '
           + '마무리에서는 <b>카드를 바꾼 아이를 먼저 불러</b> "무엇이 생각을 바꿨니?"를 물어보세요.</div></div>';
@@ -1540,11 +1639,11 @@ function viewTeacher(){
         + (tq ? '<p class="lead">주제: '+esc(tq)+' · '+rows.length+'명</p>' : '');
       h += '<h3 style="font-size:15.5px;margin:6px 0 2px">토론 전</h3>' + mapHtml(fc,'a');
       if(nL) h += '<h3 style="font-size:15.5px;margin:6px 0 2px">토론 후</h3>' + mapHtml(lc,'b');
-      h += '<div class="vlkey"><span><i class="pip a" style="background:#b9ccc0"></i>토론 전</span>'
+      h += '<div class="vlkey"><span><i class="pip a" style="background:#c8d0d8"></i>토론 전</span>'
         + '<span><i class="pip b" style="background:var(--green)"></i>토론 후</span></div>';
       if(nF) h += '<p class="mini" style="margin-top:10px">반 평균 자리: 토론 전 <b>'+(sumF/nF).toFixed(1)+'</b>'
         + (nL ? ' → 토론 후 <b>'+(sumL/nL).toFixed(1)+'</b>' : '') + '</p>';
-      h += '<div class="movecard" style="margin-top:14px"><span class="t">🔄 자리를 옮긴 사람 '+mv+'명 · 지킨 사람 '+stay+'명</span>'
+      h += '<div class="movecard" style="margin-top:14px"><span class="t">자리를 옮긴 사람 '+mv+'명 · 지킨 사람 '+stay+'명</span>'
         + '<div class="mini" style="margin-top:4px">마무리에서 <b>옮긴 아이들을 먼저 불러</b> "무엇이 너를 움직였니?"를 물어보세요. '
         + '그 한마디가 오늘 토론의 결론보다 오래 남습니다. 한 칸 옮긴 것도 옮긴 거예요.</div></div>';
       if(movers.length){
@@ -1592,9 +1691,9 @@ function viewTeacher(){
         h += '<tr><td>'+esc(rr.name)+'</td>'
           + (tp && tp.noLine
              ? '<td>카드 '+(rr.cards?rr.cards.replace(/0/g,'').length:0)+'장</td>'
-               + '<td>'+(rr.cards2 ? (cardsChanged(rr.cards||'',rr.cards2) ? cardsChanged(rr.cards||'',rr.cards2)+'장 바꿈 🔄' : '그대로') : '-')+'</td>'
+               + '<td>'+(rr.cards2 ? (cardsChanged(rr.cards||'',rr.cards2) ? cardsChanged(rr.cards||'',rr.cards2)+'장 바꿈' : '그대로') : '-')+'</td>'
              : '<td>'+(rr.first!==null?rr.first:'-')+'</td>'
-               + '<td>'+(rr.last!==null?rr.last:'-')+(rr.first!==null&&rr.last!==null&&rr.first!==rr.last?' 🔄':'')+'</td>')
+               + '<td>'+(rr.last!==null?rr.last:'-')+(rr.first!==null&&rr.last!==null&&rr.first!==rr.last?'':'')+'</td>')
           + '<td>'+esc(rr.evt)+'</td><td>'+esc(rr.score)+'</td></tr>';
       }
       h += '</table>';
@@ -1606,7 +1705,7 @@ function viewTeacher(){
       h += '<h3 style="font-size:16px;margin:22px 0 6px">토의·토론 평가 — 상·중·하 <span class="mini">('+BB.name+' 기준)</span></h3>'
         + '<p class="mini">아이들이 쓴 글을 네 기준으로 읽어 앱이 먼저 제안합니다. 설득력이나 태도는 글만으로 알 수 없으니, '
         + '<b>단추를 눌러 고치고</b> 한 줄 평도 바꿔 쓰세요. 고친 것은 이 기기에 남아요. 학년군은 맨 위에서 바꿉니다.</p>'
-        + '<details class="think"><summary>📏 평가 기준 보기 — '+BB.name+'</summary><div class="in">'
+        + '<details class="think"><summary>평가 기준 보기 — '+BB.name+'</summary><div class="in">'
         + '<table style="margin-top:8px"><tr><th style="width:120px">기준</th><th>2점</th><th>1점</th><th>0점</th></tr>';
       for(bc=0;bc<BB.crit.length;bc++)
         h += '<tr><td><b>'+esc(BB.crit[bc].k)+'</b><br><span class="mini">'+esc(BB.crit[bc].s)+'</span></td><td>'+esc(BB.crit[bc].d[0])+'</td><td>'+esc(BB.crit[bc].d[1])+'</td><td>'+esc(BB.crit[bc].d[2])+'</td></tr>';
@@ -1632,8 +1731,8 @@ function viewTeacher(){
           + '<td><input type="text" class="gnote" data-gnote="'+esc(gk)+'" data-auto="'+esc(autoNote(gr))+'" value="'+esc(noteOf(gr))+'"></td></tr>';
       }
       h += '</table></div><div class="row noprint" style="margin-top:10px">'
-        + '<button class="btn sm" data-go="copygrades">📋 평가표 복사 (엑셀·시트에 붙이기)</button>'
-        + '<button class="btn sm sec" data-go="print">🖨 인쇄</button>'
+        + '<button class="btn sm" data-go="copygrades">평가표 복사 (엑셀·시트에 붙이기)</button>'
+        + '<button class="btn sm sec" data-go="print">인쇄</button>'
         + '<button class="btn sm sec" data-go="resetgrades">앱 제안으로 되돌리기</button></div>'
         + '<p class="mini" style="margin-top:6px">한 줄 평은 그대로 쓰기보다 아이 이름을 넣어 다듬어 주세요. 복사한 표는 탭으로 나뉘어 있어 시트에 붙이면 칸이 맞습니다.</p>';
 
@@ -1645,7 +1744,7 @@ function viewTeacher(){
   }
 
   /* 합의문 */
-  h += '<div class="card agree hasprint"><h2>📜 우리 반 합의문</h2>'
+  h += '<div class="card agree hasprint"><h2>우리 반 합의문</h2>'
     + '<p class="lead">네 칸을 채우면 끝납니다. 아이들에게 불러 주면서 함께 적으세요.</p>'
     + '<label class="f"><span class="n">1</span>우리가 모두 동의한 것</label>'
     + '<div class="fh">양쪽이 다 맞다고 인정한 사실·가치. 여기부터 적어야 싸움이 멈춥니다.</div>'
@@ -1661,8 +1760,8 @@ function viewTeacher(){
     + '<textarea id="a4" placeholder="예: 얼굴 자료를 실제로 얼마나 보관하는지, 지워 달라고 요청할 수 있는지 알아보기로 했다.">'+esc(T.a4)+'</textarea>'
     + '<pre class="plain printonly">'+esc(agreeText())+'</pre>'
     + '<div class="row noprint" style="margin-top:16px">'
-    + '<button class="btn" data-go="copyagree">📋 합의문 복사</button>'
-    + '<button class="btn sec" data-go="print">🖨 인쇄해서 게시하기</button></div>'
+    + '<button class="btn" data-go="copyagree">합의문 복사</button>'
+    + '<button class="btn sec" data-go="print">인쇄해서 게시하기</button></div>'
     + '<div class="note" style="margin-top:14px"><b>이 합의문이 다음 활동으로 이어집니다.</b><br>'
     + '③번의 조건들을 모으면 그대로 <b>「우리 학교 AI 이용 약속」</b>이나 <b>모의 국회 안건</b>, '
     + '<b>크라우드 펀딩 투자 심사 기준</b>이 됩니다.</div></div>';
@@ -1811,6 +1910,7 @@ document.addEventListener('keydown', function(e){
   }
 });
 document.addEventListener('input', function(e){
+  if(e.target && e.target.tagName==='TEXTAREA') grow(e.target);
   if(e.target && (e.target.tagName==='TEXTAREA' || e.target.tagName==='INPUT')){
     clearTimeout(window.__t);
     window.__t = setTimeout(function(){ grab(); refreshNext(); }, 250);
