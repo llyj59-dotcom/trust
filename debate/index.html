@@ -82,6 +82,8 @@ b,strong{font-weight:700}
   background:linear-gradient(to bottom,rgba(255,255,255,0),#fff 22%)}
 .nav .btn{flex:1}
 .nav .btn.sec{flex:0 0 auto;min-width:96px}
+/* 마지막 단계의 [새 주제로 다시 하기]는 화면 아래에 붙이지 않아요(잘못 누르기 쉬워서). */
+.nav.static{position:static;background:none}
 
 /* 주제 고르기 */
 .topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
@@ -262,6 +264,10 @@ pre.plain{white-space:pre-wrap;font-family:inherit;font-size:15px;line-height:1.
   .nav{margin:20px -20px -22px;padding:14px 20px calc(14px + env(safe-area-inset-bottom));border-radius:0 0 22px 22px}
   .tabs{width:100%}
   .tab{flex:1;padding:8px 10px}
+  .nav.static{margin:20px 0 0;padding:0}
+}
+@media (max-width:360px){
+  .tab{padding:8px 4px;font-size:13.5px}
 }
 </style>
 </head>
@@ -1174,7 +1180,7 @@ function viewStudent(){
       + '<button class="btn'+(S.send?' sec':'')+'" data-go="copy" style="flex:1">결과 복사하기</button>'
       + '<button class="btn sec" data-go="print">인쇄</button></div>'
       + (S.send && S.lastSent ? '<p class="hint">마지막으로 보낸 때: '+esc(S.lastSent)+'</p>' : '')
-      + '<div class="nav noprint"><button class="btn sec" data-go="back">이전</button>'
+      + '<div class="nav static noprint"><button class="btn sec" data-go="back">이전</button>'
       + '<button class="btn sec" data-go="reset" style="flex:1">새 주제로 다시 하기</button></div></div>';
     return h;
   }
