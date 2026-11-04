@@ -3195,6 +3195,8 @@ const GAME_DATA = {
     count: '{글자수}자 / {최소}자 이상',
     shortOk: '✍️ 짧아도 괜찮아요. 쓰기가 힘들면 선생님께 말로 설명하고, 선생님이 대신 적어 주셔도 돼요.',
     tooShort: '{최소}자 이상 써 주세요.',
+    // 2026-11 다른 학교 수업: "ㅇㅇㅇㅇ", "....", "ㅏㅏㅏㅏ"만 쳐도 넘어간다는 의견이 있었어요
+    notWords: '자음·모음이나 점, 같은 글자 되풀이로는 까닭을 알기 어려워요. 낱말로 까닭을 써 볼까요?',
     bannedMessage: '다른 친구들도 볼 수 있어요. 고운 말로 다시 써 볼까요?',
     bannedWhich: '(걸린 말: "{말}")',
     articlesTitle: '📰 기사 다시 보기',
@@ -4255,6 +4257,15 @@ const GAME_DATA = {
   }
 
   function charLength(str) { return Array.from(str).length; }
+  // 결정서 글자 수: "ㅇㅇㅇ", "....", "ㅏㅏㅏ"처럼 자음·모음·점만 친 것은 세지 않아요
+  function wordText(str) { return String(str).replace(/[^가-힣A-Za-z0-9\s]/g, '').replace(/\s+/g, ' ').trim(); }
+  function wordLength(str) { return charLength(wordText(str)); }
+  // "가가가가가…", "투자투자투자…"처럼 같은 글자만 되풀이한 글도 걸러요
+  // 한글 낱말이 거의 없는 글("asdfasdf", 한/영 키를 잘못 둔 글)도 다시 쓰게 해요
+  function tooRepetitive(str) {
+    const t = wordText(str);
+    return new Set(t.replace(/\s/g, '')).size < 4 || (t.match(/[가-힣]/g) || []).length < 5;
+  }
   function formatNum(n) { return Number(n).toLocaleString('ko-KR'); }
   function signed(n) { return (n > 0 ? '+' : n < 0 ? '−' : '') + formatNum(Math.abs(n)); }
   // 신뢰지수는 0~trustMax(150). 모든 라운드 최고 선택이 125점이라 끝까지 쌓여요(학생 설문 반영).
@@ -5905,7 +5916,7 @@ const GAME_DATA = {
     }
 
     function update() {
-      const len = charLength(area.value.trim());
+      const len = wordLength(area.value);
       count.textContent = X.count.replace('{글자수}', len).replace('{최소}', X.minLength);
       count.classList.toggle('is-ok', len >= X.minLength);
       submitBtn.disabled = len < X.minLength || (needEv && !state.evidenceDraft);
@@ -5930,7 +5941,12 @@ const GAME_DATA = {
       if (state.screen !== 'decision') return;
       const reason = area.value.trim();
       if (needEv && !state.evidenceDraft) { error.textContent = EV.need; evBox.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
-      if (charLength(reason) < X.minLength) { error.textContent = X.tooShort.replace('{최소}', X.minLength); return; }
+      if (wordLength(reason) < X.minLength) {
+        // 글자는 넘었는데 낱말이 모자라면, 무엇이 빠졌는지 알려 줘요
+        error.textContent = charLength(reason) >= X.minLength ? X.notWords : X.tooShort.replace('{최소}', X.minLength);
+        area.focus(); return;
+      }
+      if (tooRepetitive(reason)) { error.textContent = X.notWords; area.focus(); return; }
       const bad = hasBannedWord(reason, true);
       if (bad) { error.textContent = X.bannedMessage + ' ' + X.bannedWhich.replace('{말}', bad); area.focus(); return; }
       finalizeChoice(reason);
