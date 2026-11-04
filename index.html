@@ -1974,6 +1974,9 @@ const GAME_DATA = {
     // 영어
     'fuck', 'shit', 'bitch', 'sex', 'porn', 'dick', 'pussy', 'damn', 'asshole'
   ],
+  // 결정서 글(문장)에서는 검사하지 않는 낱말 — 별명에서는 그대로 막아요.
+  // "해야 한다(야한)", "영향을 미친다·미쳤다", "보지 않았다", "자지 않고", "뒤져 보니", "불이 꺼져", "죽어 가는", "완성기"처럼 흔한 말과 겹쳐요.
+  bannedWordsSentenceSkip: ['야한', '미친', '미쳤', '보지', '자지', '뒤져', '꺼져', '죽어', '성기', '자위', '애미', '애비', '고추가', '고추만', '등신'],
   // 별명 모양 검사에서 보여 줄 말
   nicknameRules: {
     jamo: '자음이나 모음만 쓴 별명은 쓸 수 없어요. 글자를 완성해서 지어 볼까요?',
@@ -3193,6 +3196,7 @@ const GAME_DATA = {
     shortOk: '✍️ 짧아도 괜찮아요. 쓰기가 힘들면 선생님께 말로 설명하고, 선생님이 대신 적어 주셔도 돼요.',
     tooShort: '{최소}자 이상 써 주세요.',
     bannedMessage: '다른 친구들도 볼 수 있어요. 고운 말로 다시 써 볼까요?',
+    bannedWhich: '(걸린 말: "{말}")',
     articlesTitle: '📰 기사 다시 보기',
     submitButton: '결정서 내고 결과 보기',
     backButton: '← 다른 선택 하기'
@@ -4389,7 +4393,15 @@ const GAME_DATA = {
   /* ------------------------------------------------------------------
      금칙어·닉네임 검사
      ------------------------------------------------------------------ */
-  function hasBannedWord(text) {
+  /* inSentence: 결정서처럼 문장으로 쓴 글이면 띄어쓰기를 지우지 않고, 문장 속 흔한 말과 겹치는 낱말은 건너뛰어요
+     (2026-11-04 다른 학교 수업: "써놔야한다"가 '야한'에 걸려 결정서를 못 냈어요. "영향을 미친다", "보지 않았다"도 같은 문제) */
+  function hasBannedWord(text, inSentence) {
+    if (inSentence) {
+      const low = text.toLowerCase();
+      const skip = D.bannedWordsSentenceSkip || [];
+      // 무엇에 걸렸는지 알려 줄 수 있게 그 낱말을 돌려줘요
+      return D.bannedWords.find((w) => w && !skip.includes(w) && low.includes(String(w).toLowerCase())) || false;
+    }
     const normalized = text.replace(/\s+/g, '').toLowerCase();
     return D.bannedWords.some((w) => w && normalized.includes(String(w).replace(/\s+/g, '').toLowerCase()));
   }
@@ -5919,7 +5931,8 @@ const GAME_DATA = {
       const reason = area.value.trim();
       if (needEv && !state.evidenceDraft) { error.textContent = EV.need; evBox.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
       if (charLength(reason) < X.minLength) { error.textContent = X.tooShort.replace('{최소}', X.minLength); return; }
-      if (hasBannedWord(reason)) { error.textContent = X.bannedMessage; area.focus(); return; }
+      const bad = hasBannedWord(reason, true);
+      if (bad) { error.textContent = X.bannedMessage + ' ' + X.bannedWhich.replace('{말}', bad); area.focus(); return; }
       finalizeChoice(reason);
     }
 
