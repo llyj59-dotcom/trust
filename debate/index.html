@@ -353,6 +353,43 @@ textarea.long{min-height:240px}
 .sl .voice b{color:var(--amber);font-size:.8em;margin-right:.4em}
 .split .voice{background:var(--amber-l);border-radius:12px;padding:.35em .7em;margin:.3em 0 0;font-size:.9em}
 .split .voice b{color:var(--amber);font-size:.8em;margin-right:.4em}
+.nowt{background:var(--green);color:#fff}
+.nowt h2{color:#fff}
+.nowt .mini{color:#d8f2e6;font-weight:700}
+.nowt .btn{background:#fff;color:var(--green-d);margin-top:12px}
+.voice .vn{color:var(--sub);font-weight:700;font-size:.8em;margin-left:.4em}
+/* 포트폴리오 */
+.pfwrap{position:fixed;inset:0;z-index:110;background:#e9ecef;overflow:auto}
+.pfwrap[hidden]{display:none}
+.pf-bar{position:sticky;top:0;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 16px;background:#fff;z-index:2;box-shadow:0 1px 0 var(--line)}
+.pf-bar .sp{flex:1}
+.pf-pages{padding:16px 0 40px}
+.pf{background:#fff;width:210mm;max-width:calc(100% - 24px);margin:0 auto 16px;padding:13mm 14mm;font-size:10.5pt;line-height:1.5;color:#191f28;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.pf header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;border-bottom:2px solid var(--green);padding-bottom:7px;margin-bottom:4px}
+.pf h1{font-size:19pt;margin:0;letter-spacing:-.03em}
+.pf h1 small{font-size:11pt;color:var(--sub);font-weight:600;margin-left:4px}
+.pf .pf-k{font-size:8.5pt;color:var(--green-d);font-weight:700;display:block}
+.pf .pf-t{text-align:right;font-size:9.5pt;color:var(--sub);max-width:55%}
+.pf h2{font-size:11pt;margin:10px 0 3px;color:var(--green-d);letter-spacing:-.02em}
+.pf-ln{display:grid;grid-template-columns:27mm 1fr;gap:6px;padding:3px 0;border-bottom:1px solid #eef0f3;break-inside:avoid}
+.pf-ln b{color:var(--sub);font-size:9pt;font-weight:700}
+.pf-ln span{white-space:pre-wrap}
+.pf table{width:100%;font-size:9.5pt;border-collapse:collapse;margin:0}
+.pf td,.pf th{border-bottom:1px solid #eef0f3;padding:3px 5px;text-align:left;background:none}
+.pf th{color:var(--sub);font-size:8.5pt}
+.pf .chg{font-weight:700;color:var(--purple)}
+.pf-final{white-space:pre-wrap;background:#f6f7f9;border-radius:8px;padding:8px 10px;font-size:10pt;break-inside:avoid}
+.pf-jj{font-size:8.5pt;background:var(--purple-l);color:var(--purple);border-radius:6px;padding:1px 6px;margin-left:4px}
+.pf-agree{background:var(--green-l);border-radius:8px;padding:6px 10px;break-inside:avoid}
+@media print{
+  body.pfprint > *:not(#pf){display:none!important}
+  body.pfprint #pf{position:static;background:#fff;overflow:visible}
+  body.pfprint .pf-bar{display:none}
+  body.pfprint .pf-pages{padding:0}
+  body.pfprint .pf{box-shadow:none;margin:0;width:auto;max-width:none;padding:0;break-after:page}
+  body.pfprint .pf:last-child{break-after:auto}
+  @page{size:A4;margin:12mm}
+}
 .sl .ask{background:var(--blue-l);color:#26476f;border-radius:16px;padding:.7em 1em;margin:.6em 0;font-weight:600}
 .sl textarea{width:100%;font-size:1em;border:0;border-radius:16px;padding:.6em .9em;background:#fff;min-height:3.2em;resize:vertical}
 .sl label.al{display:block;font-weight:700;margin:.8em 0 .3em}
@@ -1181,7 +1218,10 @@ function viewStudent(){
 
   /* --- 0. 주제 고르기 --- */
   if(S.step===0){
-    h += '<div class="card"><h2>오늘 어떤 이야기를 나눌까요?</h2>'
+    var nt = NOWT && topicById(NOWT);
+    if(nt) h += '<div class="card nowt"><span class="mini">지금 우리 반이 하고 있는 '+(nt.noLine ? '토의' : '토론')+'</span>'
+      + '<h2 style="margin-top:6px">'+nt.ic+' '+esc(nt.q)+'</h2><button class="btn" data-topic="'+esc(nt.id)+'">이 '+(nt.noLine ? '토의' : '토론')+' 시작하기</button></div>';
+    h += '<div class="card"><h2>'+(nt ? '다른 주제로 하고 싶다면' : '오늘 어떤 이야기를 나눌까요?')+'</h2>'
       + '<p class="lead">주제를 하나 고르세요. 선생님이 정해 주신 주제가 있으면 그것을 고르면 돼요.</p>'
       + '<label class="f" for="nm">내 이름</label>'
       + '<div class="fh">선생님이 누구 생각인지 알 수 있게 적어 주세요.</div>'
@@ -1438,7 +1478,8 @@ function viewStudent(){
       + (S.send && (S.group || ROSTER) ? '<div class="grpbox" id="grp">'+groupPanel(null)+'</div>' : '')
       + '<div class="nav static noprint"><button class="btn sec" data-go="back">이전</button>'
       + '<button class="btn'+(sent6?'':' sec')+'" data-go="write" style="flex:1">글로 완성하기</button></div>'
-      + '<p class="hint noprint" style="text-align:center"><button class="linkbtn" data-go="reset">새 주제로 다시 하기</button></p></div>';
+      + '<p class="hint noprint" style="text-align:center"><button class="linkbtn" data-go="reset">새 주제로 다시 하기</button></p></div>'
+      + kidExtras();
     return h;
   }
 
@@ -1466,7 +1507,8 @@ function viewStudent(){
       + (S.send ? (sent7
           ? '<div class="pause done"><span class="t">최종 글까지 보냈어요! ('+esc(S.lastSent)+')</span><div class="mini">고친 게 있으면 한 번 더 보내도 돼요.</div></div>'
           : '<p class="hint">최종본을 붙여 넣었으면 [선생님께 보내기]를 눌러요.</p>') : '')
-      + '<div class="nav static noprint"><button class="btn sec" data-go="back">이전</button></div></div>';
+      + '<div class="nav static noprint"><button class="btn sec" data-go="back">이전</button></div></div>'
+      + kidExtras();
     return h;
   }
   return h;
@@ -2114,7 +2156,7 @@ function liveHtml(){
   var tps = Object.keys(cnt).sort(function(a,b){ return cnt[b]-cnt[a]; });
   var tp = (LIVE.topic && cnt[LIVE.topic]) ? LIVE.topic : (tps[0] || LIVE.cur || 'upload3');   /* 아직 아무도 안 들어왔으면 지금 수업(3차시) 주제로 */
   var tt = topicById(tp), kids = recent.filter(function(x){ return x.d.topic===tp; });
-  LIVE.cur = tp || LIVE.cur;
+  LIVE.cur = tp || LIVE.cur; pubNow(tp);
   if(tps.length>1){
     h += '<div class="chips" style="margin-top:10px">';
     for(var a=0;a<tps.length;a++){ var tq = topicById(tps[a]);
@@ -2236,13 +2278,13 @@ function cardVoices(rows, c, tp, CD){
     if(!hit){ quiet++; return; }
     if(hit.length > 140) hit = hit.slice(0, 138) + '…';
     if(seen[hit]) return; seen[hit] = 1;
-    out.push({ k:B[v-1], t:hit });
+    out.push({ k:B[v-1], t:hit, n:r.name });
   });
   return { list:out.slice(0, 6), more:Math.max(0, out.length-6), quiet:quiet };
 }
-function voicesHtml(vo){
+function voicesHtml(vo, names){
   if(!vo || (!vo.list.length && !vo.quiet)) return '';
-  return vo.list.map(function(x){ return '<div class="voice"><b>'+esc(x.k)+'</b>'+esc(x.t)+'</div>'; }).join('')
+  return vo.list.map(function(x){ return '<div class="voice"><b>'+esc(x.k)+'</b>'+esc(x.t)+(names && x.n ? '<span class="vn">'+esc(x.n)+'</span>' : '')+'</div>'; }).join('')
     + (vo.more ? '<div class="mini">… '+vo.more+'개 더</div>' : '')
     + (vo.quiet ? '<div class="mini" style="font-size:.75em;margin-top:.2em">까닭을 따로 적지 않은 친구 '+vo.quiet+'명</div>' : '');
 }
@@ -2317,7 +2359,7 @@ function showSlide(it){
     if(it.k==='same'){
       hs += '<h1>같은 것<span class="mini">우리 반이 거의 같이 고른 것</span></h1>';
       if(same.length) same.sort(function(a,b){ return b.share-a.share; }).forEach(function(x){
-        hs += '<div class="crow"><div class="nm">'+esc(CD.list[x.c][0])+' — '+esc(B[x.top-1])+' '+x.n[x.top]+'명</div>'+barHtml(x.n, B)+voicesHtml(x.vo)+'</div>'; });
+        hs += '<div class="crow"><div class="nm">'+esc(CD.list[x.c][0])+' — '+esc(B[x.top-1])+' '+x.n[x.top]+'명</div>'+barHtml(x.n, B)+voicesHtml(x.vo, SHOW.names)+'</div>'; });
       else hs += '<div class="empty">열 명 가운데 일곱 명 넘게 같이 고른 카드는 아직 없어요.</div>';
       var kws = KW[SHOW.tp] || [], kc = [];
       kws.forEach(function(w){
@@ -2333,7 +2375,7 @@ function showSlide(it){
     if(diff.length){
       hs += '<div class="legend">'+B.map(function(b,k){ return '<span><i style="background:'+['var(--green)','#f5a524','#e5534b'][k]+'"></i>'+esc(b)+'</span>'; }).join('')+'</div>';
       diff.sort(function(a,b){ return a.share-b.share; }).forEach(function(x){
-        hs += '<div class="crow"><div class="nm">'+esc(CD.list[x.c][0])+'<span class="tag">생각이 갈려요</span></div>'+barHtml(x.n, B)+voicesHtml(x.vo)+'</div>'; });
+        hs += '<div class="crow"><div class="nm">'+esc(CD.list[x.c][0])+'<span class="tag">생각이 갈려요</span></div>'+barHtml(x.n, B)+voicesHtml(x.vo, SHOW.names)+'</div>'; });
       hs += '<div class="ask">"'+esc(B[1]||'')+'"를 고른 친구 — 어떻게 고치면 넣을 수 있을까?<br>"'+esc(B[2]||'')+'"를 고른 친구 — 왜 빼도 된다고 생각했어?</div>'
           + '<p class="mini" style="font-size:.8em">여기서 나온 조건이 합의문 ③ "우리 반이 하기로 한 것"이 되고, 끝까지 갈리면 ② "아직 갈리는 것"에 적어요.</p>';
     } else hs += '<div class="empty">크게 갈린 카드는 없어요. 같은 것 쪽을 더 자세히 정해 봐요.</div>';
@@ -2352,6 +2394,7 @@ function paintShow(){
     return '<button data-go="showto" data-i="'+i+'" aria-current="'+(i===SHOW.i)+'">'+esc(lb)+'</button>'; }).join('');
   el.hidden = false; document.body.style.overflow = 'hidden';
   el.innerHTML = '<div class="sh-top"><b>전체 토의</b><span class="mini">'+(SHOW.i+1)+' / '+L.length+'</span><span class="sp"></span>'
+    + '<button class="btn sm sec" data-go="shownames">'+(SHOW.names ? '이름 숨기기' : '이름 보기')+'</button>'
     + '<button class="btn sm sec" data-go="showreload">새로 불러오기</button><button class="btn sm sec" data-go="showfull">전체 화면</button>'
     + '<button class="btn sm sec" data-go="showclose">닫기</button></div>'
     + '<div class="sl" id="sl">'+showSlide(L[SHOW.i])+'</div>'
@@ -2369,9 +2412,9 @@ function agTp(){ if(S.mode==='teacher') return SHOW.tp || LIVE.cur || 'upload3';
 function agUrl(){ return S.mode==='teacher' ? sheetUrl() : S.send; }
 function agVal(f){ var x = AG.f[f]; return x ? x.v : (S.mode==='teacher' ? (T[f]||'') : ''); }
 function isRep(){ return S.mode==='student' && !!(S.name||'').trim() && AG.reps.some(function(n){ return n===S.name || sameName(S.name, n); }); }
-function agPost(f, v, by, cb){
+function agPost(f, v, by, cb, tpo){
   var u = agUrl(); if(!u){ if(cb) cb(false); return; }
-  fetch(u, { method:'POST', body:JSON.stringify({agree:{tp:agTp(), f:f, v:v, by:by}}), headers:{'Content-Type':'text/plain;charset=utf-8'} })
+  fetch(u, { method:'POST', body:JSON.stringify({agree:{tp:tpo || agTp(), f:f, v:v, by:by}}), headers:{'Content-Type':'text/plain;charset=utf-8'} })
     .then(function(r){ return r.json(); })
     .then(function(j){ if(cb) cb(!!(j && j.agree)); })
     .catch(function(){ if(cb) cb(false); });
@@ -2415,7 +2458,7 @@ function agApply(root){
     var v = agVal(k);
     if(ta && ta!==document.activeElement && ta.value!==v){ ta.value = v; grow(ta); }
     if(dv && dv.textContent!==v) dv.textContent = v;
-    if(by) by.textContent = x && x.by && v ? x.by+' 씀' : '';
+    if(by) by.textContent = S.mode==='teacher' && x && x.by && v ? x.by+' 씀' : '';   /* 누가 썼는지는 선생님 화면에만 */
   }
   if(S.mode==='teacher') for(var j=0;j<AGA.length;j++){ var el = $(AGA[j][0]); if(el && el!==document.activeElement && el.value!==(T[AGA[j][0]]||'')) el.value = T[AGA[j][0]]||''; }
 }
@@ -2431,7 +2474,7 @@ function boardFromShow(){
   var rs = rows.filter(function(r){ return lastCards(r); });
   if(CD) for(var c=0;c<CD.list.length;c++){
     var m = cardCounts(rs, c), tot = m[1]+m[2]+m[3], mx = Math.max(m[1],m[2],m[3]); if(!tot) continue;
-    var vo = cardVoices(rs, c, SHOW.tp, CD);
+    var vo0 = cardVoices(rs, c, SHOW.tp, CD), vo = { list:vo0.list.map(function(v){ return {k:v.k, t:v.t}; }), more:vo0.more, quiet:vo0.quiet };   /* 아이들 화면에 가니 이름은 빼요 */
     var item = { name:CD.list[c][0], top:B[m.indexOf(mx)-1], n:mx, tot:tot, parts:[[B[0],m[1]],[B[1],m[2]],[B[2],m[3]]], vo:vo };
     (mx/tot >= 0.7 ? b.same : b.diff).push(item);
   }
@@ -2462,13 +2505,14 @@ function agreeSplit(b, can){
   var who = S.mode==='teacher' ? '선생님으로 적을 수 있어요.' : (can ? '대표로 적을 수 있어요.' : '');
   var reps = AG.reps.length ? AG.reps.join(', ') : '대표';
   var h = '<div class="split"><div class="agl"><h2>우리 반 합의문</h2>'
-    + '<p class="mini" style="font-size:.75em;margin:0 0 .4em">'+(who ? '<b>'+who+'</b> 적으면 모두의 화면에 바로 보여요.' : esc(reps)+'(이)가 대표로 적어요. 적는 대로 여기에 보여요.')+'</p>';
+    + '<p class="mini" style="font-size:.75em;margin:0 0 .4em">'+(who ? '<b>'+who+'</b> 적으면 모두의 화면에 바로 보여요.' + (S.mode==='teacher' && AG.reps.length ? ' 대표: '+esc(reps) : '')
+                                                                   : '대표 친구가 적어요. 적는 대로 여기에 보여요.')+'</p>';
   for(var i=0;i<AGA.length;i++){
     var k = AGA[i][0], v = agVal(k), x = AG.f[k];
     h += '<label class="al">'+AGA[i][1]+'</label>'
       + (can ? '<textarea data-ag="'+k+'" placeholder="'+(k==='a3' ? '예: 올리기 전에 3초 동안 개인정보·출처를 본다. 친구가 나오면 허락을 받는다.' : '')+'">'+esc(v)+'</textarea>'
              : '<div class="agv" data-agv="'+k+'">'+esc(v)+'</div>')
-      + '<div class="agby" data-agby="'+k+'">'+(x && x.by && v ? esc(x.by)+' 씀' : '')+'</div>';
+      + '<div class="agby" data-agby="'+k+'">'+(S.mode==='teacher' && x && x.by && v ? esc(x.by)+' 씀' : '')+'</div>';
   }
   return h + '<div class="agst"></div></div><div class="agneed">'+needHtml(b)+'</div></div>';
 }
@@ -2497,7 +2541,9 @@ function agLoop(){
   var go = S.mode==='teacher' ? (T.tab==='whole' || T.tab==='agree' || SHOW.open) && !!sheetUrl() : !!(S.send && topic());
   if(!go){ agTimer = setTimeout(agLoop, 6000); return; }
   agLoad(function(){
-    if(S.mode==='student') paintWhole();
+    if(S.mode==='student'){ paintWhole(); agApply(document);
+      /* ⑦·⑧에서 합의문이 처음 생기면, 쓰고 있지 않을 때 한 번 다시 그려 보여 줘요. */
+      if((S.step===6 || S.step===7) && !$('kagree') && agHas() && !(document.activeElement && /TEXTAREA|INPUT/.test(document.activeElement.tagName))) render(); }
     else { agApply(document); if(T.tab==='whole' && !SHOW.open && !document.activeElement.closest('.card textarea')) { var c = $('wholectl'); if(c) c.innerHTML = wholeCtl(); var rb = $('repbox'); if(rb) rb.innerHTML = repChips(); } }
     agTimer = setTimeout(agLoop, AG.on || SHOW.open ? 4000 : 12000);
   });
@@ -2524,7 +2570,7 @@ function showFetch(cb){
     var order = Object.keys(cnt).sort(function(a,b){ return cnt[b]-cnt[a]; });
     SHOW.tp = (LIVE.cur && cnt[LIVE.cur]) ? LIVE.cur : (order[0] || LIVE.cur || 'upload3');
     SHOW.rows = all.filter(function(r){ return r.topic===SHOW.tp; });
-    SHOW.roster = rosterFromText(txt) || LIVE.roster;
+    SHOW.roster = rosterFromText(txt) || LIVE.roster; pubNow(SHOW.tp);
     if(cb) cb();
   }
   if(!u){ use(T.paste||''); return; }
@@ -2533,6 +2579,98 @@ function showFetch(cb){
     .then(function(j){ if(!j || !j.ok) throw new Error('bad'); use((j.texts||[]).join('\n\n')); })
     .catch(function(){ SHOW.err = '시트를 읽지 못해, [결과 모아 보기]에 붙여 넣은 글로 보여 드려요.'; use(T.paste||''); });
 }
+/* 아이 첫 화면에 보일 '지금 하는 토의': 선생님 기기가 [지금 아이들]·[전체 토의]에서 정한 주제를 '_class' 줄로 올려요. */
+var NOWT;
+function pubNow(tp){ if(S.mode!=='teacher' || !tp || !sheetUrl() || LIVE.pub===tp) return; LIVE.pub = tp; agPost('mode', tp, '선생님', null, '_class'); }
+function nowLoad(){
+  if(NOWT!==undefined || !S.send || !window.fetch) return;
+  NOWT = null;
+  fetch(S.send + (S.send.indexOf('?')>=0?'&':'?') + 'what=agree&tp=_class&t=' + Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(j){ var v = j && j.f && j.f.mode && j.f.mode.v; if(v && topicById(v)){ NOWT = v; if(S.mode==='student' && S.step===0) render(); } })
+    .catch(function(){});
+}
+function agHas(){ return AGA.some(function(a){ return !!(agVal(a[0])||'').trim(); }); }
+/* ⑦·⑧ 아래: 우리 반 합의문(보기만)과 내 포트폴리오 */
+function kidExtras(){
+  var h = '';
+  if(agHas()){
+    h += '<div class="card" id="kagree"><h2>우리 반 합의문</h2><p class="lead">반 친구들과 함께 정한 것이에요. 선생님과 대표 친구가 고치면 여기에도 바로 바뀌어요.</p><div class="split" style="display:block">';
+    for(var i=0;i<AGA.length;i++){ var v = agVal(AGA[i][0]); if(v) h += '<label class="al">'+AGA[i][1]+'</label><div class="agv" data-agv="'+AGA[i][0]+'">'+esc(v)+'</div>'; }
+    h += '</div></div>';
+  }
+  return h + '<div class="card noprint" style="padding:18px 22px"><div class="row"><div style="flex:1"><b>내 포트폴리오</b>'
+    + '<div class="mini">지금까지 쓴 것을 한두 쪽으로 모아 보여 줘요. 인쇄하거나 PDF로 저장할 수 있어요.</div></div>'
+    + '<button class="btn sm sec" data-go="pfme">보기 · 인쇄</button></div></div>';
+}
+/* 선생님만: 다르게 고른 친구의 생각(이름 있음) */
+function teacherVoices(){
+  if(!SHOW.rows) return '<p class="mini">불러오는 중이에요…</p>';
+  var tt = topicById(SHOW.tp), CD = cardsOf(tt), rs = SHOW.rows.filter(function(r){ return lastCards(r); }), h = '';
+  if(!CD) return '<p class="mini">카드로 고르는 주제가 아니에요.</p>';
+  for(var c=0;c<CD.list.length;c++){
+    var vo = cardVoices(rs, c, SHOW.tp, CD);
+    if(!vo.list.length && !vo.quiet) continue;
+    var who = rs.filter(function(r){ return +(lastCards(r).charAt(c)||0) >= 2; }).map(function(r){ return r.name; });
+    h += '<h3 style="font-size:15.5px;margin:14px 0 4px">'+esc(CD.list[c][0])+' <span class="mini">다르게 고른 친구 '+who.length+'명: '+who.map(esc).join(', ')+'</span></h3>'
+      + '<div class="sl" style="padding:0;font-size:15px;overflow:visible">'+voicesHtml(vo, true)+'</div>';
+  }
+  return h || '<p class="mini">다르게 고른 친구가 없어요.</p>';
+}
+/* ===================== 포트폴리오 =====================
+   아이 한 명이 쓴 것을 한두 쪽으로. 선생님은 모두(평가 포함), 아이는 자기 것. 우리 반 합의문도 함께 들어가요. */
+function pfFromS(){
+  var t = topic(), CD = cardsOf(t), n = okCount();
+  return { name:S.name, group:S.typeName ? '' : S.group, t:t, CD:CD, c1:CD ? cardCode(CD, S.jobs) : '', c2:CD && countPicks(S.jobs2) ? cardCode(CD, S.jobs2) : '',
+    first:S.first, last:S.last, x:{claim:S.claim, reason:S.reason, ev:S.ev, who:S.who, other:S.other, still:S.still, grule:S.grule, moved:S.moved, why:S.why},
+    evt:S.evType>=0 ? EVTYPE[S.evType][0] : '', final:S.final, jj:jjFlag(), score:n[0]+'/'+n[1] };
+}
+function pfFromRow(r, R){
+  var t = topicById(r.topic), g = r.group;
+  if(!g && R) for(var k in R) if(R[k].some(function(m){ return sameName(r.name, m); })) g = k;
+  return { name:r.name, group:g, t:t, CD:cardsOf(t), c1:r.cards, c2:r.cards2, first:r.first, last:r.last, x:r.text || {},
+    evt:r.evt==='-' ? '' : r.evt, final:r.final, jj:r.jj, score:r.score, row:r };
+}
+function pfHtml(d, teacher){
+  var t = d.t, CD = d.CD, x = d.x || {}, TW = t && t.noLine ? '토의' : '토론';
+  function ln(k, v){ v = (v||'').trim(); return v ? '<div class="pf-ln"><b>'+k+'</b><span>'+esc(v)+'</span></div>' : ''; }
+  var h = '<section class="pf"><header><div><span class="pf-k">생각 모으기 · 포트폴리오</span><h1>'+esc(d.name||'(이름 없음)')+(d.group ? '<small>'+esc(d.group)+'모둠</small>' : '')+'</h1></div>'
+    + '<div class="pf-t">'+esc(t ? t.q : '')+'<br>'+new Date().toLocaleDateString('ko-KR')+'</div></header>';
+  if(CD && d.c1){
+    var B = CD.btn || CD.keys, chg = 0;
+    h += '<h2>처음 생각과 '+TW+' 뒤 생각</h2><table><tr><th>'+esc(CD.lbl)+'</th><th style="width:22%">처음</th><th style="width:22%">'+TW+' 뒤</th></tr>';
+    for(var c=0;c<CD.list.length;c++){
+      var a = +(d.c1.charAt(c)||0), b = d.c2 ? +(d.c2.charAt(c)||0) : null, ch = b!==null && a!==b; if(ch) chg++;
+      h += '<tr><td>'+esc(CD.list[c][0])+'</td><td>'+(a ? esc(B[a-1]) : '-')+'</td><td'+(ch?' class="chg"':'')+'>'+(b===null ? '-' : b ? esc(B[b-1]) : '-')+'</td></tr>';
+    }
+    h += '</table>' + (d.c2 ? '<p style="margin:3px 0 0;font-size:9.5pt">'+(chg ? '카드 '+chg+'장을 바꿨어요. 생각이 움직였어요.' : '처음 생각을 지켰어요.')+'</p>' : '');
+  } else if(t && !t.noLine && d.first!==null && d.first!==undefined){
+    h += '<h2>처음 자리와 나중 자리</h2><p style="margin:0">'+d.first+'번 자리 → '+(d.last!==null && d.last!==undefined ? d.last+'번 자리' : '아직')+'</p>';
+  }
+  h += '<h2>내 생각</h2>' + ln(t && t.noLine ? '제안하는 규칙' : '주장', x.claim) + ln('이유', x.reason) + ln('근거', (x.ev||'') + (x.ev && d.evt ? ' ('+d.evt+')' : '')) + ln('영향', x.who);
+  if((x.other||'').trim() || (x.still||'').trim()) h += '<h2>다른 의견과 내 답</h2>' + ln('다른 의견', x.other) + ln('내 답', x.still);
+  if((x.grule||'').trim()) h += '<h2>우리 모둠 의견</h2>' + ln('모둠 의견', x.grule);
+  if((x.moved||'').trim() || (x.why||'').trim()) h += '<h2>'+TW+'를 마치고</h2>' + ln('나를 움직인 말', x.moved) + ln('그 까닭', x.why);
+  if((d.final||'').trim()) h += '<h2>최종 글'+(d.jj==='j' ? '<span class="pf-jj">자작자작 도움</span>' : '')+'</h2><div class="pf-final">'+esc(d.final)+'</div>';
+  if(agHas()){
+    h += '<h2>우리 반 합의문</h2><div class="pf-agree">';
+    for(var i=0;i<AGA.length;i++) h += ln(AGA[i][1].replace(/^[①②③④]\s*/, ''), agVal(AGA[i][0]));
+    h += '</div>';
+  }
+  h += '<h2>돌아보기</h2>' + ln('스스로 점검', d.score);
+  if(teacher && d.row){ var e = evaluate(d.row); h += ln('선생님 평가', gradeOf(d.row)+' ('+e.sum+'/8)') + ln('한 줄 평', noteOf(d.row)); }
+  return h + '</section>';
+}
+function pfOpen(list, teacher){
+  var el = $('pf');
+  if(!el){ el = document.createElement('div'); el.id = 'pf'; el.className = 'pfwrap'; document.body.appendChild(el); }
+  el.innerHTML = '<div class="pf-bar"><b>포트폴리오 '+(list.length>1 ? list.length+'명' : '')+'</b><span class="mini">한 명당 한두 쪽 · A4</span><span class="sp"></span>'
+    + '<button class="btn sm" data-go="pfprint">인쇄 · PDF로 저장</button><button class="btn sm sec" data-go="pfclose">닫기</button></div>'
+    + '<div class="pf-pages">'+(list.length ? list.map(function(d){ return pfHtml(d, teacher); }).join('') : '<p style="text-align:center">아직 모인 결과가 없어요.</p>')+'</div>';
+  el.hidden = false; el.scrollTop = 0; document.body.style.overflow = 'hidden';
+}
+function pfClose(){ var el = $('pf'); if(el){ el.hidden = true; el.innerHTML = ''; } document.body.style.overflow = ''; }
+window.addEventListener('afterprint', function(){ document.body.classList.remove('pfprint'); });
 function showGo(i){ SHOW.i = i; paintShow(); var sl = $('sl'); if(sl) sl.scrollTop = 0; }
 function topicById(id){ for(var i=0;i<TOPICS.length;i++) if(TOPICS[i].id===id) return TOPICS[i]; return null; }
 function viewTeacher(){
@@ -2676,6 +2814,7 @@ function viewTeacher(){
       + '<li><b>다른 것</b> — 생각이 갈린 카드. "어떻게 고치면 다 같이 넣을 수 있을까?"를 물어요.</li>'
       + '<li><b>우리 반 합의문</b> — 네 칸을 칠판에서 함께 채워요. [마무리 — 합의문] 탭과 같은 내용이에요.</li></ol>'
       + '<div class="row" style="margin-top:14px"><button class="btn" data-go="showopen">전자칠판 화면 열기</button></div>'
+      + '<p class="mini" style="margin-top:8px">넘기기: 화면 아래 [다음]·[이전], 키보드 ←·→, 손가락으로 밀기. [전체 화면]을 누르면 칠판 가득 보여요. 칠판에 이름까지 보이려면 [이름 보기]. 끝내려면 [닫기]나 Esc.</p>'
       + '</div><div class="card"><h2>합의문 — 아이들 화면에 함께 띄우기</h2>'
       + '<p class="lead">켜면 모든 아이 화면에 <b>왼쪽 합의문 · 오른쪽 합의가 필요한 내용</b>이 똑같이 떠요. 대표로 정한 아이와 선생님만 합의문을 적을 수 있고, '
       + '다른 아이들은 적히는 대로 보기만 해요. 적은 것은 몇 초 안에 모두의 화면에 보여요.</p>'
@@ -2685,7 +2824,10 @@ function viewTeacher(){
       + '<div id="repbox">'+repChips()+'</div>'
       + '<p class="mini" style="margin-top:8px">대표 아이 화면에는 합의문 칸이 쓰는 칸으로 바뀌어요. 같은 칸을 두 사람이 동시에 고치면 나중에 쓴 쪽이 남으니, 대표마다 맡을 칸을 정해 주면 좋아요(예: 반장 ①②, 부반장 ③④).</p>'
       + '<p class="mini">서버가 없는 앱이라 완전한 잠금은 아니에요. 수업 중에 아무나 고치지 못하게 하는 정도예요.</p>'
-      + '<p class="mini" style="margin-top:8px">넘기기: 화면 아래 [다음]·[이전], 키보드 ←·→, 손가락으로 밀기. [전체 화면]을 누르면 칠판 가득 보여요. 끝내려면 [닫기]나 Esc.</p></div>';
+      + '</div><div class="card"><h2>다르게 고른 친구의 생각 <span class="mini">선생님만 보기 · 이름 있음</span></h2>'
+      + '<p class="lead">아이들 화면과 전자칠판에는 이름 없이 나가요(칠판은 [이름 보기]를 누르면 보여요). 여기서는 누가 무엇을 썼는지 볼 수 있어요.</p>'
+      + teacherVoices()
+      + '</div>';
     return h;
   }
   if(T.tab==='live'){
@@ -2857,7 +2999,7 @@ function viewTeacher(){
         + '<div class="note" style="margin-top:12px">"경험"이나 "들은 말"이 많다면 다음 시간에 <b>자료를 찾아보는 활동</b>을 한 번 넣어 주세요.</div>';
 
       h += '<h3 style="font-size:16px;margin:18px 0 6px">한 명씩 보기</h3><table>'
-        + '<tr><th>이름/코드</th><th>처음</th><th>나중</th><th>근거</th><th>점검</th><th>최종 글</th></tr>';
+        + '<tr><th>이름/코드</th><th>처음</th><th>나중</th><th>근거</th><th>점검</th><th>최종 글</th><th class="noprint">포트폴리오</th></tr>';
       for(var y=0;y<rows.length;y++){
         var rr=rows[y];
         h += '<tr><td>'+esc(rr.name)+'</td>'
@@ -2866,9 +3008,11 @@ function viewTeacher(){
                + '<td>'+(rr.cards2 ? (cardsChanged(rr.cards||'',rr.cards2) ? cardsChanged(rr.cards||'',rr.cards2)+'장 바꿈' : '그대로') : '-')+'</td>'
              : '<td>'+(rr.first!==null?rr.first:'-')+'</td>'
                + '<td>'+(rr.last!==null?rr.last:'-')+(rr.first!==null&&rr.last!==null&&rr.first!==rr.last?'':'')+'</td>')
-          + '<td>'+esc(rr.evt)+'</td><td>'+esc(rr.score)+'</td><td>'+jjTag(rr.jj)+'</td></tr>';
+          + '<td>'+esc(rr.evt)+'</td><td>'+esc(rr.score)+'</td><td>'+jjTag(rr.jj)+'</td>'
+          + '<td class="noprint"><button class="btn sm sec" data-go="pfone" data-pname="'+esc(rr.name)+'">보기</button></td></tr>';
       }
-      h += '</table>';
+      h += '</table><div class="row noprint" style="margin-top:10px"><button class="btn sm" data-go="pfall">포트폴리오 — '+rows.length+'명 모두 보기 · 인쇄</button>'
+        + '<span class="mini">한 명당 한두 쪽. [인쇄 · PDF로 저장]에서 "PDF로 저장"을 고르면 파일로 남아요. 합의문과 평가도 함께 들어가요.</span></div>';
       var fins = rows.filter(function(x){ return x.final; });
       if(fins.length){
         var nj = fins.filter(function(x){ return x.jj==='j'; }).length;
@@ -2964,6 +3108,7 @@ function render(){
   var key = S.mode+'/'+(S.mode==='teacher'?T.tab:S.step), y = window.pageYOffset||0;
   app(S.mode==='teacher' ? viewTeacher() : viewStudent());
   if(S.mode==='student' && key!==render.lastKey) progPing(true);
+  if(S.mode==='student' && S.step===0) nowLoad();
   if(S.mode==='teacher' && T.tab==='live'){ if(!liveTimer){ liveTimer = setInterval(liveLoad, 10000); liveLoad(); } }
   else if(liveTimer){ clearInterval(liveTimer); liveTimer = null; }
   if(S.mode==='student' && S.send && !rosterState && (S.step===1 || S.step>=5)) loadRoster();
@@ -3101,6 +3246,21 @@ document.addEventListener('click', function(e){
       break;
     case 'liveload': liveLoad(); break;
     case 'showopen': grab(); showOpen(); break;
+    case 'shownames': SHOW.names = !SHOW.names; paintShow(); break;
+    case 'pfme': grab(); pfOpen([pfFromS()], false); break;
+    case 'pfall': case 'pfone':
+      grab();
+      (function(one){
+        var R0 = rosterFromText(T.paste), rows = gradeRows();
+        if(one) rows = rows.filter(function(r){ return r.name===one; });
+        var gs = R0 ? Object.keys(R0) : [];
+        var list = rows.map(function(r){ return pfFromRow(r, R0); });
+        list.sort(function(a,b){ return (gs.indexOf(a.group)+1 || 99) - (gs.indexOf(b.group)+1 || 99) || String(a.name).localeCompare(String(b.name), 'ko'); });
+        agLoad(function(){ pfOpen(list, true); });
+      })(d.go==='pfone' ? d.pname : '');
+      break;
+    case 'pfprint': document.body.classList.add('pfprint'); window.print(); setTimeout(function(){ document.body.classList.remove('pfprint'); }, 1500); break;
+    case 'pfclose': pfClose(); break;
     case 'wholeon': case 'wholeboard':
       (function(on){
         function go(){
