@@ -59,12 +59,29 @@ b,strong{font-weight:700}
 .hint{color:var(--mute);font-size:14px;margin:8px 0 0;line-height:1.55}
 .mini{font-size:13px;color:var(--mute);line-height:1.55}
 
-/* 단계 */
-.stepname{font-size:13px;font-weight:600;color:var(--green);margin:6px 2px 8px;letter-spacing:-.01em}
-.steps{display:flex;gap:4px;margin:0 2px 16px}
-.steps i{flex:1;height:4px;border-radius:999px;background:#dde1e6;transition:background .3s var(--ease)}
-.steps i.on{background:var(--green)}
-.steps i.done{background:#8fd0b3}
+[hidden]{display:none!important}
+
+/* 단계 — 지금 몇 단계인지 크게, 번호 동그라미로 어디까지 왔는지 */
+.stepper{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:14px 14px 12px;margin:4px 0 12px}
+.sp-head{display:flex;align-items:center;gap:10px;margin:0 2px 14px}
+.sp-badge{background:var(--green);color:#fff;font-weight:800;font-size:15px;border-radius:999px;padding:5px 13px;white-space:nowrap}
+.sp-head b{font-size:19px;letter-spacing:-.035em;flex:1;min-width:0;line-height:1.3}
+.sp-of{font-size:13px;color:var(--mute);white-space:nowrap}
+.sp-dots{list-style:none;margin:0;padding:0;display:flex}
+.sp-dots li{flex:1;position:relative;min-width:0}
+.sp-dots li::before{content:'';position:absolute;top:15px;left:-50%;right:50%;height:3px;background:#e4e7eb;z-index:0}
+.sp-dots li:first-child::before{display:none}
+.sp-dots li.done::before,.sp-dots li.on::before{background:#a9dcc4}
+.sp-dots button,.sp-dots span{display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;position:relative;z-index:1;background:none;padding:0;color:inherit;font:inherit;min-height:0}
+.sp-dots i{font-style:normal;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;background:#e4e7eb;color:var(--mute)}
+.sp-dots li.done i{background:#d6f0e3;color:var(--green-d)}
+.sp-dots li.on i{background:var(--green);color:#fff;box-shadow:0 0 0 5px var(--green-l)}
+.sp-dots small{font-size:11.5px;color:var(--mute);white-space:nowrap;letter-spacing:-.05em}
+.sp-dots li.on small{color:var(--green-d);font-weight:700}
+.sp-dots button:active i{transform:scale(.92)}
+.sp-tip{font-size:12px;color:var(--mute);margin:10px 0 0;text-align:center}
+.toppill{background:var(--green-l);color:var(--green-d);font-size:13.5px;border-radius:999px;padding:6px 12px;white-space:nowrap;font-weight:600}
+@media (max-width:600px){ .top.hasstep .tag{display:none} }
 
 /* 단추 */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:54px;padding:0 22px;
@@ -262,9 +279,13 @@ code{font-family:inherit;background:var(--fill-2);padding:1px 6px;border-radius:
 .meline b{color:var(--ink)}
 .flow{list-style:none;margin:14px 0 8px;padding:0;display:grid;gap:6px;counter-reset:f}
 .flow li{counter-increment:f;display:flex;align-items:center;gap:10px;background:var(--fill);border-radius:12px;padding:10px 12px;font-size:14.5px;color:var(--mute);line-height:1.45}
-.flow li::before{content:counter(f);flex:0 0 24px;height:24px;border-radius:50%;background:#d5dae0;color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.flow li::before{content:'';flex:0 0 20px;height:20px;border-radius:6px;background:#fff;border:2px solid #cfd5dc;box-sizing:border-box;color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
 .flow li.on{background:var(--green-l);color:var(--green-d);font-weight:700}
-.flow li.on::before{background:var(--green)}
+.flow li.on::before{border-color:var(--green)}
+.flow li.done::before{border:0}
+.mine{display:flex;flex-direction:column;gap:2px;background:var(--fill);border-radius:14px;padding:12px 14px;margin:0 0 18px}
+.mine b{font-size:16px;line-height:1.5}
+.flow-cap{font-size:12.5px;font-weight:700;color:var(--mute);margin:14px 2px -8px}
 .flow li.done{color:var(--sub)}
 .flow li.done::before{content:'\2713';background:#8fd0b3}
 a.btn{text-decoration:none}
@@ -309,7 +330,7 @@ textarea.long{min-height:240px}
 .say{display:grid;gap:8px}
 .say div{background:var(--fill);border-radius:14px;padding:12px 14px;font-size:15px;line-height:1.6}
 .say div b.n{display:block;font-size:13px;color:var(--green-d);margin-bottom:2px}
-.say q{quotes:none;color:var(--ink)}
+.say q{quotes:none;color:var(--ink);display:block}
 .lv-talk{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--green-l);border-radius:16px;padding:12px 14px;margin-top:12px}
 .lv-talk select{font-size:14px;border:0;border-radius:10px;padding:8px 10px;background:#fff}
 .tst{font-size:13px;font-weight:700;color:var(--green-d)}
@@ -351,6 +372,28 @@ textarea.long{min-height:240px}
 .sl .kw span em{font-style:normal;color:var(--green-d);margin-left:.3em}
 .sl .voice{background:var(--amber-l);border-radius:14px;padding:.45em .8em;margin:.3em 0 0;font-size:.9em;line-height:1.5}
 .sl .voice b{color:var(--amber);font-size:.8em;margin-right:.4em}
+.pairline{background:var(--fill);border-radius:14px;padding:12px 14px 14px;margin-bottom:8px}
+.pl-ends{display:flex;justify-content:space-between;font-size:12px;color:var(--mute);margin-bottom:10px}
+.pl-bar{position:relative;height:4px;background:#dde1e6;border-radius:999px;margin:0 12px}
+.pl-dot{position:absolute;top:-6px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;white-space:nowrap}
+.pl-dot i{width:16px;height:16px;border-radius:50%;background:#c5ccd4;border:2px solid #fff}
+.pl-dot b{font-size:11.5px;font-weight:600;color:var(--sub)}
+.pl-dot.me i{background:var(--green)} .pl-dot.me b{color:var(--green-d);font-weight:800}
+.pl-dot.foe i{background:#f5a524} .pl-dot.foe b{color:#b4690e;font-weight:800}
+.say q + q{margin-top:.35em}
+.fist{margin-top:1em;background:var(--fill);border-radius:14px;padding:.8em .9em}
+.fist h3{font-size:.95em;margin:0 0 .3em}
+.fistbtns{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.fistbtns button{display:flex;flex-direction:column;align-items:center;gap:2px;background:#fff;border-radius:12px;padding:8px 2px;min-height:64px;color:var(--sub)}
+.fistbtns button b{font-size:1.3em;color:var(--ink)}
+.fistbtns button span{font-size:11px;line-height:1.25;text-align:center;letter-spacing:-.04em}
+.fistbtns button[aria-pressed=true]{background:var(--green);color:#fff}
+.fistbtns button[aria-pressed=true] b{color:#fff}
+.fistbars{display:flex;gap:8px;align-items:flex-end;height:120px;margin:.4em 0}
+.fistbars .fb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:2px}
+.fistbars .fb i{display:block;width:100%;background:var(--green);border-radius:8px 8px 3px 3px;min-height:3px}
+.fistbars .fb.lo i{background:#f5a524}
+.fistbars .fb b{font-size:.9em} .fistbars .fb span{font-size:.8em;color:var(--mute)}
 .split .voice{background:var(--amber-l);border-radius:12px;padding:.35em .7em;margin:.3em 0 0;font-size:.9em}
 .split .voice b{color:var(--amber);font-size:.8em;margin-right:.4em}
 .nowt{background:var(--green);color:#fff}
@@ -473,6 +516,7 @@ pre.plain{white-space:pre-wrap;font-family:inherit;font-size:15px;line-height:1.
       <span class="tag">우리 반 토의·토론</span>
     </div>
     <span class="sp"></span>
+    <span class="toppill" id="toppill" hidden></span>
     <button class="ghost" id="btnMode" hidden>선생님 화면</button>
   </header>
   <main id="app"></main>
@@ -630,7 +674,17 @@ var TOPICS = [
          '스스로 고르는 숙제가 좋다']},
 
  {id:'upload3', intro:'우리 반은 「업로드 전 3초」 규칙을 함께 정하는 토의를 했다.', band:'56', std:['6국01-06','6실04-03'], ic:'⏱️', cat:'디지털 시민', noLine:true,
+  /* 4단계: 반박 대신 내 규칙을 실제 상황에 넣어 봐요(규칙 시험하기). */
+  cases:{ lbl:'상황', btn:['정할 수 있어요','애매해요','못 정해요'], keys:['정할 수 있어요','애매해요','못 정해요'],
+    help:'"애매해요"나 "못 정해요"가 나와도 괜찮아요. 그게 바로 규칙의 빈틈이고, 오늘 토의에서 메울 곳이에요.',
+    list:[
+     ['단체 사진','현장체험학습에서 반 친구들과 찍은 단체 사진을 학급 SNS에 올리려고 해요.'],
+     ['AI로 만든 그림','AI로 만든 그림을 과제 게시판에 내 작품으로 올리려고 해요.'],
+     ['친구 얼굴 짤','친구 얼굴로 만든 웃긴 짤을 단톡방에 올리려고 해요. 친구도 웃을 것 같아요.'],
+     ['"내일 휴교래!"','"내일 학교 휴교래!"라는 글을 받았어요. 반 단톡방에 바로 퍼 올리려고 해요.']]},
   ph:{ claim:'예: 올리기 전에 나와 친구의 개인정보가 보이지 않는지, 출처를 밝혔는지 확인한다.',
+       cond:'예: 친구 얼굴이 나오면 올리기 전에 허락을 받는다. / AI로 만든 것은 AI로 만들었다고 밝힌다.',
+       qn:'예: 어떤 그림이 "폭력적"인 건지 기준을 먼저 정해야 한다.',
        reason:'예: 왜냐하면 개인정보는 한 번 퍼지면 다시 지울 수 없기 때문이다.',
        ev:'예: 「타워를 지켜라!」에서 출처 없이 올린 그림 때문에 타워가 무너졌다. / 다섯 모둠 가운데 네 모둠이 개인정보를 골랐다.',
        who:'예: 사진에 나온 친구, 글을 보는 사람, 그리고 올린 나도 피해를 볼 수 있다.',
@@ -903,9 +957,10 @@ var BANDS = {
      f:function(L,r){ return (L('ev')>=6 && r.evt!=='-') ? 2 : (L('ev')>=6 || r.evt!=='-') ? 1 : 0; },
      n:['이유를 {evt}에서 가져온 예로 뒷받침했어요','예를 조금 더 자세히 들면 친구들이 더 잘 알아들을 거예요','이유를 뒷받침하는 예를 적지 않았어요']},
     {k:'서로 묻고 답하기', s:'[4국01-06] 서로의 생각 교환 · [4도01-04] 다른 사람의 관점',
-     d:['친구의 다른 의견을 적고, 그래도 내 생각인 까닭까지 씀','다른 의견만','없음'],
-     f:function(L,r){ return (L('other')>=4 && L('still')>=4) ? 2 : (L('other')>=4) ? 1 : 0; },
-     n:['친구의 다른 생각을 듣고 자기 생각도 다시 말했어요','친구의 다른 생각은 적었지만 그에 대한 내 생각은 비어 있어요','친구의 다른 생각을 적는 칸이 비어 있어요']},
+     d:['친구의 다른 의견을 적고, 그래도 내 생각인 까닭까지 씀 (규칙 토의: 상황에 넣어 보고 붙일 조건까지)','다른 의견만 (상황만)','없음'],
+     f:function(L,r){ return (oL(L)>=4 && sL(L)>=4) ? 2 : (oL(L)>=4) ? 1 : 0; },
+     n:function(v,r){ return (hasCases(r) ? ['규칙을 상황에 넣어 보고 빈틈을 메울 조건까지 생각했어요','상황에 넣어 보았지만 붙일 조건은 비어 있어요','규칙을 상황에 넣어 보는 단계가 비어 있어요']
+        : ['친구의 다른 생각을 듣고 자기 생각도 다시 말했어요','친구의 다른 생각은 적었지만 그에 대한 내 생각은 비어 있어요','친구의 다른 생각을 적는 칸이 비어 있어요'])[2-v]; }},
     {k:'돌아보기', s:'[4국01-06] 생각을 나눈 뒤 자기 생각 점검',
      d:['나중 자리를 찍고 까닭(또는 움직인 말)을 씀','둘 중 하나만','없음'],
      f:function(L,r){ return (hasAfter(r) && (L('why')>=4 || L('moved')>=4)) ? 2 : (hasAfter(r) || L('moved')>=4) ? 1 : 0; }}
@@ -927,15 +982,24 @@ var BANDS = {
         : v===1 ? '근거가 '+(r.evt!=='-' ? r.evt+'에 머물러' : '아직 약해')+' 확인할 수 있는 자료를 찾아보면 좋겠어요'
         : '근거를 적지 않았어요'; }},
     {k:'다른 의견 듣기', s:'[6국01-06] 의견 비교·조정 · [6국01-07] 상대 의견 존중',
-     d:['반대편 말을 찾고 그래도 내 생각인 까닭까지 씀','반대편 말만','없음'],
-     f:function(L,r){ return (L('other')>=6 && L('still')>=6) ? 2 : (L('other')>=6) ? 1 : 0; },
-     n:['반대 의견을 듣고도 자기 생각을 설명했어요','반대 의견은 찾았지만 그에 대한 자기 생각은 비어 있어요','반대 의견을 찾아보는 단계가 비어 있어요']},
+     d:['반대편 말을 찾고 그래도 내 생각인 까닭까지 씀 (규칙 토의: 상황에 넣어 보고 붙일 조건까지)','반대편 말만 (상황만)','없음'],
+     f:function(L,r){ return (oL(L)>=6 && sL(L)>=6) ? 2 : (oL(L)>=6) ? 1 : 0; },
+     n:function(v,r){ return (hasCases(r) ? ['규칙을 상황에 넣어 보고 빈틈을 메울 조건까지 생각했어요','상황에 넣어 보았지만 붙일 조건은 비어 있어요','규칙을 상황에 넣어 보는 단계가 비어 있어요']
+        : ['반대 의견을 듣고도 자기 생각을 설명했어요','반대 의견은 찾았지만 그에 대한 자기 생각은 비어 있어요','반대 의견을 찾아보는 단계가 비어 있어요'])[2-v]; }},
     {k:'돌아보기', s:'[6국01-06] 의견 조정 뒤 자기 생각 점검',
      d:['나중 자리를 찍고 까닭(또는 움직인 말)을 씀','둘 중 하나만','없음'],
      f:function(L,r){ return (hasAfter(r) && (L('why')>=6 || L('moved')>=6)) ? 2 : (hasAfter(r) || L('moved')>=6) ? 1 : 0; }}
    ]}
 };
 function hasAfter(r){ return r.last!==null || !!r.cards2; }
+/* '다른 의견' 기준: 찬반 토론은 반대편 말·지키는 까닭, 규칙 토의는 상황에 넣어 보기·붙일 조건 */
+function oL(L){ return Math.max(L('other'), L('cases')); }
+function sL(L){ return Math.max(L('still'), L('cond')); }
+function hasCases(r){ var x = r.text || {}; return !!(x.cases || x.cond) && !(x.other || x.still); }
+function caseLine(t, cs){
+  if(!t || !t.cases) return '';
+  return t.cases.list.map(function(c, i){ var v = +(cs||{})[i] || 0; return c[0] + ': ' + (v ? t.cases.keys[v-1] : '-'); }).join(' / ');
+}
 function bandOf(){ return BANDS[T.band] || BANDS['56']; }
 function bandTopics(b){ var out=[]; for(var i=0;i<TOPICS.length;i++) if(TOPICS[i].band==='all' || TOPICS[i].band===b) out.push(TOPICS[i]); return out; }
 function bandChips(cur){
@@ -1009,7 +1073,7 @@ var S = {
   name:'', first:null, claim:'', claimPick:-1, reason:'', ev:'', evType:-1,
   who:'', jobs:{}, other:'', still:'', moved:'', last:null, why:'', checked:false,
   customL:'', customR:'', band:'56', send:'', lastSent:'', jobs2:{}, sentStep:-1, group:'',
-  sents:'', draft:'', final:'', jj:'', jjOpened:false, grule:'', grSent:false
+  sents:'', draft:'', final:'', jj:'', jjOpened:false, grule:'', grSent:false, reach:0, cs:{}, cond:'', qn:'', fist:-1, foe:'', reply:''
 };
 function save(){
   try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
@@ -1019,6 +1083,8 @@ function load(){
   try{ var r=localStorage.getItem(KEY); if(r){ var o=JSON.parse(r); for(var k in o) if(k in S) S[k]=o[k];
     /* 보낸 단계를 따로 적기 전(11-05 낮)에 보낸 기기 */
     if(!S.sents && S.sentStep>=5) S.sents = String(S.sentStep);
+    /* 어디까지 가 봤는지(단계 번호를 눌러 오가기) — 전에 쓰던 기기는 지금 단계까지 */
+    if(!(S.reach>=S.step)) S.reach = S.step;
     /* 10-29 오전 판(규칙 다섯 가지 찬반)으로 upload3을 열었던 기기: 카드 뜻이 바뀌었으니 처음부터 다시 엽니다. */
     if(o.topic==='upload3' && !('jobs2' in o)){ S.jobs={}; S.jobs2={}; S.first=null; S.last=null; S.claim=''; S.claimPick=-1; if(S.step>1) S.step=1; }
   } }catch(e){}
@@ -1070,7 +1136,12 @@ function checks(){
     d: who.length>=N_W ? '좋아요. 사람을 떠올린 주장은 힘이 세요.'
                      : '누가 좋아지고 누가 힘들어질지 한 줄 적어 보세요.' });
 
-  r.push({ ok: (S.other||'').trim().length >= N_O && (S.still||'').trim().length >= N_O,
+  if(t && t.cases) r.push({ ok: countPicks(S.cs||{}) >= t.cases.list.length && (S.cond||'').trim().length >= N_O,
+    t:'내 규칙을 상황에 넣어 보았나요?',
+    d: (countPicks(S.cs||{}) >= t.cases.list.length && (S.cond||'').trim().length >= N_O)
+      ? '상황에 넣어 보고 빈틈을 메울 조건까지 생각했어요. 아주 좋아요.'
+      : '다음 단계에서 해 봐요. 아직 비어 있어요.' });
+  else r.push({ ok: (S.other||'').trim().length >= N_O && (S.still||'').trim().length >= N_O,
     t:'나와 다른 의견 가운데 가장 그럴듯한 말을 찾았나요?',
     d: ((S.other||'').trim().length>=N_O && (S.still||'').trim().length>=N_O)
       ? '다른 의견을 읽고도 내 생각을 설명할 수 있어요. 아주 좋아요.'
@@ -1089,16 +1160,28 @@ function checks(){
 function okCount(){ var c=checks(), n=0; for(var i=0;i<c.length;i++) if(c[i].ok) n++; return [n, c.length]; }
 
 /* ===================== 공통 조각 ===================== */
-var STEPNAMES = ['주제 고르기','처음 내 자리','생각 세우기','스스로 다듬기','다른 의견 보기','나눌 준비','듣고 나서','글로 완성하기'];
-function stepLabel(i, tt){ return (tt && tt.noLine && i===1) ? '처음 내 생각' : (STEPNAMES[i]||''); }
+/* 아이에게 보이는 단계 번호는 S.step 그대로예요(0은 주제 고르는 첫 화면이라 번호 없음). 선생님 화면도 같은 번호를 써요. */
+var STEPNAMES = ['주제 고르기','처음 내 자리','생각 세우기','스스로 다듬기','다른 의견 보기','보내고 함께 토론','토론 뒤 내 생각','글로 완성하기'];
+var STEPSHORT = ['시작','처음 자리','세우기','다듬기','다른 의견','함께 토론','다시 생각','글쓰기'];
+function stepLabel(i, tt){
+  if(tt && tt.noLine){ if(i===1) return '처음 내 생각'; if(i===5) return '보내고 모둠 토의'; if(i===4 && tt.cases) return '상황에 넣어 보기'; return (STEPNAMES[i]||'').replace('토론','토의'); }
+  return STEPNAMES[i]||'';
+}
+function stepShort(i, tt){ return (tt && tt.noLine) ? (i===1 ? '처음 생각' : i===5 ? '모둠 토의' : (i===4 && tt.cases) ? '상황 넣기' : STEPSHORT[i]) : (STEPSHORT[i]||''); }
+function stepTag(i, tt){ return i>0 ? i+'단계 '+stepLabel(i, tt) : '첫 화면'; }
 function bar(){
-  var tt = topic(), nm = stepLabel(S.step, tt);
-  /* ⑧ 글로 완성하기는 선생님이 하자고 할 때만 가는 단계라, 거기 있을 때만 막대를 하나 늘려요. */
-  var n = S.step===7 ? 8 : 7;
-  var h = '<div class="stepname">'+(S.step+1)+'. '+nm+'</div><div class="steps">';
-  for(var i=0;i<n;i++)
-    h += '<i class="'+(i<S.step?'done':i===S.step?'on':'')+'"></i>';
-  return h+'</div>';
+  var tt = topic();
+  /* 7 글로 완성하기는 선생님이 하자고 할 때만 가는 단계라, 가 본 뒤에만 동그라미를 하나 늘려요. */
+  var n = (S.step===7 || S.reach>=7) ? 7 : 6, back = false;
+  var h = '<div class="stepper noprint"><div class="sp-head"><span class="sp-badge">'+S.step+'단계</span><b>'+esc(stepLabel(S.step, tt))+'</b>'
+    + '<span class="sp-of">'+n+'단계 중</span></div><ol class="sp-dots">';
+  for(var i=1;i<=n;i++){
+    var on = i===S.step, go = !on && i<=S.reach, c = on ? 'on' : i<=S.reach ? 'done' : '';
+    if(go) back = true;
+    h += '<li class="'+c+'">' + (go ? '<button data-stepgo="'+i+'" aria-label="'+i+'단계 '+esc(stepLabel(i, tt))+'(으)로 가기">' : '<span'+(on?' aria-current="step"':'')+'>')
+      + '<i>'+i+'</i><small>'+esc(stepShort(i, tt))+'</small>' + (go ? '</button>' : '</span>') + '</li>';
+  }
+  return h + '</ol>' + (back ? '<p class="sp-tip">연한 초록 번호를 누르면 그 단계로 가서 다시 보거나 고칠 수 있어요.</p>' : '') + '</div>';
 }
 /* 명단에서 고른 모둠·이름이 맞는지 */
 function inRoster(){ return !!(S.group && ROSTER && ROSTER[S.group] && ROSTER[S.group].some(function(m){ return sameName(S.name, m); })); }
@@ -1111,7 +1194,7 @@ function meLine(){
 }
 /* 이 화면에서 할 일 순서. 다 한 것은 회색 체크, 지금 할 것은 초록. */
 function flowSteps(list){
-  var h = '<ol class="flow">', on = false;
+  var h = (S.mode==='student' ? '<div class="flow-cap">이 단계에서 할 일</div>' : '') + '<ol class="flow">', on = false;
   for(var i=0;i<list.length;i++){
     var c = list[i][1] ? 'done' : (!on ? (on = true, 'on') : '');
     h += '<li class="'+c+'"><span>'+list[i][0]+'</span></li>';
@@ -1121,7 +1204,7 @@ function flowSteps(list){
 function canGoNext(){
   if(S.step===1){ var t1=topic(); if(!(S.name||'').trim()) return false; return (t1 && t1.noLine) ? countPicks(S.jobs)>0 : S.first!==null; }
   if(S.step===2) return (S.claim||'').trim().length>0 && (S.reason||'').trim().length>0;
-  if(S.step===4) return (S.other||'').trim().length>0;
+  if(S.step===4){ var t4 = topic(); return (t4 && t4.cases) ? countPicks(S.cs||{})>0 : (S.other||'').trim().length>0; }
   return true;
 }
 function refreshNext(){
@@ -1134,12 +1217,14 @@ var NEEDMSG = {1:'선 위에서 내 자리를 먼저 골라 주세요.',
   4:'반대편에서 가장 일리 있던 말을 한 줄 적어 주세요.'};
 function nav(backLabel, nextLabel, canNext){
   var tn = topic(), msg = (S.step===1 && !(S.name||'').trim()) ? '맨 위에서 내 이름을 먼저 골라(적어) 주세요.'
-      : (S.step===1 && tn && tn.noLine) ? '카드를 하나 이상 골라 주세요.' : NEEDMSG[S.step];
+      : (S.step===1 && tn && tn.noLine) ? '카드를 하나 이상 골라 주세요.'
+      : (S.step===4 && tn && tn.cases) ? '상황을 하나 이상 골라 주세요.' : NEEDMSG[S.step];
   return (!canNext && msg ? '<p class="hint noprint" style="text-align:right;margin-top:14px">'+msg+'</p>' : '')
     + '<div class="nav noprint">'
     + (S.step>0 ? '<button class="btn sec" data-go="back">'+(backLabel||'이전')+'</button>' : '')
     /* ⑥단계에서 보내기 단추가 있으면 초록 단추는 보내기 하나만 둡니다. */
-    + '<button class="btn'+(S.step===5 && S.send ? ' sec' : '')+'" data-go="next"'+(S.step===5 && S.send ? ' style="flex:1"' : '')+(canNext?'':' disabled')+'>'+(nextLabel||'다음')+'</button></div>';
+    + '<button class="btn'+(S.step===5 && S.send ? ' sec' : '')+'" data-go="next"'+(S.step===5 && S.send ? ' style="flex:1"' : '')+(canNext?'':' disabled')+'>'+(nextLabel||'다음')
+    + (S.step>=1 && S.step<=5 ? ' <small style="opacity:.8;font-weight:600">→ '+(S.step+1)+'단계</small>' : '')+'</button></div>';
 }
 function lineRow(sel, attr, t){
   var L = (t && t.ends) ? t.ends : ['아니다','그렇다'];
@@ -1354,6 +1439,27 @@ function viewStudent(){
     return h;
   }
 
+  /* --- 4. 상황에 넣어 보기 (규칙 토의) --- */
+  if(S.step===4 && t.cases){
+    var CS = t.cases, holes = [];
+    for(var ci4=0; ci4<CS.list.length; ci4++) if((+S.cs[ci4]||0) >= 2) holes.push(CS.list[ci4][0]);
+    h += '<div class="card"><h2>내 규칙을 상황에 넣어 볼까요?</h2>'
+      + '<p class="lead">규칙 토의는 친구 생각을 이기는 시간이 아니에요. 규칙을 실제 상황에 넣어 보고 <b>빈틈</b>을 찾아, 다 같이 메우는 시간이에요.</p>'
+      + '<div class="mine"><span class="mini">내가 제안한 규칙</span><b>'+esc(S.claim || '(2단계에서 아직 안 적었어요)')+'</b></div>'
+      + '<label class="f"><span class="n">1</span>내 규칙만 보고, 올려도 될지 정할 수 있나요?</label>'
+      + cardGrid(CS, S.cs, 'case')
+      + '<label class="f"><span class="n">2</span>빈틈을 메울 조건을 붙여 볼까요?</label>'
+      + '<div class="fh">'+(holes.length ? '「'+holes.map(esc).join('」, 「')+'」에서 애매하거나 못 정했어요. 규칙에 어떤 조건을 붙이면 정할 수 있을까요?'
+                                         : '"~라면 ~한다"처럼 조건을 붙이면 규칙이 더 또렷해져요. 모두 정할 수 있었다면 가장 헷갈렸던 상황을 떠올려 봐요.')+'</div>'
+      + '<textarea id="cond" placeholder="'+esc(PH.cond||'예: ~라면 ~한다.')+'">'+esc(S.cond)+'</textarea>'
+      + '<label class="f"><span class="n">3</span>모둠에서 먼저 정해야 할 기준이 있나요? <span class="mini">(없으면 비워도 돼요)</span></label>'
+      + '<div class="fh">사람마다 다르게 생각할 수 있는 말이 있으면 적어요. 예: "폭력적"은 어디까지인지, "허락"은 말로 받으면 되는지.</div>'
+      + '<textarea id="qn" placeholder="'+esc(PH.qn||'예: ~의 기준을 먼저 정해야 한다.')+'">'+esc(S.qn)+'</textarea>'
+      + '<div class="note">모둠 토의에서는 이렇게 말해요. <b>보태기</b> "좋아, 거기에 ~를 더하면?" · <b>조건 붙이기</b> "~일 때는 어떻게 해?" · <b>기준 묻기</b> "~의 기준이 뭐야?"</div>'
+      + nav('이전','나눌 준비 하기', canGoNext()) + '</div>';
+    return h;
+  }
+
   /* --- 4. 반대편 보기 --- */
   if(S.step===4){
     h += '<div class="card"><h2>'+(t.noLine ? '나와 다른 의견 가운데 가장 그럴듯한 말은?' : '반대편에서 가장 그럴듯한 말은?')+'</h2>'
@@ -1367,8 +1473,14 @@ function viewStudent(){
          + thinkLines(t.think) + '</div></details>';
     h += '<label class="f"><span class="n">2</span>그런데도 내 생각을 지키는 까닭은?</label>'
       + '<div class="fh">생각이 바뀌었다면 바뀌었다고 적어도 돼요. 그것도 훌륭한 답이에요.</div>'
-      + '<textarea id="still" placeholder="'+esc(PH.still||'그 말도 맞지만, 나는 ~ 때문에 여전히 ~라고 생각한다.')+'">'+esc(S.still)+'</textarea>'
-      + nav('이전','나눌 준비 하기', canGoNext()) + '</div>';
+      + '<textarea id="still" placeholder="'+esc(PH.still||'그 말도 맞지만, 나는 ~ 때문에 여전히 ~라고 생각한다.')+'">'+esc(S.still)+'</textarea>';
+    if(!t.noLine)
+      h += '<label class="f"><span class="n">3</span>친구가 내 근거에 뭐라고 물을까요? <span class="mini">(미리 준비하면 덜 당황해요)</span></label>'
+        + '<div class="fh">반대편 친구가 "그거 사실이야?", "모두에게 해당돼?", "주장이랑 이어져?" 가운데 무엇을 물을지 떠올려 봐요.</div>'
+        + '<textarea id="foe" placeholder="'+esc(PH.foe||'예: 그 뉴스는 다른 나라 이야기 아니야?')+'">'+esc(S.foe)+'</textarea>'
+        + '<label class="f"><span class="n">4</span>그때 나는 이렇게 답할래요</label>'
+        + '<textarea id="reply" placeholder="'+esc(PH.reply||'예: 우리나라에서도 비슷한 일이 있었어. ~에서 봤어.')+'">'+esc(S.reply)+'</textarea>';
+    h += nav('이전','나눌 준비 하기', canGoNext()) + '</div>';
     return h;
   }
 
@@ -1384,6 +1496,10 @@ function viewStudent(){
       + (S.who?'<p class="ln"><span class="k">영향</span>'+esc(S.who)+'</p>':'')
       + (S.other?'<p class="ln"><span class="k">그런데</span>'+esc(S.other)+'</p>':'')
       + (S.still?'<p class="ln"><span class="k">그래도</span>'+esc(S.still)+'</p>':'')
+      + (S.foe?'<p class="ln"><span class="k">물으면</span>'+esc(S.foe)+'</p>':'')
+      + (S.reply?'<p class="ln"><span class="k">내 답</span>'+esc(S.reply)+'</p>':'')
+      + (S.cond?'<p class="ln"><span class="k">조건</span>'+esc(S.cond)+'</p>':'')
+      + (S.qn?'<p class="ln"><span class="k">물어볼 것</span>'+esc(S.qn)+'</p>':'')
       + '</div>'
       + '<div class="note"><b>이야기할 때 세 가지만 지켜요.</b><br>'
       + '① 사람이 아니라 생각에 반대하기 &nbsp; ② 끝까지 듣고 말하기 &nbsp; ③ "왜 그렇게 생각했어?"라고 먼저 묻기</div>';
@@ -1531,6 +1647,7 @@ function buildDraft(t){
   if(body) P.push(body);
   if((S.other||'').trim()) P.push('물론 「' + bare(S.other) + '」라는 의견도 일리가 있다.'
     + ((S.still||'').trim() ? (/^(하지만|그래도|그런데|그렇지만)/.test(S.still.trim()) ? ' ' : ' 하지만 ') + s(S.still) : ''));
+  if((S.cond||'').trim()) P.push('이 규칙을 실제 상황에 넣어 보니 애매한 때가 있었다. 그래서 조건을 붙이고 싶다. ' + s(S.cond));
   if((S.moved||'').trim() || (S.why||'').trim()) P.push([(S.moved||'').trim() ? '이야기를 나누며 마음에 남은 말이 있다. ' + s(S.moved) : '', s(S.why)].filter(Boolean).join(' '));
   P.push('그래서 나는 다시 한번 말하고 싶다. ' + s(S.claim));
   return P.join('\n\n');
@@ -1553,8 +1670,18 @@ function resultText(){
   L.push('[근거] ' + (S.ev||'') + (S.evType>=0 ? ' (' + EVTYPE[S.evType][0] + ')' : ''));
   L.push('[영향] ' + (S.who||''));
   L.push('');
-  L.push('[반대편에서 가장 일리 있던 말] ' + (S.other||''));
-  L.push('[그래도 내 생각인 까닭] ' + (S.still||''));
+  if(t && t.cases){
+    L.push('[상황에 넣어 보기] ' + caseLine(t, S.cs));
+    L.push('[붙일 조건] ' + (S.cond||''));
+    if((S.qn||'').trim()) L.push('[먼저 정할 기준] ' + S.qn);
+    if((S.other||'').trim()) L.push('[반대편에서 가장 일리 있던 말] ' + S.other);
+    if((S.still||'').trim()) L.push('[그래도 내 생각인 까닭] ' + S.still);
+  } else {
+    L.push('[반대편에서 가장 일리 있던 말] ' + (S.other||''));
+    L.push('[그래도 내 생각인 까닭] ' + (S.still||''));
+    if((S.foe||'').trim()) L.push('[친구가 물을 것 같은 말] ' + S.foe);
+    if((S.reply||'').trim()) L.push('[그때 내 답] ' + S.reply);
+  }
   if((S.grule||'').trim()) L.push('[우리 모둠 의견] ' + S.grule.trim().replace(/\s*\n+\s*/g, ' / '));
   L.push('');
   L.push('[스스로 점검] ' + n[0] + '/' + n[1]);
@@ -1752,7 +1879,9 @@ function groupPanel(txt){
   if(!txt) return '<div class="pause"><span class="t">'+esc(S.group)+'모둠 친구들을 확인하는 중…</span></div>';
   var got = grpGot(txt), tk = talkOf(S.group, members.length);
   var done = got.filter(function(g){ return g.row; }).length, me = got.filter(function(g){ return sameName(S.name, g.name); })[0];
-  if(tk) return grpBoard(got);   /* ⑦에서 다시 볼 때 */
+  if(tk) return grpBoard(got);   /* 6단계에서 다시 볼 때 */
+  /* 6단계(토의 뒤)에는 "모여서 시작해요" 안내 대신 모둠 판만 보여 줘요. */
+  if(S.step>=6) return done ? grpBoard(got) : '';
   var h = '', mins = talkMinFor(members.length);
   if(done < members.length){
     h += '<div class="pause"><span class="t">우리 모둠 '+done+' / '+members.length+'명 보냈어요</span>'
@@ -1843,16 +1972,51 @@ function talkView(tk){
   /* 약속 */
   h += '<div class="note"><b>모둠 '+TW+' 약속</b><ol class="rules">'
     + '<li>한 사람씩 돌아가며 <b>30초</b> 동안 내 생각을 말해요. 그동안 다른 친구는 끝까지 들어요.</li>'
-    + '<li>반대하고 싶으면 "왜 그렇게 생각했어?"를 <b>먼저</b> 물어요.</li>'
-    + '<li>사람이 아니라 <b>생각</b>에 반대해요.</li>'
-    + '<li>'+(CD ? '<b>생각이 갈린 카드</b>부터' : '<b>생각이 가장 다른 곳</b>부터')+' 이야기해요.</li>'
-    + '<li>손 들어 정하기 대신 "어떻게 고치면 <b>다 같이</b> 받아들일 수 있을까?"를 물어 <b>우리 모둠 의견</b> 한두 개로 모아요.</li></ol></div>';
+    + (t && t.cases
+       ? '<li>이기려고 반박하지 않아요. 친구 규칙에 <b>보태고</b>, 상황에 넣어 <b>조건</b>을 붙이고, 헷갈리는 말은 <b>기준</b>을 물어요.</li>'
+         + '<li>"애매해요"가 나온 상황은 실패가 아니라 <b>함께 메울 빈틈</b>이에요.</li>'
+       : t && !t.noLine
+       ? '<li>먼저 <b>반대편 짝</b>(선 위에서 나와 가장 먼 친구)과 이야기해요.</li>'
+         + '<li>사람이 아니라 <b>근거</b>를 따져요. 아래 <b>근거 묻기 질문</b> 세 가지로 물어요.</li>'
+       : '<li>반대하고 싶으면 "왜 그렇게 생각했어?"를 <b>먼저</b> 물어요.</li>'
+         + '<li>사람이 아니라 <b>생각</b>에 반대해요.</li>')
+    + (t && !t.noLine
+       ? '<li>이기고 지는 게 아니에요. 끝나면 <b>둘 다 인정한 것</b>과 <b>끝까지 갈린 까닭</b>을 모둠 정리로 적어요.</li></ol></div>'
+       : '<li>'+(CD ? '<b>생각이 갈린 카드</b>부터' : '<b>생각이 가장 다른 곳</b>부터')+' 이야기해요.</li>'
+         + '<li>손 들어 정하기 대신 "어떻게 고치면 <b>다 같이</b> 받아들일 수 있을까?"를 물어 <b>우리 모둠 의견</b> 한두 개로 모아요.</li></ol></div>');
+  /* 찬반 토론: 반대편 짝 — 처음 자리가 나와 가장 먼 친구 */
+  var foeMate = null;
+  if(t && !t.noLine){
+    var pos = got.filter(function(g){ return g.row && g.row.first!==null && g.row.first!==undefined; })
+                 .map(function(g){ return { name:g.name, v:+g.row.first, row:g.row, me:sameName(S.name, g.name) }; });
+    var myv = S.first!==null ? S.first : 5;
+    if(!pos.some(function(x){ return x.me; }) && S.first!==null) pos.push({ name:S.name, v:S.first, me:true });
+    pos.sort(function(a,b){ return a.v - b.v; });
+    pos.forEach(function(x){ if(!x.me && (!foeMate || Math.abs(x.v-myv) > Math.abs(foeMate.v-myv))) foeMate = x; });
+    if(pos.length){
+      h += '<h3 class="grph">반대편 짝</h3><div class="pairline">'
+        + '<div class="pl-ends"><span>◀ '+esc(t.ends[0])+'</span><span>'+esc(t.ends[1])+' ▶</span></div><div class="pl-bar">'
+        + pos.map(function(x){ return '<span class="pl-dot'+(x.me?' me':'')+(foeMate && x.name===foeMate.name?' foe':'')+'" style="left:'+(x.v*10)+'%"><i></i><b>'+(x.me ? '나' : esc(x.name))+' '+x.v+'</b></span>'; }).join('')
+        + '</div>' + (foeMate && Math.abs(foeMate.v-myv) >= 2
+            ? '<p class="mini" style="margin-top:2.6em"><b>'+esc(foeMate.name)+'</b>(자리 '+foeMate.v+')와 먼저 이야기해 봐요. 내 자리는 '+myv+'. 서로 30초씩 말하고, 근거 묻기 질문을 하나씩 해요.</p>'
+            : '<p class="mini" style="margin-top:2.6em">우리 모둠은 자리가 비슷해요. 반대편이라면 뭐라고 할지 한 사람이 맡아 말해 봐요.</p>')
+        + '</div>';
+    }
+  }
   /* 내 생각 · 반박 */
   h += '<h3 class="grph">내 생각</h3><div class="speech">'
     + '<p class="ln"><span class="k">주장</span>'+esc(S.claim)+'</p>'
     + '<p class="ln"><span class="k">이유</span>'+esc(S.reason)+'</p>'
     + (S.ev ? '<p class="ln"><span class="k">근거</span>'+esc(S.ev)+(evt?' <b>('+evt+')</b>':'')+'</p>' : '')
     + '</div>';
+  if(t && t.cases && (countPicks(S.cs||{}) || (S.cond||'').trim() || (S.qn||'').trim())){
+    var hl = t.cases.list.map(function(c, i){ return [c[0], +(S.cs||{})[i]||0]; }).filter(function(x){ return x[1]>=2; });
+    h += '<h3 class="grph">상황에 넣어 보기 — 내가 찾은 빈틈</h3><div class="speech">'
+      + (hl.length ? '<p class="ln"><span class="k">빈틈</span>'+hl.map(function(x){ return esc(x[0])+' ('+esc(t.cases.keys[x[1]-1])+')'; }).join(', ')+'</p>' : '')
+      + (S.cond ? '<p class="ln"><span class="k">붙일 조건</span>'+esc(S.cond)+'</p>' : '')
+      + (S.qn ? '<p class="ln"><span class="k">먼저 정할 것</span>'+esc(S.qn)+'</p>' : '')
+      + '</div>';
+  }
   if((S.other||'').trim() || (S.still||'').trim())
     h += '<h3 class="grph">반박 — 나와 다른 의견과 내 답</h3><div class="speech">'
       + (S.other ? '<p class="ln"><span class="k">다른 의견</span>'+esc(S.other)+'</p>' : '')
@@ -1876,20 +2040,45 @@ function talkView(tk){
     + '<div><b class="n">1. 내 생각 말하기 (30초)</b><q>'+(t && t.noLine ? '내가 제안하는 규칙은 「'+esc(bare(S.claim))+'」야. ' : '내 생각은 「'+esc(bare(S.claim))+'」야. ')
     + (rs ? esc((/^왜냐하면/.test(rs) ? rs : '왜냐하면 '+rs).replace(/때문(이다|입니다|이에요)$/, '때문이야'))+'. ' : '')
     + (S.ev ? '실제로 '+esc(bare(S.ev))+'.' : '')+'</q></div>'
-    + ((S.other||'').trim() ? '<div><b class="n">2. 다른 의견도 먼저 꺼내기</b><q>「'+esc(bare(S.other))+'」라고 생각할 수도 있어. '
+    + (t && t.cases ? caseSay(t) : t && !t.noLine ? debateSay(t)
+       : ((S.other||'').trim() ? '<div><b class="n">2. 다른 의견도 먼저 꺼내기</b><q>「'+esc(bare(S.other))+'」라고 생각할 수도 있어. '
         + ((S.still||'').trim() ? '그래도 나는 '+esc(bare(S.still).replace(/^(그래도|하지만|그렇지만)\s*/,''))+'.' : '그 말도 일리가 있어.')+'</q></div>' : '')
     + '<div><b class="n">'+((S.other||'').trim()?'3':'2')+'. 친구에게 묻기</b><q>'+esc(ask || '왜 그렇게 생각했어? 어떤 경험이 있었어?')+'</q></div>'
     + '<div><b class="n">'+((S.other||'').trim()?'4':'3')+'. 모둠 의견으로 모으기</b><q>'+esc(agree || '두 생각을 합쳐서, 「'+bare(S.claim)+'」에 친구 생각을 더하면 어때?')
-    + ' 이렇게 고치면 다 같이 받아들일 수 있을까?</q></div></div>';
+    + ' 이렇게 고치면 다 같이 받아들일 수 있을까?</q></div>') + '</div>';
+  /* 찬반 토론: 반대편 짝에게 근거 묻기 → 내 답 → 정리 */
+  function debateSay(t){
+    var fx = foeMate && foeMate.row && foeMate.row.text || {}, fn = foeMate ? foeMate.name : '친구';
+    return ((S.other||'').trim() ? '<div><b class="n">2. 반대편 말도 먼저 인정하기</b><q>「'+esc(bare(S.other))+'」, 이 말은 일리가 있어. '
+          + ((S.still||'').trim() ? '그래도 나는 '+esc(bare(S.still).replace(/^(그래도|하지만|그렇지만)\s*/,''))+'.' : '')+'</q></div>' : '')
+      + '<div><b class="n">'+((S.other||'').trim()?'3':'2')+'. 근거 묻기 — 하나만 골라 물어요</b>'
+      + (fx.claim ? '<p class="mini" style="margin:.2em 0">'+esc(fn)+'의 주장: 「'+esc(bare(fx.claim))+'」'+(fx.ev ? ' · 근거: '+esc(bare(fx.ev)) : '')+'</p>' : '')
+      + '<q>사실 확인: "그거 사실이야? 어디서 봤어?"</q><q>모두에게: "그 이유가 모두에게 해당돼? 아닌 경우는 없어?"</q><q>이어짐: "그 근거가 주장이랑 정말 이어져?"</q></div>'
+      + ((S.foe||'').trim() ? '<div><b class="n">'+((S.other||'').trim()?'4':'3')+'. 내 근거를 물으면</b><q>「'+esc(bare(S.foe))+'」라고 물으면, '
+          + ((S.reply||'').trim() ? esc(bare(S.reply))+'.' : '어떻게 답할지 생각해 둬요.')+'</q></div>' : '')
+      + '<div><b class="n">정리하기</b><q>우리 둘 다 「 ~ 」는 인정해. 생각이 다른 건 ~를 더 중요하게 봐서야.</q></div>';
+  }
+  /* 규칙 토의: 이기는 말 대신 보태고 다듬는 말 */
+  function caseSay(t){
+    var hl = t.cases.list.filter(function(c, i){ return (+(S.cs||{})[i]||0) >= 2; })[0];
+    var fr = got.filter(function(g){ return g.row && g.row.text && g.row.text.claim && !sameName(S.name, g.name); })[0];
+    return '<div><b class="n">2. 보태기 — 친구 규칙에 더하기</b><q>'+(fr ? esc(fr.name)+'의 「'+esc(bare(fr.row.text.claim))+'」 좋아. ' : '좋아. ')
+        + '거기에 '+((S.cond||'').trim() ? '「'+esc(bare(S.cond))+'」라는 조건을' : '내 생각을')+' 더하면 어때?</q></div>'
+      + '<div><b class="n">3. 조건 붙이기 — 상황에 넣어 보기</b><q>'+(hl ? '「'+esc(hl[0])+'」 같은 때는 어떻게 해? ' : '이런 때는 어떻게 해? ')
+        + '우리 규칙으로 정할 수 있을까?</q></div>'
+      + '<div><b class="n">4. 기준 묻기</b><q>'+((S.qn||'').trim() ? esc(bare(S.qn))+'. 우리 모둠은 어디까지로 할까?' : '사람마다 다르게 생각할 말이 있나? 그 기준부터 같이 정하자.')+'</q></div>'
+      + '<div><b class="n">5. 모둠 의견으로 모으기</b><q>'+esc(agree || '「'+bare(S.claim)+'」에 지금 나온 조건을 붙이면 다 같이 받아들일 수 있을까?')+'</q></div>';
+  }
   /* 모둠 판 */
   h += grpBoard(got);
   /* 우리 모둠 의견 */
   var others = got.filter(function(g){ return g.row && g.row.text && g.row.text.grule && !sameName(S.name, g.name); });
-  h += '<h3 class="grph">우리 모둠 의견</h3>'
-    + '<div class="fh">모둠이 함께 정한 '+(t && t.noLine ? '규칙' : '의견')+'을 한두 개 적어요. 모둠 친구들과 같은 내용으로 적어도 돼요. 전체 '+TW+' 때 이걸 발표해요.</div>'
+  h += '<h3 class="grph">'+(t && !t.noLine ? '우리 모둠 정리' : '우리 모둠 의견')+'</h3>'
+    + '<div class="fh">'+(t && !t.noLine ? '<b>둘 다 인정한 것</b> 한 줄, <b>끝까지 갈린 까닭</b> 한 줄을 적어요. 전체 토론 때 이걸 발표해요.'
+                                       : '모둠이 함께 정한 '+(t && t.noLine ? '규칙' : '의견')+'을 한두 개 적어요. 모둠 친구들과 같은 내용으로 적어도 돼요. 전체 '+TW+' 때 이걸 발표해요.')+'</div>'
     + (others.length ? '<div class="grpclaims" style="margin-bottom:8px">' + others.map(function(g){ return '<div class="gcl"><b>'+esc(g.name)+'</b><span>'+esc(g.row.text.grule)+'</span></div>'; }).join('') + '</div>' : '')
-    + '<textarea id="grule" placeholder="'+esc((t && t.ph && t.ph.grule) || (t && t.noLine ? '예: 올리기 전에 사진에 친구 얼굴이 나오는지 보고, 나오면 허락을 받는다.' : '예: 우리 모둠은 ~라고 생각한다. 다만 ~라면 ~해야 한다.'))+'">'+esc(S.grule)+'</textarea>'
-    + '<div class="row noprint" style="margin-top:10px"><button class="btn'+(S.grSent?' sec':'')+'" data-go="gsend" style="flex:1">'+(S.grSent ? '모둠 의견 다시 보내기' : '모둠 의견 보내기')+'</button></div>'
+    + '<textarea id="grule" placeholder="'+esc((t && t.ph && t.ph.grule) || (t && t.noLine ? '예: 올리기 전에 사진에 친구 얼굴이 나오는지 보고, 나오면 허락을 받는다.' : '예: 둘 다 인정한 것: ~는 중요하다. / 갈린 까닭: 한쪽은 ~를, 다른 쪽은 ~를 더 중요하게 봤다.'))+'">'+esc(S.grule)+'</textarea>'
+    + '<div class="row noprint" style="margin-top:10px"><button class="btn'+(S.grSent?' sec':'')+'" data-go="gsend" style="flex:1">'+(S.grSent ? '다시 보내기' : (t && !t.noLine ? '모둠 정리 보내기' : '모둠 의견 보내기'))+'</button></div>'
     + (S.grSent ? '<p class="hint"><b>보냈어요.</b> 전체 '+TW+' 때 우리 모둠 의견을 발표해요. 전체 '+TW+'가 끝나면 아래 단추를 눌러요.</p>' : '')
     + '<div class="nav static noprint"><button class="btn sec" data-go="back">이전</button>'
     + '<button class="btn'+(S.grSent?'':' sec')+'" data-go="next" style="flex:1">'+TW+' 끝나고 누르기</button></div></div>';
@@ -1931,14 +2120,14 @@ function grpTick(){
 /* 실시간 진행: 아이 기기가 "지금 몇 단계, 어느 칸"을 시트 '진행' 탭에 한 줄로 알립니다(이름마다 한 줄을 고쳐 씀).
    시트 스크립트가 옛 판이면 {ok:false}가 오니, 그때부터는 이 기기에서 더 보내지 않아요. 결과 탭은 건드리지 않습니다. */
 var progOff = false, progTimer = null, progDue = 0, progLast = '', progAt = 0, progField = '';
-var FIELDNAMES = { nm:'이름', claim:'주장', reason:'이유', ev:'근거', who:'영향', other:'다른 의견', still:'지키는 까닭',
+var FIELDNAMES = { nm:'이름', claim:'주장', reason:'이유', ev:'근거', who:'영향', other:'다른 의견', still:'지키는 까닭', foe:'예상 반론', reply:'반론에 답', cond:'붙일 조건', qn:'먼저 정할 기준',
   moved:'움직인 말', why:'그 까닭', draft:'초안', final:'최종본', grule:'모둠 의견' };
 function progData(){
-  var t = topic(), f = {}, ks = ['claim','reason','ev','who','other','still','moved','why','draft','final','grule'];
+  var t = topic(), f = {}, ks = ['claim','reason','ev','who','other','still','foe','reply','cond','qn','moved','why','draft','final','grule'];
   for(var i=0;i<ks.length;i++){ var v=(S[ks[i]]||'').trim(); if(v) f[ks[i]] = v.length; }
   return { name:(S.name||'').trim(), group:S.typeName?'':(S.group||''), topic:t?t.id:'', step:S.step, field:progField,
            sents:S.sents||'', jj:jjFlag(), cards:countPicks(S.jobs), cards2:countPicks(S.jobs2), f:f,
-           grule:(S.grule||'').trim().slice(0,300), gs:S.grSent?1:0 };
+           grule:(S.grule||'').trim().slice(0,300), gs:S.grSent?1:0, fist:S.fist };
 }
 function progPing(fast){
   if(progOff || !S.send || S.mode!=='student' || !(S.name||'').trim() || !topic() || !window.fetch) return;
@@ -2030,7 +2219,8 @@ function parsePastes(src){
 }
 /* 결과 글의 "[주장] ..." 같은 줄을 읽어 옵니다. 같은 이름표가 여러 번이면 마지막 것을 씁니다. */
 var FIELDS = { claim:'주장', reason:'이유', ev:'근거', who:'영향', other:'반대편에서 가장 일리 있던 말',
-  still:'그래도 내 생각인 까닭', moved:'나를 움직인 말', why:'그 까닭', grule:'우리 모둠 의견' };
+  still:'그래도 내 생각인 까닭', moved:'나를 움직인 말', why:'그 까닭', grule:'우리 모둠 의견',
+  cases:'상황에 넣어 보기', cond:'붙일 조건', qn:'먼저 정할 기준', foe:'친구가 물을 것 같은 말', reply:'그때 내 답' };
 function readFields(txt){
   var out = { found:false };
   for(var k in FIELDS){
@@ -2144,7 +2334,8 @@ function ago(ms){ var m = Math.floor(ms/60000); return m<1 ? '방금' : m<60 ? m
 function liveHtml(){
   var h = '<div class="lv-top"><h2 style="margin:0">지금 아이들</h2>'
     + '<div class="row"><span class="mini">'+(LIVE.at ? '10초마다 저절로 새로 봐요 · '+new Date(LIVE.at).toLocaleTimeString('ko-KR') : '불러오는 중…')+'</span>'
-    + '<button class="btn sm sec" data-go="liveload">지금 새로 보기</button><button class="btn sm" data-go="showopen">전체 토의 화면</button></div></div>';
+    + '<button class="btn sm sec" data-go="liveload">지금 새로 보기</button><button class="btn sm sec" data-go="rosteropen">명단 넣기·고치기</button>'
+    + '<button class="btn sm" data-go="showopen">전체 토의 화면</button></div></div>';
   if(LIVE.err==='nosheet') return h + '<p class="lead" style="margin-top:10px">[결과 모아 보기]에 시트 웹 앱 주소를 먼저 넣어 주세요.</p>';
   if(LIVE.err==='fail') h += '<div class="warn">시트를 읽지 못했어요. 인터넷을 확인하고 잠시 뒤 다시 볼게요.</div>';
   if(LIVE.old) return h + '<div class="warn"><b>시트 스크립트가 옛 판이에요.</b> 실시간 보기를 쓰려면 시트의 Apps Script를 새 판으로 바꿔야 해요. '
@@ -2168,7 +2359,7 @@ function liveHtml(){
   /* 단계별 인원 */
   var bySt = {}; kids.forEach(function(x){ bySt[x.d.step] = (bySt[x.d.step]||0) + 1; });
   h += '<div class="lv-sum">';
-  for(var st=1; st<=7; st++) if(bySt[st]) h += '<span>'+(st+1)+'. '+esc(stepLabel(st, tt))+' <b>'+bySt[st]+'명</b></span>';
+  for(var st=0; st<=7; st++) if(bySt[st]) h += '<span>'+esc(stepTag(st, tt))+' <b>'+bySt[st]+'명</b></span>';
   h += '</div>';
   function find(nm){ var hit=null; for(var i=0;i<kids.length;i++) if(kids[i].d.name===nm) hit=kids[i];
     if(!hit) for(var j=0;j<kids.length;j++) if(sameName(kids[j].d.name, nm)) hit=kids[j]; return hit; }
@@ -2179,7 +2370,7 @@ function liveHtml(){
     if(!x) hh += '아직 안 들어왔어요';
     else {
       var d = x.d, sn = d.sents||'', fl = d.field && FIELDNAMES[d.field] ? FIELDNAMES[d.field] : '';
-      hh += '<span class="st s'+d.step+'">'+(d.step+1)+'. '+esc(stepLabel(d.step, tt))+'</span>'
+      hh += '<span class="st s'+d.step+'">'+esc(stepTag(d.step, tt))+'</span>'
          + (fl ? esc(fl)+' 칸'+(d.f && d.f[d.field] ? ' · '+d.f[d.field]+'자' : '') : (d.step===1 && tt && tt.noLine ? '카드 '+(d.cards||0)+'장 고름' : ''))
          + '<span class="mini">'
          + (sn.indexOf('5')>=0 ? '<span class="mk ok">'+TWn+' 전 보냄</span>' : '')
@@ -2217,14 +2408,14 @@ function liveHtml(){
     if(gops) h += '<div class="lv-g"><h3>모둠 의견 모아 보기 <span class="mini">전체 '+TWn+' 때 이 화면을 띄워 보세요</span></h3>'+gops+'</div>';
   }
   if(R){
-    h += '<p class="mini" style="margin-top:10px">모둠을 잘못 골랐거나 자리를 옮긴 아이는 오른쪽에서 모둠을 바꿔 주세요. 아이 화면은 ⑥단계에서 저절로 따라가요.</p>';
+    h += '<p class="mini" style="margin-top:10px">모둠을 잘못 골랐거나 자리를 옮긴 아이는 오른쪽에서 모둠을 바꿔 주세요. 아이 화면은 5단계(보내고 모둠 토의)에서 저절로 따라가요.</p>';
     for(var gi=0; gi<gs.length; gi++){
       var mem = R[gs[gi]], xs = mem.map(function(nm){ return find(nm); }), inn = xs.filter(Boolean);
       var minSt = inn.length ? Math.min.apply(null, inn.map(function(x){ return x.d.step; })) : -1;
       var all5 = inn.length===mem.length && inn.every(function(x){ return (x.d.sents||'').indexOf('5')>=0 || (x.d.sents||'').indexOf('6')>=0; });
       var stTxt = !inn.length ? '아직 아무도 안 들어왔어요'
         : all5 ? '모두 보냈어요 — 모둠 '+TWn+' 중'
-        : (inn.length<mem.length ? (mem.length-inn.length)+'명 아직 · ' : '') + '가장 느린 친구 '+(minSt+1)+'. '+stepLabel(minSt, tt);
+        : (inn.length<mem.length ? (mem.length-inn.length)+'명 아직 · ' : '') + '가장 느린 친구 '+stepTag(minSt, tt);
       var gt = talkOf(gs[gi], mem.length, tp), gOver = gt && (gt.stop || srvNow() >= gt.end);
       h += '<div class="lv-g"><h3>'+esc(gs[gi])+'모둠 <span class="mini">'+esc(stTxt)+'</span>'
         + (gt ? '<span class="tst'+(gOver?' over':'')+'">'+(gOver ? TWn+' 끝' : TWn+' 중 · <span data-end="'+gt.end+'">'+fmtLeft(gt.end - srvNow())+'</span> 남음')+'</span>' : '')
@@ -2257,6 +2448,100 @@ function moveKid(nm, g){
     .then(function(j){ if(!j || !j.ok) throw new Error('bad'); LIVE.roster = R; paintLive(); })
     .catch(function(){ alert('모둠을 바꾸지 못했어요. 인터넷을 확인하고 다시 해 볼까요?'); paintLive(); });
 }
+/* 선생님이 명단을 처음 넣거나 고침: 모둠마다 한 줄("1모둠: 김민준, 이서연")로 쓰고 저장하면 새 명단 줄을 보냄 */
+var RED = { open:false, txt:'', msg:'', busy:false, old:null };
+function rosterToText(R){ return Object.keys(R||{}).map(function(g){ return g+'모둠: '+R[g].join(', '); }).join('\n'); }
+function rosterParse(txt){
+  var R = {}, n = 0, seen = {}, dup = [], cnt = 0;
+  (txt||'').split(/\n+/).forEach(function(line){
+    line = line.trim(); if(!line) return;
+    var m = line.match(/^(\d+)\s*(?:모둠)?\s*[:：.)\-]?\s*(.*)$/), g, rest;
+    if(m){ g = String(+m[1]); rest = m[2]; } else { g = String(n+1); rest = line; }
+    n = Math.max(n, +g);
+    rest.split(/[,，、·\/\s]+/).forEach(function(nm){
+      nm = nm.trim(); if(!nm) return;
+      if(seen[nm]){ if(dup.indexOf(nm)<0) dup.push(nm); return; }
+      seen[nm] = 1; (R[g] = R[g] || []).push(nm); cnt++;
+    });
+  });
+  return { R:R, dup:dup, n:cnt, g:Object.keys(R).length };
+}
+function rosterPrev(){
+  var p = rosterParse(RED.txt);
+  if(!p.n) return '<span class="mini">아직 이름이 없어요.</span>';
+  return '<span class="mini"><b>'+p.g+'모둠 · '+p.n+'명</b>으로 읽혀요 — '+Object.keys(p.R).map(function(g){ return esc(g)+'모둠 '+p.R[g].length+'명'; }).join(' · ')+'</span>'
+    + (p.dup.length ? '<div class="warn" style="margin-top:6px">두 번 쓴 이름이 있어요: '+p.dup.map(esc).join(', ')+' — 한 번만 넣었어요.</div>' : '');
+}
+function rosterCard(){
+  if(!sheetUrl()) return '';
+  var R = LIVE.roster, h = '<h2>우리 반 모둠 명단</h2>';
+  if(!RED.open){
+    var nn = 0; if(R) for(var g in R) nn += R[g].length;
+    return h + '<p class="lead">'+(R ? Object.keys(R).length+'모둠 · '+nn+'명이 들어 있어요. 이름을 고치거나 아이를 더하고 빼려면 [명단 고치기]를 눌러 주세요.'
+                              : '아직 명단이 없어요. 명단을 넣으면 아이들이 이름을 쓰지 않고 모둠과 이름을 눌러서 골라요.')+'</p>'
+      + (RED.msg ? '<p class="mini" style="color:var(--green)">'+esc(RED.msg)+'</p>' : '')
+      + '<div class="row"><button class="btn sm sec" data-go="rosteropen">'+(R ? '명단 고치기' : '명단 넣기')+'</button></div>';
+  }
+  if(RED.busy) return h + '<p class="lead">시트에서 지금 명단을 불러오는 중이에요…</p>';
+  return h + '<p class="lead">한 줄에 한 모둠씩, 이름은 쉼표나 띄어쓰기로 나눠 써요. 모둠을 늘리려면 줄을 하나 더 쓰면 돼요.</p>'
+    + '<textarea id="rosteredit" rows="7" placeholder="1모둠: 김민준, 이서연, 박지호&#10;2모둠: 최유나, 정하준, 강도윤">'+esc(RED.txt)+'</textarea>'
+    + '<div id="rosterprev" style="margin-top:6px">'+rosterPrev()+'</div>'
+    + '<div class="row" style="margin-top:12px"><button class="btn sm" data-go="rostersave">명단 저장</button><button class="btn sm sec" data-go="rosterclose">닫기</button></div>'
+    + '<p class="mini" style="margin-top:8px">이미 이름을 고른 아이의 이름을 고치면, 그 아이는 화면 위 [모둠·이름 바꾸기]로 새 이름을 한 번 눌러 주면 돼요. '
+    + '아직 첫 화면에 있는 아이는 새로고침하면 바뀐 명단이 보여요. 쓴 글은 그대로 남아요.</p>';
+}
+/* [진행 순서] 맨 위: 처음 쓰는 선생님이 이 차례대로 누르면 수업 준비부터 마무리까지 앱 안에서 끝나요. */
+var prepAsked = false;
+function prepCard(){
+  var u = sheetUrl(), R = LIVE.roster, nn = 0;
+  if(u && !R && !prepAsked){ prepAsked = true;
+    sheetGet(u, function(txt){ var r = txt ? rosterFromText(txt) : null; if(r && Object.keys(r).length){ LIVE.roster = r; if(S.mode==='teacher' && T.tab==='guide') render(); } }); }
+  if(R) for(var g in R) nn += R[g].length;
+  function go(tab, lbl, open){ return ' <button class="linkbtn" data-tab="'+tab+'"'+(open ? ' data-open="'+open+'"' : '')+'>'+lbl+'</button>'; }
+  return '<div class="card"><h2>수업 순서 — 이 차례대로 하면 돼요</h2>'
+    + '<p class="lead">처음 쓰실 때는 1~3을 한 번만 해 두면, 다음 수업부터는 4번부터예요.</p>'
+    + flowSteps([
+      ['<b>구글 시트 연결</b>'+(u ? ' — 연결돼 있어요' : ' — 아이 글이 선생님께 바로 와요(15분, 한 번만)')+go('gather', u ? '바꾸기' : '연결하러 가기'), !!u],
+      ['<b>모둠 명단 넣기</b>'+(R ? ' — '+Object.keys(R).length+'모둠 · '+nn+'명' : ' — 아이들이 이름을 누르기만 하면 돼요')+(u ? go('live', R ? '고치기' : '넣으러 가기', 'roster') : ' <span class="mini">(1번을 먼저)</span>'), !!R],
+      ['<b>학생용 주소 만들기</b> — 복사해서 패들렛·게시판에 올려요. 아이 첫 화면에 지금 하는 토의가 먼저 보여요. <button class="linkbtn" data-go="copylink">학생용 주소 복사</button>', false],
+      ['<b>수업 중</b> — [지금 아이들]에서 누가 몇 단계인지 보고, 모둠 토의 타이머를 켜요'+go('live', '열기'), false],
+      ['<b>전체 토의</b> — [전체 토의]에서 칠판 화면을 띄우고, 대표를 정해 합의문을 함께 써요'+go('whole', '열기'), false],
+      ['<b>끝나고</b> — [결과 모아 보기]에서 시트를 불러와 평가하고, 포트폴리오를 인쇄·PDF로 저장해요'+go('gather', '열기'), false]
+    ]) + '</div>';
+}
+function paintRoster(){ var el = $('rostercard'); if(el) el.innerHTML = rosterCard(); }
+function rosterOpen(){
+  var u = sheetUrl(); if(!u) return;
+  RED.open = true; RED.busy = true; RED.msg = ''; paintRoster();
+  sheetGet(u, function(txt){
+    var R = txt ? rosterFromText(txt) : null;
+    if(R && Object.keys(R).length) LIVE.roster = R;
+    RED.old = LIVE.roster ? JSON.parse(JSON.stringify(LIVE.roster)) : null;
+    RED.txt = rosterToText(LIVE.roster); RED.busy = false; paintRoster();
+    var ta = $('rosteredit'); if(ta){ grow(ta); ta.focus(); }
+  });
+}
+function rosterSave(){
+  var u = sheetUrl(), p = rosterParse(RED.txt);
+  if(!u) return;
+  if(!p.n){ alert('이름을 한 명 이상 써 주세요.'); return; }
+  var was = [], now = [], O = RED.old || {};
+  for(var g in O) was = was.concat(O[g]);
+  for(var g2 in p.R) now = now.concat(p.R[g2]);
+  var add = now.filter(function(x){ return was.indexOf(x)<0; }), gone = was.filter(function(x){ return now.indexOf(x)<0; });
+  var q = p.g+'모둠 · '+p.n+'명으로 저장할까요?'
+    + (add.length ? '\n\n새로 들어가는 이름: '+add.join(', ') : '') + (gone.length ? '\n빠지는 이름: '+gone.join(', ') : '');
+  if(!confirm(q)) return;
+  var tx = '모둠명단 ' + JSON.stringify(p.R) + '\n@@__모둠명단__|' + (LIVE.cur || LIVE.topic || 'upload3') + '@@';
+  fetch(u, { method:'POST', body:JSON.stringify({text:tx}), headers:{'Content-Type':'text/plain;charset=utf-8'} })
+    .then(function(r){ return r.json(); })
+    .then(function(j){
+      if(!j || !j.ok) throw new Error('bad');
+      LIVE.roster = p.R; if(SHOW.roster) SHOW.roster = p.R;
+      RED.open = false; RED.msg = '저장했어요. '+p.g+'모둠 · '+p.n+'명'; paintRoster(); paintLive();
+    })
+    .catch(function(){ alert('명단을 저장하지 못했어요. 인터넷을 확인하고 다시 해 볼까요? 쓴 내용은 그대로 있어요.'); });
+}
 /* ===================== 전체 토의 화면 (전자칠판) =====================
    시트 글을 한 번 불러와 표지 → 모둠마다 한 장 → 같은 것 → 다른 것 → 합의문 순서로 크게 보여 줍니다.
    붙여넣기 칸(T.paste)은 건드리지 않아요. */
@@ -2272,7 +2557,7 @@ function cardVoices(rows, c, tp, CD){
   var B = CD.btn || CD.keys, ws = cardWords(tp, c, CD), out = [], seen = {}, quiet = 0;
   rows.forEach(function(r){
     var v = +(lastCards(r).charAt(c)||0); if(v<2) return;
-    var x = r.text || {}, src = [x.why, x.other, x.still, x.grule, x.claim, x.moved, r.final].join('\n');
+    var x = r.text || {}, src = [x.why, x.qn, x.cond, x.other, x.still, x.grule, x.claim, x.moved, r.final].join('\n');
     var sents = src.replace(/([.!?。])\s+/g, '$1\n').split(/\n+/).map(function(t){ return t.trim(); }).filter(Boolean);
     var hit = sents.filter(function(t){ return ws.some(function(w){ return t.indexOf(w)>=0; }); })[0];
     if(!hit){ quiet++; return; }
@@ -2407,6 +2692,8 @@ function paintShow(){
    대표 아이와 선생님이 칸을 고치면 1초 뒤 그 칸만 보내고, 모두의 기기가 4초(꺼져 있을 땐 12초)마다 읽어 갑니다.
    지금 쓰고 있는 칸은 남이 고친 것으로 덮지 않아요. */
 var AG = { f:{}, on:false, reps:[], board:null, at:0 }, AGA = [['a1','① 우리가 모두 동의한 것'],['a2','② 아직 생각이 갈리는 것'],['a3','③ 그래서 우리 반이 하기로 한 것 — 조건까지'],['a4','④ 더 알아봐야 할 것']];
+var AGL = ['① 양쪽 모두 인정한 것','② 끝까지 갈린 곳 — 무엇을 더 중요하게 봤나','③ 그래서 우리 반의 잠정 결론 — 조건까지','④ 더 알아봐야 할 것'];
+function agLabel(i){ var tt = topicById(agTp()); return (tt && !tt.noLine) ? AGL[i] : AGA[i][1]; }
 var agTimers = {}, agTimer = null, WH = { min:false, can:null, bkey:'' };
 function agTp(){ if(S.mode==='teacher') return SHOW.tp || LIVE.cur || 'upload3'; var t = topic(); return t ? t.id : ''; }
 function agUrl(){ return S.mode==='teacher' ? sheetUrl() : S.send; }
@@ -2483,23 +2770,100 @@ function boardFromShow(){
     if(n) b.kw.push([w, n]);
   });
   b.kw.sort(function(a,c){ return c[1]-a[1]; }); b.kw = b.kw.slice(0, 8);
+  /* 찬반 토론: 수직선 전→뒤와 양쪽에서 나온 주장·근거 — 이름 없이 */
+  if(tt && !tt.noLine){
+    var side = function(v){ return v<5 ? 0 : v>5 ? 2 : 1; }, L0 = [0,0,0], L1 = [0,0,0], mv = 0, sd = [[],[],[]], sseen = {};
+    rows.forEach(function(r){
+      if(r.first!==null && r.first!==undefined) L0[side(+r.first)]++;
+      if(r.last!==null && r.last!==undefined){ L1[side(+r.last)]++; if(r.first!==null && +r.last!==+r.first) mv++; }
+      var x = r.text || {}, cl = (x.claim||'').trim(), sv = r.last!==null && r.last!==undefined ? +r.last : r.first;
+      if(cl && sv!==null && sv!==undefined && !sseen[cl]){ sseen[cl] = 1; var ev0 = (x.ev||'').trim(); sd[side(+sv)].push((cl + (ev0 ? ' — ' + ev0 : '')).slice(0, 160)); }
+    });
+    b.line = { ends:tt.ends, before:L0, after:L1, moved:mv, left:sd[0].slice(0,4), right:sd[2].slice(0,4) };
+  }
+  /* 규칙 토의: 상황에 넣어 보기(빈틈), 붙이자고 한 조건, 먼저 정할 기준 — 이름 없이 */
+  if(tt && tt.cases){
+    b.cases = tt.cases.list.map(function(c){ return { name:c[0], n:[0,0,0] }; });
+    var cs0 = {}, qs0 = {}; b.conds = []; b.qns = [];
+    rows.forEach(function(r){
+      var x = r.text || {};
+      (x.cases||'').split(' / ').forEach(function(part){
+        var m = part.split(': '); if(m.length<2) return;
+        for(var i=0;i<b.cases.length;i++) if(b.cases[i].name===m[0]){ var k = tt.cases.keys.indexOf(m[1]); if(k>=0) b.cases[i].n[k]++; }
+      });
+      var cd = (x.cond||'').trim(), qn = (x.qn||'').trim();
+      if(cd && !cs0[cd]){ cs0[cd] = 1; b.conds.push(cd.length>140 ? cd.slice(0,138)+'…' : cd); }
+      if(qn && !qs0[qn]){ qs0[qn] = 1; b.qns.push(qn.length>140 ? qn.slice(0,138)+'…' : qn); }
+    });
+    b.keys = tt.cases.keys; b.conds = b.conds.slice(0, 12); b.qns = b.qns.slice(0, 8);
+  }
   return b;
 }
 function needHtml(b){
   if(!b) return '<h2>합의가 필요한 내용</h2><div class="empty">선생님이 곧 띄워 줄 거예요.</div>';
   var h = '<h2>합의가 필요한 내용</h2>';
   if(b.groups && b.groups.length){
-    h += '<h3>모둠 의견</h3>';
+    h += '<h3>'+(b.line ? '모둠 정리' : '모둠 의견')+'</h3>';
     b.groups.forEach(function(g){ h += '<div class="og"><b>'+esc(g.g)+'모둠</b>'+(g.ops.length ? g.ops.map(function(o){ return '<div>'+esc(o)+'</div>'; }).join('') : '<span class="mini">아직 없어요</span>')+'</div>'; });
+  }
+  if(b.line){
+    var ln0 = b.line, e = ln0.ends || ['아니다','그렇다'];
+    var row3 = function(a){ return '◀ '+esc(e[0])+' 쪽 <b>'+a[0]+'명</b> · 가운데 <b>'+a[1]+'명</b> · '+esc(e[1])+' 쪽 <b>'+a[2]+'명</b> ▶'; };
+    h += '<h3>수직선 — 토론 전과 뒤</h3><div class="og"><div>토론 전: '+row3(ln0.before)+'</div>'
+      + (ln0.after[0]+ln0.after[1]+ln0.after[2] ? '<div>토론 뒤: '+row3(ln0.after)+'</div><div class="mini">자리를 옮긴 친구 '+ln0.moved+'명</div>' : '')+'</div>';
+    if(ln0.left.length) h += '<h3>'+esc(e[0])+' 쪽에서 나온 말 <span class="mini">(이름 없이)</span></h3>'+ln0.left.map(function(c){ return '<div class="voice">'+esc(c)+'</div>'; }).join('');
+    if(ln0.right.length) h += '<h3>'+esc(e[1])+' 쪽에서 나온 말 <span class="mini">(이름 없이)</span></h3>'+ln0.right.map(function(c){ return '<div class="voice">'+esc(c)+'</div>'; }).join('');
+    h += '<div class="ask" style="font-size:.9em">양쪽이 모두 맞다고 한 것은 ①에, 무엇을 더 중요하게 봐서 갈렸는지는 ②에 적어요. 이기고 진 쪽을 정하지 않아요.</div>';
   }
   if(b.same && b.same.length) h += '<h3>같은 것 — 모두 거의 같이 고른 것</h3>'+b.same.map(function(x){
       return '<div class="og"><b>'+esc(x.name)+'</b> '+esc(x.top)+' '+x.n+'/'+x.tot+'명'+voicesHtml(x.vo)+'</div>'; }).join('');
-  h += '<h3>다른 것 — 생각이 갈린 것</h3>' + (b.diff && b.diff.length
+  if(!b.line || (b.diff && b.diff.length)) h += '<h3>다른 것 — 생각이 갈린 것</h3>' + (b.diff && b.diff.length
     ? b.diff.map(function(x){ return '<div class="og"><b>'+esc(x.name)+'</b><div>'+x.parts.filter(function(p){ return p[1]; }).map(function(p){ return esc(p[0])+' '+p[1]+'명'; }).join(' · ')+'</div>'+voicesHtml(x.vo)+'</div>'; }).join('')
     : '<div class="og">크게 갈린 것은 없어요. 이제 <b>어떻게 지킬지</b>(언제, 무엇을, 어떻게)를 정해요.</div>');
+  if(b.cases && b.cases.some(function(c){ return c.n[0]+c.n[1]+c.n[2]; })){
+    h += '<h3>상황에 넣어 보니 — 빈틈이 보인 곳</h3>' + b.cases.map(function(c){
+      var gap = c.n[1]+c.n[2];
+      return '<div class="og"><b>'+esc(c.name)+'</b><div>'+[0,1,2].filter(function(i){ return c.n[i]; }).map(function(i){ return esc(b.keys[i])+' '+c.n[i]+'명'; }).join(' · ')
+        + (gap ? ' <span class="tag">빈틈</span>' : '')+'</div></div>'; }).join('');
+  }
+  if(b.conds && b.conds.length) h += '<h3>친구들이 붙이자고 한 조건 <span class="mini">→ ③</span></h3>'+b.conds.map(function(c){ return '<div class="voice">'+esc(c)+'</div>'; }).join('');
+  if(b.qns && b.qns.length) h += '<h3>먼저 정해야 할 기준 <span class="mini">→ ③ 또는 ④</span></h3>'+b.qns.map(function(c){ return '<div class="voice">'+esc(c)+'</div>'; }).join('');
   if(b.kw && b.kw.length) h += '<h3>많이 나온 말</h3><div class="chipline">'+b.kw.map(function(k){ return '<span>'+esc(k[0])+' '+k[1]+'명</span>'; }).join('')+'</div>';
+  if(b.line) return h;
   return h + '<div class="ask" style="font-size:.9em">노란 칸은 다르게 고른 친구의 생각이에요(이름 없이). 모두 같은 것은 ①에, 아직 갈리는 것은 ②에, '
     + '그래서 하기로 한 것과 <b>조건</b>(~라면 ~한다, 먼저 정할 기준)은 ③에 적어요.</div>';
+}
+/* 손가락 합의: 손 들어 이기고 지는 대신 "얼마나 받아들일 수 있나"를 0~5로. 아이 기기의 진행 알림에 실려 가요. */
+var FISTW = ['반대해요','많이 고쳐야 해요','조금 고쳐야 해요','받아들일 수 있어요','좋아요','아주 좋아요'];
+var FIST = { n:null, at:0 };
+function fistKid(){
+  var h = '<div class="fist"><h3>손가락 합의 — 이 합의문을 얼마나 받아들일 수 있나요?</h3>'
+    + '<p class="mini" style="font-size:.75em;margin:0 0 .4em">손 들어 정하지 않아요. 모두 3 이상이 되도록 고쳐 가요. 누가 몇을 골랐는지는 선생님만 봐요.</p><div class="fistbtns">';
+  for(var i=0;i<=5;i++) h += '<button data-fist="'+i+'" aria-pressed="'+(S.fist===i)+'"><b>'+i+'</b><span>'+FISTW[i]+'</span></button>';
+  return h + '</div><p class="mini fistme" style="font-size:.75em;margin:.4em 0 0">'+(S.fist>=0 ? (S.fist<3 ? '무엇을 고치면 3이 될지 대표 친구나 선생님께 말해 줘요.' : '골랐어요. 합의문이 바뀌면 다시 골라도 돼요.') : '')+'</p></div>';
+}
+function fistHtml(names){
+  var F = FIST.n;
+  if(!F) return '<p class="mini">손가락 합의를 불러오는 중이에요…</p>';
+  var tot = F.reduce(function(a,c){ return a + c.length; }, 0), lo = F[0].concat(F[1], F[2]), mx = Math.max.apply(null, F.map(function(c){ return c.length; })) || 1;
+  if(!tot) return '<div class="fist"><h3>손가락 합의</h3><p class="mini">아직 고른 친구가 없어요. 아이들 화면 합의문 아래에서 0~5를 골라요.</p></div>';
+  var h = '<div class="fist"><h3>손가락 합의 <span class="mini">'+tot+'명이 골랐어요</span></h3><div class="fistbars">';
+  for(var i=0;i<=5;i++) h += '<div class="fb'+(i<3?' lo':'')+'"><i style="height:'+Math.round(F[i].length/mx*100)+'%"></i><b>'+F[i].length+'</b><span>'+i+'</span></div>';
+  h += '</div>' + (lo.length ? '<p class="mini">0~2를 고른 친구 '+lo.length+'명'+(names ? ': '+lo.map(esc).join(', ') : '')+' — "무엇을 고치면 3이 될까?"를 물어 합의문을 고쳐요.</p>'
+                             : '<p class="mini" style="color:var(--green-d);font-weight:700">모두 3 이상이에요. 우리 반 합의가 됐어요.</p>');
+  return h + '</div>';
+}
+function fistLoad(){
+  var u = sheetUrl(), tp = agTp(); if(!u || !window.fetch) return;
+  fetch(u + (u.indexOf('?')>=0?'&':'?') + 'what=progress&t=' + Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(j){
+      if(!j || !j.progress) return;
+      var now = j.now || Date.now(), F = [[],[],[],[],[],[]];
+      j.progress.forEach(function(x){ var d = x && x.d; if(d && d.topic===tp && now - (x.at||0) < 3*3600000 && d.fist>=0 && d.fist<=5) F[d.fist].push(d.name); });
+      FIST.n = F; FIST.at = Date.now();
+      var bs = document.querySelectorAll('.fistbox'); for(var i=0;i<bs.length;i++) bs[i].innerHTML = fistHtml(bs[i].getAttribute('data-names')==='1');
+    }).catch(function(){});
 }
 function agreeSplit(b, can){
   var who = S.mode==='teacher' ? '선생님으로 적을 수 있어요.' : (can ? '대표로 적을 수 있어요.' : '');
@@ -2509,11 +2873,12 @@ function agreeSplit(b, can){
                                                                    : '대표 친구가 적어요. 적는 대로 여기에 보여요.')+'</p>';
   for(var i=0;i<AGA.length;i++){
     var k = AGA[i][0], v = agVal(k), x = AG.f[k];
-    h += '<label class="al">'+AGA[i][1]+'</label>'
+    h += '<label class="al">'+agLabel(i)+'</label>'
       + (can ? '<textarea data-ag="'+k+'" placeholder="'+(k==='a3' ? '예: 올리기 전에 3초 동안 개인정보·출처를 본다. 친구가 나오면 허락을 받는다.' : '')+'">'+esc(v)+'</textarea>'
              : '<div class="agv" data-agv="'+k+'">'+esc(v)+'</div>')
       + '<div class="agby" data-agby="'+k+'">'+(S.mode==='teacher' && x && x.by && v ? esc(x.by)+' 씀' : '')+'</div>';
   }
+  h += S.mode==='student' ? '<div class="fistkid"'+(agHas() ? '' : ' hidden')+'>'+fistKid()+'</div>' : '<div class="fistbox" data-names="'+(SHOW.names?'1':'')+'">'+fistHtml(!!SHOW.names)+'</div>';
   return h + '<div class="agst"></div></div><div class="agneed">'+needHtml(b)+'</div></div>';
 }
 /* 아이 화면: 선생님이 띄우면 전체 토의 화면이 덮어요. 잠깐 내 글로 돌아갈 수도 있어요. */
@@ -2534,6 +2899,7 @@ function paintWhole(){
     return;
   }
   agApply(el);
+  var fk = el.querySelector('.fistkid'); if(fk) fk.hidden = !agHas();
   if(bkey!==WH.bkey){ var nd = el.querySelector('.agneed'); if(nd) nd.innerHTML = needHtml(AG.board); WH.bkey = bkey; }
 }
 /* 읽어 오기: 아이는 시트가 연결돼 있으면 늘, 선생님은 [전체 토의] 탭이나 전자칠판 합의문 장에 있을 때만 */
@@ -2544,7 +2910,7 @@ function agLoop(){
     if(S.mode==='student'){ paintWhole(); agApply(document);
       /* ⑦·⑧에서 합의문이 처음 생기면, 쓰고 있지 않을 때 한 번 다시 그려 보여 줘요. */
       if((S.step===6 || S.step===7) && !$('kagree') && agHas() && !(document.activeElement && /TEXTAREA|INPUT/.test(document.activeElement.tagName))) render(); }
-    else { agApply(document); if(T.tab==='whole' && !SHOW.open && !document.activeElement.closest('.card textarea')) { var c = $('wholectl'); if(c) c.innerHTML = wholeCtl(); var rb = $('repbox'); if(rb) rb.innerHTML = repChips(); } }
+    else { agApply(document); if(T.tab==='whole' || SHOW.open) fistLoad(); if(T.tab==='whole' && !SHOW.open && !document.activeElement.closest('.card textarea')) { var c = $('wholectl'); if(c) c.innerHTML = wholeCtl(); var rb = $('repbox'); if(rb) rb.innerHTML = repChips(); } }
     agTimer = setTimeout(agLoop, AG.on || SHOW.open ? 4000 : 12000);
   });
 }
@@ -2596,7 +2962,7 @@ function kidExtras(){
   var h = '';
   if(agHas()){
     h += '<div class="card" id="kagree"><h2>우리 반 합의문</h2><p class="lead">반 친구들과 함께 정한 것이에요. 선생님과 대표 친구가 고치면 여기에도 바로 바뀌어요.</p><div class="split" style="display:block">';
-    for(var i=0;i<AGA.length;i++){ var v = agVal(AGA[i][0]); if(v) h += '<label class="al">'+AGA[i][1]+'</label><div class="agv" data-agv="'+AGA[i][0]+'">'+esc(v)+'</div>'; }
+    for(var i=0;i<AGA.length;i++){ var v = agVal(AGA[i][0]); if(v) h += '<label class="al">'+agLabel(i)+'</label><div class="agv" data-agv="'+AGA[i][0]+'">'+esc(v)+'</div>'; }
     h += '</div></div>';
   }
   return h + '<div class="card noprint" style="padding:18px 22px"><div class="row"><div style="flex:1"><b>내 포트폴리오</b>'
@@ -2622,7 +2988,7 @@ function teacherVoices(){
 function pfFromS(){
   var t = topic(), CD = cardsOf(t), n = okCount();
   return { name:S.name, group:S.typeName ? '' : S.group, t:t, CD:CD, c1:CD ? cardCode(CD, S.jobs) : '', c2:CD && countPicks(S.jobs2) ? cardCode(CD, S.jobs2) : '',
-    first:S.first, last:S.last, x:{claim:S.claim, reason:S.reason, ev:S.ev, who:S.who, other:S.other, still:S.still, grule:S.grule, moved:S.moved, why:S.why},
+    first:S.first, last:S.last, x:{claim:S.claim, reason:S.reason, ev:S.ev, who:S.who, other:S.other, still:S.still, foe:S.foe, reply:S.reply, cases:caseLine(t, S.cs), cond:S.cond, qn:S.qn, grule:S.grule, moved:S.moved, why:S.why},
     evt:S.evType>=0 ? EVTYPE[S.evType][0] : '', final:S.final, jj:jjFlag(), score:n[0]+'/'+n[1] };
 }
 function pfFromRow(r, R){
@@ -2648,13 +3014,15 @@ function pfHtml(d, teacher){
     h += '<h2>처음 자리와 나중 자리</h2><p style="margin:0">'+d.first+'번 자리 → '+(d.last!==null && d.last!==undefined ? d.last+'번 자리' : '아직')+'</p>';
   }
   h += '<h2>내 생각</h2>' + ln(t && t.noLine ? '제안하는 규칙' : '주장', x.claim) + ln('이유', x.reason) + ln('근거', (x.ev||'') + (x.ev && d.evt ? ' ('+d.evt+')' : '')) + ln('영향', x.who);
-  if((x.other||'').trim() || (x.still||'').trim()) h += '<h2>다른 의견과 내 답</h2>' + ln('다른 의견', x.other) + ln('내 답', x.still);
+  if((x.cases||'').replace(/[^:]*: -( \/ )?/g,'').trim() || (x.cond||'').trim() || (x.qn||'').trim())
+    h += '<h2>상황에 넣어 보기</h2>' + ln('상황', x.cases) + ln('붙일 조건', x.cond) + ln('먼저 정할 기준', x.qn);
+  if((x.other||'').trim() || (x.still||'').trim() || (x.foe||'').trim()) h += '<h2>다른 의견과 내 답</h2>' + ln('다른 의견', x.other) + ln('내 답', x.still) + ln('예상 반론', x.foe) + ln('그때 내 답', x.reply);
   if((x.grule||'').trim()) h += '<h2>우리 모둠 의견</h2>' + ln('모둠 의견', x.grule);
   if((x.moved||'').trim() || (x.why||'').trim()) h += '<h2>'+TW+'를 마치고</h2>' + ln('나를 움직인 말', x.moved) + ln('그 까닭', x.why);
   if((d.final||'').trim()) h += '<h2>최종 글'+(d.jj==='j' ? '<span class="pf-jj">자작자작 도움</span>' : '')+'</h2><div class="pf-final">'+esc(d.final)+'</div>';
   if(agHas()){
     h += '<h2>우리 반 합의문</h2><div class="pf-agree">';
-    for(var i=0;i<AGA.length;i++) h += ln(AGA[i][1].replace(/^[①②③④]\s*/, ''), agVal(AGA[i][0]));
+    for(var i=0;i<AGA.length;i++) h += ln(agLabel(i).replace(/^[①②③④]\s*/, ''), agVal(AGA[i][0]));
     h += '</div>';
   }
   h += '<h2>돌아보기</h2>' + ln('스스로 점검', d.score);
@@ -2688,6 +3056,7 @@ function viewTeacher(){
 
   if(T.tab==='guide'){
     var ci;
+    h += prepCard();
     h += '<div class="card"><h2>교육과정과 이어지는 곳 — '+B.name+'</h2>'
       + '<p class="lead">이 수업이 2022 개정 초등학교 교육과정(별책2)의 어디에 닿는지입니다. [결과 모아 보기]의 상·중·하 기준도 여기에 맞춰 두었어요.</p>'
       + '<h3 style="font-size:15.5px;margin:10px 0 4px">핵심 성취기준</h3><ul class="std">';
@@ -2712,7 +3081,7 @@ function viewTeacher(){
     h += '</table><div class="row noprint" style="margin-top:12px"><button class="btn sm" data-go="copylink">'+B.name+' 학생용 주소 복사</button>'
       + '<span class="mini">주소 뒤에 <code>?band='+T.band+'</code>가 붙어요. 아이들 화면이 이 학년군으로 열립니다.'
       + (sheetUrl() ? ' 구글 시트 주소도 함께 들어가서 아이들 화면에 [선생님께 보내기] 단추가 생겨요.' : '') + '</span></div>'
-      + '<p class="mini" style="margin-top:8px">여기 없는 주제는 아이들이 ①단계 맨 아래 "우리 반이 정한 주제"에 직접 적으면 돼요. 성취기준 글자 위에 마우스를 올리면 전체 문장이 보여요.</p></div>';
+      + '<p class="mini" style="margin-top:8px">여기 없는 주제는 아이들이 첫 화면 맨 아래 "우리 반이 정한 주제"에 직접 적으면 돼요. 성취기준 글자 위에 마우스를 올리면 전체 문장이 보여요.</p></div>';
 
     /* 수업 꾸러미 — 이 학년군에서 쓸 수 있는 묶음 수업 */
     if(T.band==='56'){
@@ -2722,10 +3091,10 @@ function viewTeacher(){
         + '<p class="mini">닿는 성취기준: [6국01-06] 토의에 협력적으로 참여하며 서로의 의견을 비교하고 조정한다. · [6실04-03] 건전한 정보기기의 활용을 실천한다.</p>'
         + '<table style="margin-top:10px"><tr><th style="width:110px">때</th><th>하는 일</th><th style="width:30%">앱에서</th></tr>'
         + '<tr><td><b>도입</b> 5분</td><td>노션 갤러리의 모둠 핵심 기준 다섯 개를 다시 봅니다. "오늘은 이 기준들로 우리 반 모두가 지킬 규칙을 정해요."</td><td class="mini">학생용 주소를 열면 이 주제가 바로 열려요.</td></tr>'
-        + '<tr><td><b>전개 1</b> 10분</td><td>혼자서 다섯 모둠의 기준 카드를 "꼭 넣자 / 고치거나 합쳐서 넣자 / 빼도 된다"로 나누고, <b>내가 제안하는 우리 반 규칙</b>을 이유와 함께 씁니다.</td><td class="mini">② 처음 카드 → ③ 제안하는 규칙·이유 → ④ 다듬기 → ⑤ 다른 의견 → ⑥ [선생님께 보내기]</td></tr>'
+        + '<tr><td><b>전개 1</b> 10분</td><td>혼자서 다섯 모둠의 기준 카드를 "꼭 넣자 / 고치거나 합쳐서 넣자 / 빼도 된다"로 나누고, <b>내가 제안하는 우리 반 규칙</b>을 이유와 함께 씁니다.</td><td class="mini">앱 1단계 처음 카드 → 2단계 제안하는 규칙·이유 → 3단계 다듬기 → 4단계 상황에 넣어 보기 → 5단계 [선생님께 보내기]</td></tr>'
         + '<tr><td><b>전개 2</b> 15분</td><td>[결과 모아 보기]를 화면에 띄웁니다. <b>표에서 생각이 갈린 기준</b>부터 이야기합니다. "고치거나 합쳐서 넣자" → 어떻게 고치고 무엇과 합칠까? 아이들이 제안한 규칙 문장을 비교해 겹치는 것은 묶고, 빠진 것(동의, 사실 확인 등)이 있는지 묻습니다.</td><td class="mini">[시트에서 불러오기] 한 번이면 표가 채워져요.</td></tr>'
-        + '<tr><td><b>전개 3</b> 3분</td><td>토의를 듣고 카드를 다시 나눕니다. 바꾼 아이에게 "무엇이 생각을 바꿨니?"를 먼저 묻습니다.</td><td class="mini">⑦ 나를 움직인 말 · 카드 다시 나누기 → 한 번 더 보내기</td></tr>'
-        + '<tr><td><b>정리</b> 7분</td><td>합의문 네 칸을 함께 채웁니다. ③에 <b>「우리 반 업로드 전 3초」 규칙</b>을 적습니다. 포스터는 이 ③을 옮겨 모둠별로 만듭니다.</td><td class="mini">[마무리 — 합의문] → 복사·인쇄</td></tr></table>'
+        + '<tr><td><b>전개 3</b> 3분</td><td>토의를 듣고 카드를 다시 나눕니다. 바꾼 아이에게 "무엇이 생각을 바꿨니?"를 먼저 묻습니다.</td><td class="mini">앱 6단계: 나를 움직인 말 · 카드 다시 나누기 → 한 번 더 보내기</td></tr>'
+        + '<tr><td><b>정리</b> 7분</td><td>합의문 네 칸을 함께 채웁니다. ③에 <b>「우리 반 업로드 전 3초」 규칙</b>을 조건까지 적습니다(아이들이 상황에 넣어 보며 붙인 조건이 오른쪽에 모여 있어요). 그다음 <b>손가락 합의</b>(0~5): 모두 3 이상이면 합의, 0~2가 있으면 "무엇을 고치면 3이 될까?"를 물어 고칩니다. 포스터는 이 ③을 옮겨 모둠별로 만듭니다.</td><td class="mini">[전체 토의] → 아이들 화면에 띄우기 → 손가락 합의</td></tr></table>'
         + '<div class="note" style="margin-top:12px"><b>2차시 모둠 핵심 기준</b> (노션 「모둠 기준 올리기」)<br>'
         + '1모둠 출처가 정확한지 · 2모둠 폭력적이지 않은지 · 3모둠 개인정보와 보기 좋은지(딥페이크, 비하하는 말) · '
         + '4모둠 출처가 믿을 만한지와 다른 사람의 개인정보 · 5모둠 다른 사람의 개인정보</div>'
@@ -2742,7 +3111,7 @@ function viewTeacher(){
       + '<tr><td><b>2</b></td><td>서 보기</td><td>"지금 생각하는 자리에 가서 서세요." <b>말은 하지 않고</b> 움직이기만 합니다.</td></tr>'
       + '<tr><td><b>3</b></td><td>세 사람만 묻기</td><td>왼쪽 끝 한 명 · 가운데 한 명 · 오른쪽 끝 한 명에게만 <b>"왜 거기 서 있나요?"</b><br>'
       + '<span class="mini">여기서 모두에게 물으면 시간이 다 갑니다. 세 명이면 충분해요.</span></td></tr>'
-      + '<tr><td><b>4</b></td><td>앉아서 쓰기</td><td>자리에 돌아와 앱에서 주장·이유·근거를 세웁니다. (②~④)</td></tr>'
+      + '<tr><td><b>4</b></td><td>앉아서 쓰기</td><td>자리에 돌아와 앱에서 주장·이유·근거를 세웁니다. (앱 2~3단계)</td></tr>'
       + '<tr><td><b>5</b></td><td>가까운 짝 / 먼 짝</td><td>처음엔 <b>가까이 선 사람</b>끼리 묶어 생각을 다듬고, 다음엔 <b>멀리 선 사람</b>과 짝지어 듣습니다.<br>'
       + '<span class="mini">먼 짝에게는 반박 말고 질문만 하게 하세요. "왜 그렇게 생각했어?"</span></td></tr>'
       + '<tr><td><b>6</b></td><td>다시 서 보기</td><td>토론 뒤 <b>한 번 더 줄을 섭니다.</b> 옮겨진 아이가 눈에 보여요. 그 뒤 앱에 나중 자리를 찍습니다.</td></tr></table>'
@@ -2785,8 +3154,8 @@ function viewTeacher(){
       + '<p class="lead">앱은 서버가 없어서 결과가 저절로 모이지 않아요. 아이들이 복사한 글을 한곳에 모았다가 여기 붙여 넣습니다.</p>'
       + '<table><tr><th style="width:36px">　</th><th style="width:140px">언제</th><th>어떻게</th></tr>'
       + '<tr><td><b>1</b></td><td>수업 전</td><td>패들렛에 오늘 토론용 담벼락을 하나 만들고 링크를 아이들에게 줍니다. 구글 문서 하나를 공유해도 됩니다.</td></tr>'
-      + '<tr><td><b>2</b></td><td>⑤ 나눌 준비</td><td>아이들이 [결과 복사하기]를 눌러 담벼락에 글 하나로 붙여 넣습니다. (토론 전 자리)</td></tr>'
-      + '<tr><td><b>3</b></td><td>⑦ 듣고 나서</td><td>같은 단추를 한 번 더 눌러 다시 올립니다. (나중 자리까지 들어 있음)</td></tr>'
+      + '<tr><td><b>2</b></td><td>앱 5단계 보내고 함께 토론</td><td>아이들이 [결과 복사하기]를 눌러 담벼락에 글 하나로 붙여 넣습니다. (토론 전 자리)</td></tr>'
+      + '<tr><td><b>3</b></td><td>앱 6단계 토론 뒤 내 생각</td><td>같은 단추를 한 번 더 눌러 다시 올립니다. (나중 자리까지 들어 있음)</td></tr>'
       + '<tr><td><b>4</b></td><td>집계</td><td>담벼락 글을 모두 긁어 복사해서 [결과 모아 보기] 칸에 붙여 넣고 [집계하기]. '
       + '<span class="mini">앞뒤에 다른 글이 섞여 있어도 괜찮아요. @@ 표시 사이의 줄만 읽습니다. 같은 아이가 두 번 올렸으면 뒤의 것만 셉니다.</span></td></tr></table>'
       + '<div class="note">패들렛은 [공유 → 내보내기]로 전체 글을 한 번에 받을 수도 있습니다. 받은 글을 통째로 붙여 넣어도 됩니다.<br>'
@@ -2822,6 +3191,7 @@ function viewTeacher(){
       + '<label class="f" style="margin-top:16px">합의문 대표 (반장·부반장)</label>'
       + '<div class="fh">이름을 누르면 대표가 돼요. 다시 누르면 빠져요. 대표가 아니어도 선생님은 언제든 적을 수 있어요.</div>'
       + '<div id="repbox">'+repChips()+'</div>'
+      + '<div class="fistbox" data-names="1" style="margin-top:16px">'+fistHtml(true)+'</div>'
       + '<p class="mini" style="margin-top:8px">대표 아이 화면에는 합의문 칸이 쓰는 칸으로 바뀌어요. 같은 칸을 두 사람이 동시에 고치면 나중에 쓴 쪽이 남으니, 대표마다 맡을 칸을 정해 주면 좋아요(예: 반장 ①②, 부반장 ③④).</p>'
       + '<p class="mini">서버가 없는 앱이라 완전한 잠금은 아니에요. 수업 중에 아무나 고치지 못하게 하는 정도예요.</p>'
       + '</div><div class="card"><h2>다르게 고른 친구의 생각 <span class="mini">선생님만 보기 · 이름 있음</span></h2>'
@@ -2832,6 +3202,7 @@ function viewTeacher(){
   }
   if(T.tab==='live'){
     h += '<div class="card"><div id="live">'+liveHtml()+'</div></div>';
+    h += '<div class="card" id="rostercard">'+rosterCard()+'</div>';
     return h;
   }
   if(T.tab==='gather'){
@@ -2840,12 +3211,24 @@ function viewTeacher(){
       + '<p class="lead">시트를 연결해 두면 아이들이 [선생님께 보내기]를 누른 글이 시트에 쌓이고, 여기서 한 번에 불러올 수 있어요. '
       + '연결하지 않으면 지금처럼 복사·붙여넣기로 모읍니다.</p>'
       + '<label class="f" for="sheet">웹 앱 주소 (Apps Script 배포 URL)</label>'
-      + '<div class="fh">만드는 법은 안내 문서 「02_구글시트_연결하기」에 화면 순서대로 있어요. 처음 한 번만 15분쯤 걸립니다.</div>'
+      + '<div class="fh">처음이라면 아래 「처음 연결하는 법」을 차례대로 따라 해 보세요. 한 번만 15분쯤 걸려요.</div>'
       + '<input type="text" id="sheet" value="'+esc(T.sheet)+'" placeholder="https://script.google.com/macros/s/…/exec">'
       + '<div class="row" style="margin-top:10px">'
       + '<button class="btn sm" data-go="loadsheet">시트에서 불러오기</button>'
       + '<button class="btn sm sec" data-go="testsheet">연결 확인</button>'
       + '<span class="mini" id="sheetmsg"></span></div>'
+      + '<details class="think" style="margin-top:14px"'+(sheetUrl() ? '' : ' open')+'><summary>처음 연결하는 법 — 한 번만, 15분쯤</summary><div class="in">'
+      + '<ol class="rules" style="font-size:15px">'
+      + '<li>구글 드라이브에서 <b>새로 만들기 → Google 스프레드시트</b>를 만들어요. 이름은 「생각 모으기 결과」처럼 알아보기 쉽게.</li>'
+      + '<li>시트 메뉴 <b>확장 프로그램 → Apps Script</b>. 처음 들어 있는 글을 모두 지우고, 아래 <b>[스크립트 복사]</b>를 눌러 붙여 넣은 뒤 저장(Ctrl+S)해요.</li>'
+      + '<li>오른쪽 위 <b>배포 → 새 배포</b> → 톱니에서 <b>웹 앱</b>을 골라요. 실행: <b>나</b>, 액세스 권한: <b>모든 사용자</b> → [배포]. '
+      + '승인 창이 뜨면 내 계정 → "고급" → "…(으)로 이동" → 허용. 선생님이 직접 만든 스크립트라 괜찮아요.</li>'
+      + '<li>마지막에 나온 <b>웹 앱 URL</b>을 복사해 위 칸에 붙여 넣고 [연결 확인]을 눌러요. "연결됐어요"가 나오면 끝이에요.</li>'
+      + '<li>[진행 순서] 탭의 <b>[학생용 주소 복사]</b>로 아이들에게 줄 주소를 만들고, [지금 아이들] 탭에서 <b>모둠 명단</b>을 넣어요.</li></ol>'
+      + '<div class="row" style="margin-top:10px"><button class="btn sm sec" data-go="copygs">스크립트 복사</button><span class="mini" id="gsmsg"></span></div>'
+      + '<p class="mini" style="margin-top:8px">주소가 <b>…/a/macros/학교주소/…</b> 모양이면 액세스가 "모든 사용자"가 아니라서 아이 기기에서 보내지지 않아요. [배포 관리]에서 연필을 눌러 고쳐 주세요.<br>'
+      + '이미 연결했는데 [지금 아이들]에 "옛 판"이라고 나오면: 스크립트를 새로 붙여 넣고 저장 → <b>배포 관리 → 연필 → 버전: 새 버전 → 배포</b>. 주소는 그대로예요.</p>'
+      + '</div></details>'
       + '<p class="mini" style="margin-top:8px">불러오면 아래 붙여넣기 칸이 시트 내용으로 바뀌어요. 주소를 넣은 뒤 [진행 순서]의 [학생용 주소 복사]를 누르면 '
       + '시트 주소가 함께 들어가서, 그 주소로 들어온 아이 화면에만 보내기 단추가 생깁니다.</p></div>';
     h += teacherGroups();
@@ -3102,11 +3485,16 @@ function agreeText(){
 /* ===================== 그리기 · 이벤트 ===================== */
 function render(){
   var bm = $('btnMode');
-  if(askPin){ app(viewLock()); bm.hidden = true; var pe=$('pin'); if(pe) pe.focus(); render.lastKey='lock'; return; }
+  if(askPin){ app(viewLock()); bm.hidden = true; $('toppill').hidden = true; var pe=$('pin'); if(pe) pe.focus(); render.lastKey='lock'; return; }
   if(S.mode==='teacher' && !unlocked()) S.mode = 'student';
   if(S.mode!=='teacher' && S.step>0 && !topic()){ S.step=0; S.topic=null; }
   var key = S.mode+'/'+(S.mode==='teacher'?T.tab:S.step), y = window.pageYOffset||0;
+  if(S.mode==='student' && S.step>(S.reach||0)) S.reach = S.step;
   app(S.mode==='teacher' ? viewTeacher() : viewStudent());
+  /* 머리 막대에도 지금 단계 — 길게 내려 써도 늘 보여요 */
+  var tpl = $('toppill'), tpt = S.mode==='student' && S.step>0 ? topic() : null;
+  tpl.hidden = !tpt; tpl.innerHTML = tpt ? '<b>'+S.step+'단계</b> · '+esc(stepShort(S.step, tpt)) : '';
+  document.querySelector('.top').classList.toggle('hasstep', !!tpt);
   if(S.mode==='student' && key!==render.lastKey) progPing(true);
   if(S.mode==='student' && S.step===0) nowLoad();
   if(S.mode==='teacher' && T.tab==='live'){ if(!liveTimer){ liveTimer = setInterval(liveLoad, 10000); liveLoad(); } }
@@ -3123,7 +3511,7 @@ function render(){
   render.lastKey = key;
 }
 function grab(){
-  var ids = ['claim','reason','ev','who','other','still','moved','why','draft','final','grule','nm','cq','cl','cr','paste','a1','a2','a3','a4','sheet'];
+  var ids = ['claim','reason','ev','who','other','still','foe','reply','cond','qn','moved','why','draft','final','grule','nm','cq','cl','cr','paste','a1','a2','a3','a4','sheet'];
   for(var i=0;i<ids.length;i++){
     var el = $(ids[i]); if(!el) continue;
     var v = el.value;
@@ -3146,13 +3534,23 @@ function grab(){
   save();
 }
 document.addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('[data-go],[data-topic],[data-first],[data-last],[data-stem],[data-evt],[data-job],[data-tab],[data-tpick],[data-grade],[data-band],[data-job2],[data-grp],[data-me],[data-livetopic],[data-rep]') : null;
+  var el = e.target.closest ? e.target.closest('[data-go],[data-topic],[data-first],[data-last],[data-stem],[data-evt],[data-job],[data-tab],[data-tpick],[data-grade],[data-band],[data-job2],[data-grp],[data-me],[data-livetopic],[data-rep],[data-stepgo],[data-case],[data-fist]') : null;
   if(!el) return;
   var d = el.dataset;
 
   if(d.band){ grab(); if(S.mode==='teacher') T.band=d.band; else S.band=d.band; save(); render(); return; }
 
-  if(d.tab){ grab(); T.tab=d.tab; render(); return; }
+  if(d.tab){ grab(); T.tab=d.tab; render();
+    if(d.open==='roster' && sheetUrl()){ rosterOpen(); var rc0 = $('rostercard'); if(rc0 && rc0.scrollIntoView) rc0.scrollIntoView({block:'start'}); }
+    return; }
+  /* 단계 번호 누르기: 가 본 단계까지만 오가요 */
+  if(d.stepgo){
+    grab(); var sg = +d.stepgo, tg = topic();
+    if(!tg || sg<1 || sg>(S.reach||0) || sg===S.step) return;
+    if(sg===6 && tg.noLine && !countPicks(S.jobs2)){ S.jobs2={}; for(var kg in S.jobs) S.jobs2[kg]=S.jobs[kg]; }
+    if(sg===7 && !(S.draft||'').trim()) S.draft = buildDraft(tg);
+    S.whoOpen = false; S.step = sg; save(); render(); return;
+  }
   if(d.livetopic!==undefined){ LIVE.topic=d.livetopic; paintLive(); return; }
   if(d.rep!==undefined){
     var rl = AG.reps.slice(), ri = rl.indexOf(d.rep);
@@ -3171,7 +3569,7 @@ document.addEventListener('click', function(e){
       if(!(S.custom||'').trim()){ alert('주제를 적어 주세요.'); return; }
       S.topic='custom';
     } else S.topic=d.topic;
-    if(prevTopic!==S.topic){ S.jobs={}; S.jobs2={}; }
+    if(prevTopic!==S.topic){ S.jobs={}; S.jobs2={}; S.cs={}; S.fist=-1; S.reach=1; }
     S.step=1; save(); render(); return;
   }
   if(d.first!==undefined){ S.first=+d.first; save(); render(); return; }
@@ -3188,6 +3586,11 @@ document.addEventListener('click', function(e){
   if(d.job2!==undefined){ grab(); var j2=+d.job2;
     if(d.v){ var v2=+d.v; S.jobs2[j2] = (S.jobs2[j2]===v2) ? 0 : v2; } else S.jobs2[j2] = ((S.jobs2[j2]||0)+1) % 4;
     save(); render(); return; }
+  if(d.fist!==undefined){ S.fist = +d.fist; save(); progPing(true);
+    var fb = document.querySelectorAll('[data-fist]'); for(var fi=0; fi<fb.length; fi++) fb[fi].setAttribute('aria-pressed', String(+fb[fi].getAttribute('data-fist')===S.fist));
+    var fm = document.querySelector('.fistme'); if(fm) fm.textContent = S.fist<3 ? '무엇을 고치면 3이 될지 대표 친구나 선생님께 말해 줘요.' : '골랐어요. 합의문이 바뀌면 다시 골라도 돼요.';
+    return; }
+  if(d.case!==undefined){ grab(); var jc=+d.case, vc=+d.v||0; S.cs = S.cs || {}; S.cs[jc] = (S.cs[jc]===vc) ? 0 : vc; save(); render(); return; }
   if(d.job!==undefined){ grab(); var j=+d.job;
     if(d.v){ var v1=+d.v; S.jobs[j] = (S.jobs[j]===v1) ? 0 : v1; } else S.jobs[j] = ((S.jobs[j]||0)+1) % 4;
     save(); render(); return; }
@@ -3245,6 +3648,17 @@ document.addEventListener('click', function(e){
       if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(S.draft||'').catch(function(){});
       break;
     case 'liveload': liveLoad(); break;
+    case 'rosteropen': rosterOpen(); var rc = $('rostercard'); if(rc && rc.scrollIntoView) rc.scrollIntoView({behavior:'smooth', block:'start'}); break;
+    case 'copygs':
+      (function(tx){
+        var m = $('gsmsg'); function ok(){ if(m) m.textContent = '복사했어요. Apps Script 편집 칸에 붙여 넣으세요.'; }
+        function fb(){ var ta=document.createElement('textarea'); ta.value=tx; ta.style.position='fixed'; ta.style.left='-9999px';
+          document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); ok(); }catch(e){ if(m) m.textContent='복사하지 못했어요. 다른 브라우저(크롬)에서 해 볼까요?'; } document.body.removeChild(ta); }
+        if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(tx).then(ok, fb); else fb();
+      })(($('gssrc')||{}).textContent || '');
+      break;
+    case 'rosterclose': RED.open = false; RED.msg = ''; paintRoster(); break;
+    case 'rostersave': rosterSave(); break;
     case 'showopen': grab(); showOpen(); break;
     case 'shownames': SHOW.names = !SHOW.names; paintShow(); break;
     case 'pfme': grab(); pfOpen([pfFromS()], false); break;
@@ -3347,7 +3761,7 @@ document.addEventListener('click', function(e){
       S = { mode:S.mode, step:0, topic:null, custom:'', name:nm, first:null, claim:'', claimPick:-1,
             reason:'', ev:'', evType:-1, who:'', jobs:{}, other:'', still:'', moved:'', last:null, why:'', checked:false,
             customL:'', customR:'', band:S.band, send:S.send, lastSent:'', jobs2:{}, sentStep:-1, group:gp,
-            sents:'', draft:'', final:'', jj:'', jjOpened:false, grule:'', grSent:false };
+            sents:'', draft:'', final:'', jj:'', jjOpened:false, grule:'', grSent:false, reach:0, cs:{}, cond:'', qn:'', fist:-1, foe:'', reply:'' };
       save(); render(); break;
   }
 });
@@ -3397,6 +3811,7 @@ document.addEventListener('touchend', function(e){
 }, {passive:true});
 document.addEventListener('input', function(e){
   var ga = e.target && e.target.getAttribute;
+  if(e.target && e.target.id==='rosteredit'){ RED.txt = e.target.value; grow(e.target); var rp = $('rosterprev'); if(rp) rp.innerHTML = rosterPrev(); return; }
   if(ga && e.target.getAttribute('data-gop')!==null){ T.gop = T.gop || {}; T.gop[e.target.getAttribute('data-gop')] = e.target.value; grow(e.target); save(); return; }
   if(ga && e.target.getAttribute('data-ag')!==null){ agType(e.target.getAttribute('data-ag'), e.target.value); grow(e.target); return; }
   /* [마무리 — 합의문] 탭에서 고쳐도 모두의 화면에 가요 */
@@ -3435,7 +3850,7 @@ var _qt = /[?&]topic=([a-z0-9]+)/.exec(location.search);
 if(_qt && location.search.indexOf('teacher')<0){
   var _tt = null; for(var _j=0;_j<TOPICS.length;_j++) if(TOPICS[_j].id===_qt[1]) _tt=TOPICS[_j];
   /* 이미 그 주제로 쓰던 아이는 그대로 두고, 처음 들어오는 아이만 그 주제로 엽니다. */
-  if(_tt && S.topic!==_tt.id){ S.topic=_tt.id; S.step=1; S.jobs={}; S.jobs2={}; if(_tt.band!=='all') S.band=_tt.band; save(); }
+  if(_tt && S.topic!==_tt.id){ S.topic=_tt.id; S.step=1; S.reach=1; S.jobs={}; S.jobs2={}; S.cs={}; if(_tt.band!=='all') S.band=_tt.band; save(); }
 }
 var _qs = /[?&]send=([^&#]+)/.exec(location.search);
 if(_qs){
@@ -3450,6 +3865,190 @@ if(_qs){
 render();
 setTimeout(agLoop, 1500);
 })();
+</script>
+<!-- 선생님 화면 [스크립트 복사]가 복사하는 시트 스크립트. 문서/구글시트_연결.gs 를 고치면 여기도 똑같이 바꿔 주세요. -->
+<script type="text/plain" id="gssrc">
+/* ─────────────────────────────────────────────────────────────
+ * 생각 모으기 — 구글 시트 연결 (Google Apps Script)
+ *
+ * 이 파일 전체를 복사해서 구글 시트의 [확장 프로그램 → Apps Script]에
+ * 붙여 넣고, [배포 → 새 배포 → 웹 앱]으로 배포하면 됩니다.
+ * 자세한 순서는 「02_구글시트_연결하기.md」에 있어요.
+ *
+ * 하는 일
+ *  - 아이가 앱에서 [선생님께 보내기]를 누르면 → doPost → 시트 '결과' 탭에 한 줄 추가
+ *  - 선생님이 앱에서 [시트에서 불러오기]를 누르면 → doGet → 쌓인 글 전부를 돌려줌
+ *  - (2026-11-05 새 판) 아이 기기가 "지금 몇 단계, 어느 칸"을 알리면 → '진행' 탭에서
+ *    그 아이 줄을 고쳐 씀(아이마다 한 줄). 선생님 화면 [지금 아이들]이 이걸 10초마다 읽음.
+ *  - (같은 날 버전 3) 모둠 토의 타이머: "모둠토의 {…}" 줄은 결과 탭에 쌓이고, 받은 때(서버 시각)를 함께 돌려줌.
+ *    ?what=ctl 은 모둠 명단·모둠 토의 줄만 가볍게 돌려줌(아직 안 보낸 아이 기기가 15초마다 읽음).
+ *  - (버전 4) 우리 반 합의문: '합의문' 탭에 주제·칸마다 한 줄(a1~a4 글, mode 띄우기, reps 대표, board 합의가 필요한 내용).
+ *    ?what=agree&tp=주제 로 읽고, {agree:{tp,f,v,by}} 로 고쳐 씀.
+ * ───────────────────────────────────────────────────────────── */
+
+var SHEET_NAME = '결과';
+var PROG_NAME = '진행';
+var AGREE_NAME = '합의문';
+
+function sheet_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName(SHEET_NAME);
+  if (!sh) {
+    sh = ss.insertSheet(SHEET_NAME);
+    sh.appendRow(['받은 때', '이름/코드', '주제', '처음 자리', '나중 자리', '글 전체']);
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+
+function prog_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName(PROG_NAME);
+  if (!sh) {
+    sh = ss.insertSheet(PROG_NAME);
+    sh.appendRow(['마지막 때', '이름', '모둠', '주제', '단계', '쓰는 칸', '자료']);
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+
+function agreeSheet_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName(AGREE_NAME);
+  if (!sh) {
+    sh = ss.insertSheet(AGREE_NAME);
+    sh.appendRow(['마지막 때', '주제', '칸', '내용', '쓴 사람']);
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+
+function out_(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+/* 아이가 보낸 글 받기 */
+function doPost(e) {
+  var text = '', d = null;
+  try {
+    d = JSON.parse(e.postData.contents);
+    text = String(d.text || '');
+  } catch (err) {
+    text = String((e.postData && e.postData.contents) || '');
+  }
+
+  /* 진행 알림: 결과 탭은 건드리지 않고 '진행' 탭의 그 아이 줄만 고쳐 씀 */
+  if (d && d.progress) return progress_(d.progress);
+  /* 합의문 한 칸 고쳐 쓰기 */
+  if (d && d.agree) return agree_(d.agree);
+
+  if (!text || text.indexOf('@@') < 0) return out_({ ok: false, why: '결과 글이 아니에요' });
+
+  var m = /@@([^@]*)@@/.exec(text);
+  var p = (m ? m[1] : '').split('|');
+
+  var lock = LockService.getScriptLock();
+  lock.tryLock(10000);
+  try {
+    sheet_().appendRow([new Date(), p[0] || '', p[1] || '', p[2] || '', p[3] || '', text]);
+  } finally {
+    lock.releaseLock();
+  }
+  return out_({ ok: true });
+}
+
+function progress_(p) {
+  var name = String(p.name || '').slice(0, 40), topic = String(p.topic || '').slice(0, 40);
+  if (!name) return out_({ ok: false, why: '이름이 없어요' });
+  var row = [new Date(), name, String(p.group || '').slice(0, 20), topic, Number(p.step) || 0,
+             String(p.field || '').slice(0, 20), JSON.stringify(p).slice(0, 3000)];
+  var lock = LockService.getScriptLock();
+  lock.tryLock(10000);
+  try {
+    var sh = prog_(), n = sh.getLastRow(), at = -1;
+    if (n >= 2) {
+      var v = sh.getRange(2, 2, n - 1, 3).getValues();   // 이름, 모둠, 주제
+      for (var i = 0; i < v.length; i++) if (v[i][0] === name && v[i][2] === topic) { at = i + 2; break; }
+    }
+    if (at < 0) sh.appendRow(row);
+    else sh.getRange(at, 1, 1, row.length).setValues([row]);
+  } finally {
+    lock.releaseLock();
+  }
+  return out_({ ok: true, progress: true });
+}
+
+function agree_(a) {
+  var tp = String(a.tp || '').slice(0, 40), f = String(a.f || '').slice(0, 20);
+  if (!tp || !/^(a1|a2|a3|a4|mode|reps|board)$/.test(f)) return out_({ ok: false, why: '칸이 맞지 않아요' });
+  var row = [new Date(), tp, f, String(a.v == null ? '' : a.v).slice(0, 20000), String(a.by || '').slice(0, 40)];
+  var lock = LockService.getScriptLock();
+  lock.tryLock(10000);
+  try {
+    var sh = agreeSheet_(), n = sh.getLastRow(), at = -1;
+    if (n >= 2) {
+      var v = sh.getRange(2, 2, n - 1, 2).getValues();
+      for (var i = 0; i < v.length; i++) if (v[i][0] === tp && v[i][1] === f) { at = i + 2; break; }
+    }
+    if (at < 0) sh.appendRow(row);
+    else sh.getRange(at, 1, 1, row.length).setValues([row]);
+  } finally {
+    lock.releaseLock();
+  }
+  return out_({ ok: true, agree: true });
+}
+
+function agreeList_(tp) {
+  var sh = agreeSheet_(), n = sh.getLastRow(), f = {};
+  if (n >= 2) {
+    var v = sh.getRange(2, 1, n - 1, 5).getValues();
+    for (var i = 0; i < v.length; i++) if (v[i][1] === tp) f[v[i][2]] = { v: String(v[i][3]), by: String(v[i][4]), at: new Date(v[i][0]).getTime() };
+  }
+  return out_({ ok: true, f: f, now: Date.now() });
+}
+
+/* 선생님이 불러가기 (texts 와 같은 차례로 받은 때 times 도) */
+function doGet(e) {
+  var what = e && e.parameter && e.parameter.what;
+  if (what === 'progress') return progressList_();
+  if (what === 'agree') return agreeList_(String(e.parameter.tp || ''));
+  var sh = sheet_(), n = sh.getLastRow(), texts = [], times = [];
+  if (n >= 2) {
+    var v = sh.getRange(2, 1, n - 1, 6).getValues();
+    for (var i = 0; i < v.length; i++) {
+      var t = String(v[i][5] || '');
+      if (!t) continue;
+      if (what === 'ctl' && t.indexOf('모둠명단 ') !== 0 && t.indexOf('모둠토의 ') !== 0) continue;
+      texts.push(t); times.push(new Date(v[i][0]).getTime());
+    }
+  }
+  return out_({ ok: true, count: texts.length, texts: texts, times: times, now: Date.now() });
+}
+
+/* [지금 아이들]: 진행 탭 전부 + 가장 마지막 모둠 명단 줄 */
+function progressList_() {
+  var list = [], roster = '';
+  var ps = prog_(), n = ps.getLastRow();
+  if (n >= 2) {
+    var v = ps.getRange(2, 1, n - 1, 7).getValues();
+    for (var i = 0; i < v.length; i++) {
+      var d = null;
+      try { d = JSON.parse(v[i][6]); } catch (err) {}
+      if (d) list.push({ at: new Date(v[i][0]).getTime(), d: d });
+    }
+  }
+  var sh = sheet_(), m = sh.getLastRow(), ctl = [], ctlTimes = [];
+  if (m >= 2) {
+    var t = sh.getRange(2, 1, m - 1, 6).getValues();
+    for (var j = 0; j < t.length; j++) {
+      var s = String(t[j][5] || '');
+      if (s.indexOf('모둠명단 ') === 0) roster = s;
+      else if (s.indexOf('모둠토의 ') === 0) { ctl.push(s); ctlTimes.push(new Date(t[j][0]).getTime()); }
+    }
+  }
+  return out_({ ok: true, progress: list, roster: roster, ctl: ctl, ctlTimes: ctlTimes, now: Date.now() });
+}
 </script>
 </body>
 </html>
