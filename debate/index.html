@@ -1249,6 +1249,7 @@ function viewStudent(){
       + (S.send ? (S.sentStep===6
           ? '<div class="pause done"><span class="t">다 했어요! 선생님께 보냈어요 ('+esc(S.lastSent)+')</span><div class="mini">고친 게 있으면 한 번 더 보내도 돼요. 마지막에 보낸 것만 셀게요.</div></div>'
           : '<p class="hint">다 쓰면 [선생님께 보내기]를 눌러요. '+TW+' 뒤 생각은 아직 보내지 않았어요.</p>') : '')
+      + (S.send && (S.group || ROSTER) ? '<div class="grpbox" id="grp">'+groupPanel(null)+'</div>' : '')
       + '<div class="nav static noprint"><button class="btn sec" data-go="back">이전</button>'
       + '<button class="btn sec" data-go="reset" style="flex:1">새 주제로 다시 하기</button></div></div>';
     return h;
@@ -1329,7 +1330,11 @@ function sendOut(){
   function ok(){
     var tt = topic(), tw = tt && tt.noLine ? '토의가' : '토론이';
     S.lastSent=stamp(); S.sentStep=S.step; save(); render();
-    alert(S.step>=6 ? '선생님께 보냈어요. 오늘 활동 끝! 수고했어요.' : '선생님께 보냈어요. 이제 친구들과 이야기해요. '+tw+' 끝나면 한 번 더 보내요.');
+    var gm = S.group && ROSTER && ROSTER[S.group], gd = gm && grpDone();
+    if(gm) grpTick();
+    alert(gm && !gd ? '선생님께 보냈어요. 모둠 친구들이 다 보내면 아래에 우리 모둠 판이 나와요.'
+      : S.step>=6 ? '선생님께 보냈어요. 오늘 활동 끝! 수고했어요.'
+      : '선생님께 보냈어요. 이제 친구들과 이야기해요. '+tw+' 끝나면 한 번 더 보내요.');
   }
   function fail(){ render(); alert('보내지 못했어요. 인터넷이 되는지 보고, 안 되면 [결과 복사하기]로 선생님이 알려 주신 곳에 붙여 넣어 주세요.'); }
   if(!window.fetch){ fail(); return; }
@@ -1411,11 +1416,14 @@ function groupPanel(txt){
     return '<div class="pause"><span class="t">보냈다면 여기서 잠깐 멈춰요</span><div class="mini">이제 친구들과 '+TW+'해요.</div></div>';
   }
   var members = ROSTER[S.group];
+  /* 모둠만 고르고 이름을 아직 안 골랐으면(또는 앞에서 쓴 이름이 명단과 달라 비었으면) 이름 단추를 다시 보여 줍니다. */
+  if(!members.some(function(m){ return sameName(S.name, m); }))
+    return '<div class="pause"><span class="t">내 이름을 눌러 주세요</span></div>' + whoPicker();
   if(txt===null || txt===undefined) txt = grpLast;
   if(!txt) return '<div class="pause"><span class="t">'+esc(S.group)+'모둠 친구들을 확인하는 중…</span></div>';
   var rows = parsePastes(txt).filter(function(r){ return t && r.topic===t.id; });
   var got = members.map(function(m){ var r=null; for(var i=0;i<rows.length;i++) if(sameName(rows[i].name, m)) r=rows[i]; return {name:m, row:r}; });
-  var done = got.filter(function(g){ return g.row; }).length, me = got.filter(function(g){ return g.name===S.name; })[0];
+  var done = got.filter(function(g){ return g.row; }).length, me = got.filter(function(g){ return sameName(S.name, g.name); })[0];
   var h = '';
   if(done < members.length){
     h += '<div class="pause"><span class="t">우리 모둠 '+done+' / '+members.length+'명 보냈어요</span>'
@@ -1449,11 +1457,16 @@ function groupPanel(txt){
   h += '</div>';
   return h;
 }
+function grpDone(){
+  var t = topic(), m = ROSTER && ROSTER[S.group]; if(!m || !grpLast) return false;
+  var rows = parsePastes(grpLast).filter(function(r){ return t && r.topic===t.id; });
+  return m.every(function(nm){ return rows.some(function(r){ return sameName(r.name, nm); }); });
+}
 function grpTick(){
-  if(S.mode!=='student' || S.step!==5 || !S.send || !S.group){ clearInterval(grpTimer); grpTimer=null; return; }
+  if(S.mode!=='student' || S.step<5 || !S.send || !S.group){ clearInterval(grpTimer); grpTimer=null; return; }
   sheetGet(S.send, function(txt){
     if(txt){ grpLast = txt; var r = rosterFromText(txt); if(r) ROSTER = r; }
-    var el = $('grp'); if(el && S.step===5) el.innerHTML = groupPanel(txt);
+    var el = $('grp'); if(el && S.step>=5) el.innerHTML = groupPanel(txt);
   });
 }
 /* 선생님 화면: 모둠별 진행 */
@@ -2005,8 +2018,8 @@ function render(){
   if(S.mode!=='teacher' && S.step>0 && !topic()){ S.step=0; S.topic=null; }
   var key = S.mode+'/'+(S.mode==='teacher'?T.tab:S.step), y = window.pageYOffset||0;
   app(S.mode==='teacher' ? viewTeacher() : viewStudent());
-  if(S.mode==='student' && S.send && !rosterState && (S.step===1 || S.step===5)) loadRoster();
-  if(S.mode==='student' && S.step===5 && S.send && S.group){ if(!grpTimer){ grpTimer = setInterval(grpTick, 8000); setTimeout(grpTick, 300); } }
+  if(S.mode==='student' && S.send && !rosterState && (S.step===1 || S.step>=5)) loadRoster();
+  if(S.mode==='student' && S.step>=5 && S.send && S.group){ if(!grpTimer){ grpTimer = setInterval(grpTick, 8000); setTimeout(grpTick, 300); } }
   else if(grpTimer){ clearInterval(grpTimer); grpTimer = null; }
   /* 아이 기기에는 단추가 보이지 않아요. 비밀번호를 넣은 선생님 기기에서만 두 화면을 오갑니다. */
   bm.hidden = !(S.mode==='teacher' || unlocked());
@@ -2067,8 +2080,8 @@ document.addEventListener('click', function(e){
     save(); render(); return;
   }
   if(d.evt!==undefined){ grab(); S.evType = (S.evType===+d.evt)?-1:+d.evt; save(); render(); return; }
-  if(d.grp!==undefined){ grab(); if(S.group!==d.grp){ S.group=d.grp; if(ROSTER && ROSTER[d.grp] && ROSTER[d.grp].indexOf(S.name)<0) S.name=''; } save(); render(); return; }
-  if(d.me!==undefined){ grab(); S.name=d.me; S.typeName=false; save(); render(); if(S.step===5) grpTick(); refreshNext(); return; }
+  if(d.grp!==undefined){ grab(); if(S.group!==d.grp){ S.group=d.grp; if(ROSTER && ROSTER[d.grp] && !ROSTER[d.grp].some(function(m){ return sameName(S.name, m); })) S.name=''; } save(); render(); return; }
+  if(d.me!==undefined){ grab(); S.name=d.me; S.typeName=false; save(); render(); if(S.step>=5) grpTick(); refreshNext(); return; }
   if(d.job2!==undefined){ grab(); var j2=+d.job2;
     if(d.v){ var v2=+d.v; S.jobs2[j2] = (S.jobs2[j2]===v2) ? 0 : v2; } else S.jobs2[j2] = ((S.jobs2[j2]||0)+1) % 4;
     save(); render(); return; }
@@ -2078,6 +2091,9 @@ document.addEventListener('click', function(e){
 
   switch(d.go){
     case 'next': grab(); if(!canGoNext()){ refreshNext(); break; } S.nameHere = false;
+      if(S.step===5 && S.send && S.group && ROSTER && ROSTER[S.group] && !grpDone()
+         && !confirm(S.sentStep===5 ? '아직 모둠 친구들이 다 보내지 않았어요. 모둠 판이 열리면 모둠 토의를 하고 나서 넘어가요.\n그래도 지금 넘어갈까요?'
+                                    : '아직 [선생님께 보내기]를 누르지 않았어요. 먼저 보내고, 모둠 토의를 한 뒤에 넘어가요.\n그래도 지금 넘어갈까요?')) break;
       if(S.step<6){ S.step++;
         var tn = topic();
         if(S.step===6 && tn && tn.noLine && !countPicks(S.jobs2)){ S.jobs2={}; for(var kj in S.jobs) S.jobs2[kj]=S.jobs[kj]; }
