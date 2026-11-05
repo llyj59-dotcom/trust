@@ -2045,7 +2045,7 @@ function liveHtml(){
   var now = LIVE.now || Date.now(), recent = LIVE.list.filter(function(x){ return x && x.d && now - (x.at||0) < 3*3600000; });
   var cnt = {}; recent.forEach(function(x){ cnt[x.d.topic] = (cnt[x.d.topic]||0) + 1; });
   var tps = Object.keys(cnt).sort(function(a,b){ return cnt[b]-cnt[a]; });
-  var tp = (LIVE.topic && cnt[LIVE.topic]) ? LIVE.topic : (tps[0] || '');
+  var tp = (LIVE.topic && cnt[LIVE.topic]) ? LIVE.topic : (tps[0] || LIVE.cur || 'upload3');   /* 아직 아무도 안 들어왔으면 지금 수업(3차시) 주제로 */
   var tt = topicById(tp), kids = recent.filter(function(x){ return x.d.topic===tp; });
   LIVE.cur = tp || LIVE.cur;
   if(tps.length>1){
