@@ -6035,13 +6035,14 @@ const GAME_DATA = {
 
     app.appendChild(el('section', { className: 'screen result-screen' },
       bar.node,
+      // 2026-11 심사 의견: 점수보다 까닭이 먼저 보이게 — 결과 글 → 왜 바뀌었나 → 점수 칩 순서
       el('div', { className: 'card result-card' },
+        el('p', { className: 'result-text', text: fill(res.text, R.company) }),
+        whyNote(res.why),
         el('div', { className: 'delta-row' },
           deltaChip(D.ui.seedIcon, D.ui.seedLabel, res.seedsDelta),
           deltaChip(D.ui.trustIcon, D.ui.trustLabel, res.trustDelta)
-        ),
-        el('p', { className: 'result-text', text: fill(res.text, R.company) }),
-        whyNote(res.why)
+        )
       ),
       learningCard(R.learning, state.round),
       button(state.replay ? D.collect.replayBack : D.ui.nextButton, 'btn-primary btn-block', afterResult),
