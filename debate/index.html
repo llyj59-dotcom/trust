@@ -294,6 +294,29 @@ textarea.long{min-height:240px}
 .mk.jj{background:var(--purple-l);color:var(--purple)}
 .mk.late{background:var(--amber-l);color:var(--amber)}
 .fin{background:var(--fill);border-radius:14px;padding:12px 14px;margin-top:8px;white-space:pre-wrap;font-size:14.5px}
+.late{background:var(--amber-l);border-radius:16px;padding:14px 16px;margin:0 0 14px;font-size:14.5px;color:#7a4306;line-height:1.55}
+.late b{color:var(--amber)}
+.late .row{margin-top:8px}
+.talkbox{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;background:var(--green);color:#fff;border-radius:18px;padding:16px 18px;margin:14px 0}
+.talkbox .lb{font-weight:700;font-size:15px}
+.talkbox .clock{font-size:34px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.talkbox .mini{color:#d8f2e6;flex-basis:100%}
+.talkbox .ovr{display:none;flex-basis:100%;font-weight:700}
+.talkbox.over{background:var(--amber)}
+.talkbox.over .ovr{display:block}
+.rules{margin:8px 0 0;padding-left:20px}
+.rules li{margin:3px 0}
+.say{display:grid;gap:8px}
+.say div{background:var(--fill);border-radius:14px;padding:12px 14px;font-size:15px;line-height:1.6}
+.say div b.n{display:block;font-size:13px;color:var(--green-d);margin-bottom:2px}
+.say q{quotes:none;color:var(--ink)}
+.lv-talk{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--green-l);border-radius:16px;padding:12px 14px;margin-top:12px}
+.lv-talk select{font-size:14px;border:0;border-radius:10px;padding:8px 10px;background:#fff}
+.tst{font-size:13px;font-weight:700;color:var(--green-d)}
+.tst.over{color:var(--amber)}
+.lv-g .gbtn{display:inline-flex;gap:4px;margin-left:auto}
+.gop{background:#fff;border-radius:14px;padding:12px 14px;margin-top:8px;font-size:17px;line-height:1.55}
+.gop .mini{display:block;margin-top:4px}
 .pause{background:var(--green-l);border-radius:18px;padding:16px 18px;margin:16px 0 4px}
 .pause .t{display:block;font-weight:700;color:var(--green-d);font-size:16px}
 .pause .mini{color:var(--sub);margin-top:4px;font-size:14px}
@@ -882,7 +905,7 @@ var S = {
   name:'', first:null, claim:'', claimPick:-1, reason:'', ev:'', evType:-1,
   who:'', jobs:{}, other:'', still:'', moved:'', last:null, why:'', checked:false,
   customL:'', customR:'', band:'56', send:'', lastSent:'', jobs2:{}, sentStep:-1, group:'',
-  sents:'', draft:'', final:'', jj:'', jjOpened:false
+  sents:'', draft:'', final:'', jj:'', jjOpened:false, grule:'', grSent:false
 };
 function save(){
   try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
@@ -1082,6 +1105,7 @@ function viewStudent(){
   var TAG = {y:'그렇다', n:'아니다', q:'생각해 봐요'};
   function thinkLines(arr){ var o=''; for(var i=0;i<arr.length;i++) o += '<div class="tline"><span class="s '+arr[i][0]+'">'+(TAG[arr[i][0]]||'')+'</span><span>'+esc(arr[i][1])+'</span></div>'; return o; }
   if(S.step>0) h += bar() + meLine();
+  if(S.step>=1 && S.step<=5) h += '<div id="latebar">'+lateBar()+'</div>';
   if(S.step>=2 && S.whoOpen && S.send && ROSTER){
     h += '<div class="card"><h2>모둠과 이름을 다시 골라요</h2>'
       + '<p class="lead">잘못 골랐다면 여기서 바꿔요. 쓴 글은 그대로 남아요.</p>' + whoPicker()
@@ -1257,10 +1281,16 @@ function viewStudent(){
       + '<div class="note"><b>이야기할 때 세 가지만 지켜요.</b><br>'
       + '① 사람이 아니라 생각에 반대하기 &nbsp; ② 끝까지 듣고 말하기 &nbsp; ③ "왜 그렇게 생각했어?"라고 먼저 묻기</div>';
     if(S.send){
+      var tk = grpMode && inRoster() ? talkOf(S.group, ROSTER[S.group].length) : null;
+      if(tk && sent5) return h + talkView(tk);
       h += '<div class="card"><h2>보내고, 친구들과 '+TW+'해요</h2>'
-        + flowSteps([
+        + flowSteps(grpMode ? [
             ['[선생님께 보내기]를 눌러요', sent5],
-            [grpMode ? '모둠 친구들이 다 보내면 아래에 <b>우리 모둠 판</b>이 열려요. 그걸 보며 모둠 '+TW+'해요' : '친구들과 '+TW+'해요', gDone],
+            ['모둠 친구들이 보내면 아래 <b>우리 모둠 판</b>에서 모둠 '+TW+'를 시작해요', !!tk],
+            ['모둠 '+TW+'가 끝나면 <b>우리 모둠 의견</b>을 보내요', !!S.grSent],
+            ['전체 '+TW+'가 끝나면 맨 아래 ['+TW+' 끝나고 누르기]를 눌러요', false]] : [
+            ['[선생님께 보내기]를 눌러요', sent5],
+            ['친구들과 '+TW+'해요', false],
             [TWg+' 끝나면 맨 아래 ['+TW+' 끝나고 누르기]를 눌러요', false]])
         + '<div class="row noprint" style="margin-top:12px">'
         + '<button class="btn'+(sent5?' sec':'')+'" data-go="send" style="flex:1">'+(sent5?'다시 보내기':'선생님께 보내기')+'</button></div>'
@@ -1271,7 +1301,7 @@ function viewStudent(){
         + '<div class="row noprint" style="margin-top:14px"><button class="btn sec sm" data-go="copy">결과 복사하기</button>'
         + '<button class="btn sec sm" data-go="print">인쇄하기</button></div>'
         + '<div class="nav static noprint"><button class="btn sec" data-go="back">이전</button>'
-        + '<button class="btn'+(sent5 && (gDone || !grpMode) ? '' : ' sec')+'" data-go="next" style="flex:1">'+TW+' 끝나고 누르기</button></div></div>';
+        + '<button class="btn'+(sent5 && (S.grSent || !grpMode) ? '' : ' sec')+'" data-go="next" style="flex:1">'+TW+' 끝나고 누르기</button></div></div>';
       return h;
     }
     h += '<div class="card"><h2>친구들에게 이렇게 말해요</h2>'
@@ -1416,6 +1446,7 @@ function resultText(){
   L.push('');
   L.push('[반대편에서 가장 일리 있던 말] ' + (S.other||''));
   L.push('[그래도 내 생각인 까닭] ' + (S.still||''));
+  if((S.grule||'').trim()) L.push('[우리 모둠 의견] ' + S.grule.trim().replace(/\s*\n+\s*/g, ' / '));
   L.push('');
   L.push('[스스로 점검] ' + n[0] + '/' + n[1]);
   var CD = cardsOf(t), cardCode = '';
@@ -1463,7 +1494,7 @@ function resultText(){
     cell(t?t.ends[0]:''), cell(t?t.ends[1]:''), cell(t&&t.id==='custom'?t.q:''), cardCode, after, cell(S.typeName?'':S.group), jf ].join('|') + '@@');
   return L.join('\n');
 }
-function sendOut(){
+function sendOut(kind){
   if(!S.send) return;
   if(!(S.name||'').trim()){
     var nm = prompt('이름을 적지 않았어요. 선생님이 누구 글인지 알 수 있게 적어 주세요.', '');
@@ -1476,7 +1507,10 @@ function sendOut(){
   function stamp(){ var d=new Date(); return d.getHours()+'시 '+(d.getMinutes()<10?'0':'')+d.getMinutes()+'분'; }
   function ok(){
     var tt = topic(), tw = tt && tt.noLine ? '토의가' : '토론이';
-    S.lastSent=stamp(); S.sentStep=S.step; if(S.sents.indexOf(String(S.step))<0) S.sents += S.step; save(); render(); progPing(true);
+    S.lastSent=stamp(); S.sentStep=S.step; if(S.sents.indexOf(String(S.step))<0) S.sents += S.step;
+    if(kind==='grp'){ S.grSent = true; save(); render(); progPing(true);
+      alert('우리 모둠 의견을 보냈어요. 전체 '+(tt && tt.noLine ? '토의' : '토론')+' 때 이 의견을 발표해요.'); return; }
+    save(); render(); progPing(true);
     var gm = S.step<7 && S.group && ROSTER && ROSTER[S.group], gd = gm && grpDone();
     if(gm) grpTick();
     alert(S.step>=7 ? '선생님께 보냈어요. 최종 글까지 다 했어요! 수고했어요.'
@@ -1527,8 +1561,8 @@ function sheetGet(url, cb){
   if(!url || !window.fetch){ cb(null); return; }
   fetch(url + (url.indexOf('?')>=0?'&':'?') + 't=' + Date.now())
     .then(function(r){ return r.json(); })
-    .then(function(j){ cb(j && j.ok ? (j.texts||[]).join('\n\n') : null); })
-    .catch(function(){ cb(null); });
+    .then(function(j){ if(j && j.ok) ctlRead(j); cb(j && j.ok ? (j.texts||[]).join('\n\n') : null, j); })
+    .catch(function(){ cb(null, null); });
 }
 function loadRoster(){
   if(rosterState) return;
@@ -1566,7 +1600,35 @@ function whoPicker(){
   h += '<p class="hint"><button class="linkbtn" data-go="typename">명단에 내 이름이 없어요</button></p>';
   return h;
 }
-/* ⑥단계 모둠 판. txt 가 없으면 '확인하는 중'으로 그립니다. */
+/* 우리 모둠 친구마다 보낸 결과(없으면 row:null) */
+function grpGot(txt){
+  var t = topic(), members = ROSTER && ROSTER[S.group] || [];
+  var rows = parsePastes(txt || grpLast || '').filter(function(r){ return t && r.topic===t.id; });
+  return members.map(function(m){ var r=null; for(var i=0;i<rows.length;i++) if(sameName(rows[i].name, m)) r=rows[i]; return {name:m, row:r}; });
+}
+/* 고른 카드와 제안한 규칙(보낸 친구만) */
+function grpBoard(got){
+  var t = topic(), CD = cardsOf(t), h = '', sent = got.filter(function(g){ return g.row; });
+  if(!sent.length) return '';
+  if(CD){
+    var B = CD.btn || CD.keys;
+    h += '<h3 class="grph">우리 모둠이 고른 카드</h3><div class="grpcards">';
+    for(var c=0;c<CD.list.length;c++){
+      var col = [[],[],[]];
+      for(var g=0;g<sent.length;g++){ var v = +((sent[g].row.cards||'').charAt(c)||0); if(v) col[v-1].push(sent[g].name); }
+      var split = (col[0].length>0) + (col[1].length>0) + (col[2].length>0) > 1;
+      h += '<div class="gc'+(split?' split':'')+'"><div class="nm">'+esc(CD.list[c][0])+(split?' <span class="tag">생각이 갈려요</span>':'')+'</div>';
+      for(var k=0;k<3;k++) if(col[k].length) h += '<div class="gl"><b class="k'+k+'">'+esc(B[k])+'</b> '+col[k].map(esc).join(', ')+'</div>';
+      h += '</div>';
+    }
+    h += '</div>';
+  }
+  h += '<h3 class="grph">'+(t && t.noLine ? '우리 모둠이 제안한 규칙' : '우리 모둠의 주장')+'</h3><div class="grpclaims">';
+  for(var q=0;q<sent.length;q++){ var x = sent[q].row.text || {};
+    h += '<div class="gcl"><b>'+esc(sent[q].name)+'</b><span>'+esc(x.claim || '(글 없이 보냈어요)')+'</span></div>'; }
+  return h + '</div>';
+}
+/* ⑥단계 모둠 판(토의 시작 전, 또는 ⑦에서 다시 볼 때). txt 가 없으면 '확인하는 중'으로 그립니다. */
 function groupPanel(txt){
   var t = topic(), TW = t && t.noLine ? '토의' : '토론';
   if(!S.group || !ROSTER || !ROSTER[S.group]){
@@ -1579,40 +1641,149 @@ function groupPanel(txt){
     return '<div class="pause"><span class="t">내 이름을 눌러 주세요</span></div>' + whoPicker();
   if(txt===null || txt===undefined) txt = grpLast;
   if(!txt) return '<div class="pause"><span class="t">'+esc(S.group)+'모둠 친구들을 확인하는 중…</span></div>';
-  var rows = parsePastes(txt).filter(function(r){ return t && r.topic===t.id; });
-  var got = members.map(function(m){ var r=null; for(var i=0;i<rows.length;i++) if(sameName(rows[i].name, m)) r=rows[i]; return {name:m, row:r}; });
+  var got = grpGot(txt), tk = talkOf(S.group, members.length);
   var done = got.filter(function(g){ return g.row; }).length, me = got.filter(function(g){ return sameName(S.name, g.name); })[0];
-  var h = '';
+  if(tk) return grpBoard(got);   /* ⑦에서 다시 볼 때 */
+  var h = '', mins = talkMinFor(members.length);
   if(done < members.length){
     h += '<div class="pause"><span class="t">우리 모둠 '+done+' / '+members.length+'명 보냈어요</span>'
        + '<div class="mini">'+(me && !me.row ? '<b>나는 아직 안 보냈어요.</b> 위의 [선생님께 보내기]를 눌러요. ' : '')
-       + '모두 보내면 우리 모둠이 고른 것이 여기에 저절로 나와요. 기다리는 동안 내 발표 카드를 소리 내어 읽어 봐요.</div>'
+       + '모두 보내면 바로 모둠 '+TW+'를 시작할 수 있어요. 기다리는 동안 내 발표 카드를 소리 내어 읽어 봐요.</div>'
        + '<div class="who">';
     for(var i=0;i<got.length;i++) h += '<span class="'+(got[i].row?'ok':'')+'">'+(got[i].row?'✓ ':'')+esc(got[i].name)+'</span>';
-    h += '</div></div>';
-    return h;
-  }
-  /* 모두 보냄 → 우리 모둠 판 */
-  h += '<div class="pause done"><span class="t">'+esc(S.group)+'모둠 모두 모였어요! 모둠 '+TW+'를 시작해요</span>'
-     + '<div class="mini">같은 카드를 다르게 고른 친구에게 "왜 그렇게 골랐어?"를 먼저 물어봐요. 우리 모둠이 함께 내놓을 규칙을 1~2개 정해요.</div></div>';
-  var CD = cardsOf(t);
-  if(CD){
-    var B = CD.btn || CD.keys;
-    h += '<h3 class="grph">우리 모둠이 고른 카드</h3><div class="grpcards">';
-    for(var c=0;c<CD.list.length;c++){
-      var col = [[],[],[]];
-      for(var g=0;g<got.length;g++){ var v = +((got[g].row.cards||'').charAt(c)||0); if(v) col[v-1].push(got[g].name); }
-      var split = (col[0].length>0) + (col[1].length>0) + (col[2].length>0) > 1;
-      h += '<div class="gc'+(split?' split':'')+'"><div class="nm">'+esc(CD.list[c][0])+(split?' <span class="tag">생각이 갈려요</span>':'')+'</div>';
-      for(var k=0;k<3;k++) if(col[k].length) h += '<div class="gl"><b class="k'+k+'">'+esc(B[k])+'</b> '+col[k].map(esc).join(', ')+'</div>';
-      h += '</div>';
-    }
     h += '</div>';
+    /* 절반 넘게 모이면 먼저 시작할 수 있어요. 늦는 친구 화면에는 합류 알림과 타이머가 떠요. */
+    if(me && me.row && done*2 >= members.length)
+      h += '<div class="row" style="margin-top:12px"><button class="btn sm" data-go="talkstart">지금 모인 '+done+'명과 먼저 시작하기 · '+mins+'분</button></div>'
+         + '<div class="mini" style="margin-top:6px">아직 안 온 친구 화면에는 "'+TALK_JOIN+'분 안에 보내고 함께해요" 알림이 떠요.</div>';
+    return h + '</div>';
   }
-  h += '<h3 class="grph">우리 모둠이 제안한 규칙</h3><div class="grpclaims">';
-  for(var q=0;q<got.length;q++){ var x = got[q].row.text || {};
-    h += '<div class="gcl"><b>'+esc(got[q].name)+'</b><span>'+esc(x.claim || '(글 없이 보냈어요)')+'</span></div>'; }
-  h += '</div>';
+  h += '<div class="pause done"><span class="t">'+esc(S.group)+'모둠 모두 모였어요!</span>'
+     + '<div class="mini">아래 단추를 누르면 모둠 '+TW+' 타이머가 시작돼요. 모둠 친구 누구든 한 명만 누르면 돼요.</div>'
+     + '<div class="row" style="margin-top:12px"><button class="btn" data-go="talkstart" style="flex:1;background:#fff;color:var(--green-d)">모둠 '+TW+' 시작하기 · '+mins+'분</button></div></div>';
+  return h + grpBoard(got);
+}
+/* ===================== 모둠 토의 시간 =====================
+   선생님이나 모둠 아이가 시트에 "모둠토의 {…}" 줄을 하나 보내면, 같은 모둠 기기가 모두 그 줄을 읽어 같은 타이머를 봅니다.
+   k: start(시작, min 0이면 자동) · add(min분 더) · stop(끝내기), g: 모둠 이름 또는 '*'(모든 모둠).
+   시각은 시트가 받은 때(서버 시각)를 써서 기기마다 시계가 달라도 같은 시간이 남아요. 세 시간이 지난 줄은 지난 수업으로 봅니다. */
+var CTL = [], clockOff = 0, TALK_JOIN = 3, talkMinSet = 0;
+function autoMin(n){ return Math.max(6, Math.min(12, (n||4) + 4)); }
+function talkMinFor(n){ return talkMinSet || autoMin(n); }
+function srvNow(){ return Date.now() + clockOff; }
+function ctlRead(j){
+  if(!j) return;
+  if(j.now) clockOff = j.now - Date.now();
+  var tx = j.ctl || j.texts || [], tm = j.ctl ? (j.ctlTimes || []) : (j.times || []), out = [];
+  for(var i=0;i<tx.length;i++){
+    var m = /^모둠토의 (\{[^\n]*\})/.exec(String(tx[i])); if(!m) continue;
+    try{ var o = JSON.parse(m[1]); o.at = +tm[i] || +o.t || 0; if(srvNow() - o.at < 3*3600000) out.push(o); }catch(e){}
+  }
+  out.sort(function(a,b){ return a.at - b.at; });
+  CTL = out;
+  /* 선생님이 정한 시간: 가장 마지막 '*' 시작 줄의 분 */
+  for(var k=out.length-1;k>=0;k--) if(out[k].g==='*' && out[k].k==='start'){ talkMinSet = +out[k].min || 0; break; }
+}
+function talkOf(g, n, tp){
+  var t = topic(), tid = tp || (t ? t.id : ''), st = null;
+  for(var i=0;i<CTL.length;i++){
+    var e = CTL[i]; if((e.g!==g && e.g!=='*') || (e.tp && tid && e.tp!==tid)) continue;
+    var live = st && !st.stop && e.at < st.end;
+    if(e.k==='start'){ if(!live) st = { start:e.at, min:+e.min || autoMin(n), add:0, stop:0, by:e.by||'' }; }
+    else if(e.k==='add'){ if(live) st.add += (+e.min || 1); }
+    else if(e.k==='stop'){ if(live) st.stop = e.at; }
+    if(st) st.end = st.stop || (st.start + (st.min + st.add) * 60000);
+  }
+  return st;
+}
+function fmtLeft(ms){ ms = Math.max(0, ms); var s = Math.ceil(ms/1000); return Math.floor(s/60) + ':' + ('0' + (s%60)).slice(-2); }
+function ctlPost(url, o, done){
+  o.t = Date.now(); if(!o.tp){ var t = topic(); o.tp = t ? t.id : (LIVE.cur || 'upload3'); }
+  var tx = '모둠토의 ' + JSON.stringify(o) + '\n@@__모둠토의__|' + o.tp + '@@';
+  fetch(url, { method:'POST', body:JSON.stringify({text:tx}), headers:{'Content-Type':'text/plain;charset=utf-8'} })
+    .then(function(r){ return r.json(); })
+    .then(function(j){ if(!j || !j.ok) throw new Error('bad'); if(done) done(true); })
+    .catch(function(){ if(done) done(false); });
+}
+/* ①~⑥ 어디에 있든, 우리 모둠 토의가 시작됐는데 아직 안 보냈으면 띄우는 알림 */
+function lateBar(){
+  if(!S.send || !S.group || !inRoster() || S.sents.indexOf('5')>=0 || S.sents.indexOf('6')>=0) return '';
+  var tk = talkOf(S.group, ROSTER[S.group].length), t = topic(), TW = t && t.noLine ? '토의' : '토론';
+  if(!tk || tk.stop || srvNow() >= tk.end) return '';
+  var due = tk.start + TALK_JOIN*60000, late = srvNow() >= due;
+  return '<div class="late"><b>우리 모둠 '+TW+'가 시작됐어요!</b> '
+    + (late ? '얼른 지금까지 쓴 것으로 보내고 함께해요.'
+            : '<b data-end="'+due+'">'+fmtLeft(due - srvNow())+'</b> 안에 지금까지 쓴 것으로 보내고 함께해요.')
+    + (S.step<5 ? '<div class="row"><button class="btn sm" data-go="join">보내러 가기</button></div>' : '<div class="mini">아래 [선생님께 보내기]를 눌러요.</div>')
+    + '</div>';
+}
+/* 모둠 토의 화면 */
+function talkView(tk){
+  var t = topic(), TW = t && t.noLine ? '토의' : '토론', got = grpGot(), over = !!tk.stop || srvNow() >= tk.end;
+  var CD = cardsOf(t), evt = S.evType>=0 ? EVTYPE[S.evType][0] : '';
+  function bare(x){ return (x||'').trim().replace(/[.!?。~\s]+$/,''); }
+  var missing = got.filter(function(g){ return !g.row; }).map(function(g){ return g.name; });
+  var h = '<div class="card"><h2>'+esc(S.group)+'모둠 '+TW+' 중이에요</h2>'
+    + flowSteps([['[선생님께 보내기]', true], ['모둠 '+TW+' — 돌아가며 말하고, 묻고, 모으기', over || S.grSent],
+                 ['우리 모둠 의견 보내기', S.grSent], ['전체 '+TW+'가 끝나면 맨 아래 ['+TW+' 끝나고 누르기]', false]])
+    + '<div class="talkbox'+(over?' over':'')+'"><span class="lb">모둠 '+TW+' 남은 시간</span>'
+    + '<b class="clock" data-end="'+tk.end+'">'+fmtLeft(tk.end - srvNow())+'</b>'
+    + '<span class="ovr">시간이 다 됐어요. 아래에 우리 모둠 의견을 정해 보내요.</span>'
+    + '<span class="mini">'+(tk.min + tk.add)+'분 · '+(tk.by==='선생님' ? '선생님이 시작했어요' : '모둠에서 시작했어요')+'</span></div>'
+    + (missing.length ? '<p class="hint">아직 안 온 친구: '+missing.map(esc).join(', ')+' — 합류하라는 알림이 갔어요.</p>' : '');
+  /* 약속 */
+  h += '<div class="note"><b>모둠 '+TW+' 약속</b><ol class="rules">'
+    + '<li>한 사람씩 돌아가며 <b>30초</b> 동안 내 생각을 말해요. 그동안 다른 친구는 끝까지 들어요.</li>'
+    + '<li>반대하고 싶으면 "왜 그렇게 생각했어?"를 <b>먼저</b> 물어요.</li>'
+    + '<li>사람이 아니라 <b>생각</b>에 반대해요.</li>'
+    + '<li>'+(CD ? '<b>생각이 갈린 카드</b>부터' : '<b>생각이 가장 다른 곳</b>부터')+' 이야기해요.</li>'
+    + '<li>손 들어 정하기 대신 "어떻게 고치면 <b>다 같이</b> 받아들일 수 있을까?"를 물어 <b>우리 모둠 의견</b> 한두 개로 모아요.</li></ol></div>';
+  /* 내 생각 · 반박 */
+  h += '<h3 class="grph">내 생각</h3><div class="speech">'
+    + '<p class="ln"><span class="k">주장</span>'+esc(S.claim)+'</p>'
+    + '<p class="ln"><span class="k">이유</span>'+esc(S.reason)+'</p>'
+    + (S.ev ? '<p class="ln"><span class="k">근거</span>'+esc(S.ev)+(evt?' <b>('+evt+')</b>':'')+'</p>' : '')
+    + '</div>';
+  if((S.other||'').trim() || (S.still||'').trim())
+    h += '<h3 class="grph">반박 — 나와 다른 의견과 내 답</h3><div class="speech">'
+      + (S.other ? '<p class="ln"><span class="k">다른 의견</span>'+esc(S.other)+'</p>' : '')
+      + (S.still ? '<p class="ln"><span class="k">내 답</span>'+esc(S.still)+'</p>' : '')
+      + '</div>';
+  /* 이렇게 말해 봐요 */
+  var rs = bare(S.reason), ask = '', agree = '';
+  if(CD){
+    var mine = S.jobs || {}, sent = got.filter(function(g){ return g.row && !sameName(S.name, g.name); }), B = CD.btn || CD.keys;
+    for(var c=0; c<CD.list.length && !ask; c++)
+      for(var q=0; q<sent.length && !ask; q++){
+        var v = +((sent[q].row.cards||'').charAt(c)||0);
+        if(v && v!==(+mine[c]||0)) ask = sent[q].name+', 「'+CD.list[c][0]+'」 카드를 \''+B[v-1]+'\'로 골랐네. 왜 그렇게 생각했어?';
+      }
+    var all = got.filter(function(g){ return g.row; });
+    for(var a=0; a<CD.list.length && !agree && all.length>1; a++)
+      if(all.every(function(g){ return (g.row.cards||'').charAt(a)==='1'; })) agree = '우리 모두 「'+CD.list[a][0]+'」 카드는 꼭 넣자고 했네. 이건 우리 모둠 의견에 넣자.';
+  }
+  if(!ask){ var oth = got.filter(function(g){ return g.row && !sameName(S.name, g.name); })[0]; if(oth) ask = oth.name+', 왜 그 '+(t && t.noLine ? '규칙' : '생각')+'을 골랐어? 나는 조금 다르게 생각했거든.'; }
+  h += '<h3 class="grph">이렇게 말해 봐요</h3><div class="say">'
+    + '<div><b class="n">1. 내 생각 말하기 (30초)</b><q>'+(t && t.noLine ? '내가 제안하는 규칙은 「'+esc(bare(S.claim))+'」야. ' : '내 생각은 「'+esc(bare(S.claim))+'」야. ')
+    + (rs ? esc((/^왜냐하면/.test(rs) ? rs : '왜냐하면 '+rs).replace(/때문(이다|입니다|이에요)$/, '때문이야'))+'. ' : '')
+    + (S.ev ? '실제로 '+esc(bare(S.ev))+'.' : '')+'</q></div>'
+    + ((S.other||'').trim() ? '<div><b class="n">2. 다른 의견도 먼저 꺼내기</b><q>「'+esc(bare(S.other))+'」라고 생각할 수도 있어. '
+        + ((S.still||'').trim() ? '그래도 나는 '+esc(bare(S.still).replace(/^(그래도|하지만|그렇지만)\s*/,''))+'.' : '그 말도 일리가 있어.')+'</q></div>' : '')
+    + '<div><b class="n">'+((S.other||'').trim()?'3':'2')+'. 친구에게 묻기</b><q>'+esc(ask || '왜 그렇게 생각했어? 어떤 경험이 있었어?')+'</q></div>'
+    + '<div><b class="n">'+((S.other||'').trim()?'4':'3')+'. 모둠 의견으로 모으기</b><q>'+esc(agree || '두 생각을 합쳐서, 「'+bare(S.claim)+'」에 친구 생각을 더하면 어때?')
+    + ' 이렇게 고치면 다 같이 받아들일 수 있을까?</q></div></div>';
+  /* 모둠 판 */
+  h += grpBoard(got);
+  /* 우리 모둠 의견 */
+  var others = got.filter(function(g){ return g.row && g.row.text && g.row.text.grule && !sameName(S.name, g.name); });
+  h += '<h3 class="grph">우리 모둠 의견</h3>'
+    + '<div class="fh">모둠이 함께 정한 '+(t && t.noLine ? '규칙' : '의견')+'을 한두 개 적어요. 모둠 친구들과 같은 내용으로 적어도 돼요. 전체 '+TW+' 때 이걸 발표해요.</div>'
+    + (others.length ? '<div class="grpclaims" style="margin-bottom:8px">' + others.map(function(g){ return '<div class="gcl"><b>'+esc(g.name)+'</b><span>'+esc(g.row.text.grule)+'</span></div>'; }).join('') + '</div>' : '')
+    + '<textarea id="grule" placeholder="'+esc((t && t.ph && t.ph.grule) || (t && t.noLine ? '예: 올리기 전에 사진에 친구 얼굴이 나오는지 보고, 나오면 허락을 받는다.' : '예: 우리 모둠은 ~라고 생각한다. 다만 ~라면 ~해야 한다.'))+'">'+esc(S.grule)+'</textarea>'
+    + '<div class="row noprint" style="margin-top:10px"><button class="btn'+(S.grSent?' sec':'')+'" data-go="gsend" style="flex:1">'+(S.grSent ? '모둠 의견 다시 보내기' : '모둠 의견 보내기')+'</button></div>'
+    + (S.grSent ? '<p class="hint"><b>보냈어요.</b> 전체 '+TW+' 때 우리 모둠 의견을 발표해요. 전체 '+TW+'가 끝나면 아래 단추를 눌러요.</p>' : '')
+    + '<div class="nav static noprint"><button class="btn sec" data-go="back">이전</button>'
+    + '<button class="btn'+(S.grSent?'':' sec')+'" data-go="next" style="flex:1">'+TW+' 끝나고 누르기</button></div></div>';
   return h;
 }
 function grpDone(){
@@ -1620,14 +1791,31 @@ function grpDone(){
   var rows = parsePastes(grpLast).filter(function(r){ return t && r.topic===t.id; });
   return m.every(function(nm){ return rows.some(function(r){ return sameName(r.name, nm); }); });
 }
+function talkKey(){ var tk = S.group && ROSTER && ROSTER[S.group] ? talkOf(S.group, ROSTER[S.group].length) : null; return tk ? tk.start+':'+tk.end+':'+tk.stop : ''; }
+/* ①~⑤에서 아직 안 보낸 아이: 15초마다 모둠 토의가 시작됐는지만 가볍게 봅니다(?what=ctl). */
+var ctlTimer = null;
+function ctlTick(){
+  if(S.mode!=='student' || !S.send || !S.group || S.step<1 || S.step>4){ clearInterval(ctlTimer); ctlTimer = null; return; }
+  var u = S.send;
+  fetch(u + (u.indexOf('?')>=0?'&':'?') + 'what=ctl&t=' + Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(j){
+      if(!j || !j.ok) return;
+      ctlRead(j);
+      var rr = rosterFromText((j.texts||[]).join('\n\n')); if(rr) ROSTER = rr;
+      var el = $('latebar'); if(el) el.innerHTML = lateBar();
+    }).catch(function(){});
+}
 function grpTick(){
   if(S.mode!=='student' || S.step<5 || S.step>6 || !S.send || !S.group){ clearInterval(grpTimer); grpTimer=null; return; }
-  var was = inRoster() && grpDone();
+  var was = (inRoster() && grpDone()) + '|' + talkKey();
   sheetGet(S.send, function(txt){
     if(txt){ grpLast = txt; var r = rosterFromText(txt); if(r) ROSTER = r; }
-    var moved = syncGroup(), now = inRoster() && grpDone();
-    /* ⑥에서는 모둠이 다 모이면 위의 순서 안내까지 바뀌도록 다시 그리고, 쓰는 칸이 있는 ⑦에서는 모둠 판만 바꿔요. */
-    if(S.step===5 && (moved || now!==was)){ render(); return; }
+    var moved = syncGroup(), now = (inRoster() && grpDone()) + '|' + talkKey();
+    /* ⑥에서는 모둠이 다 모이거나 토의가 시작·연장·끝나면 다시 그리고, 쓰는 칸이 있는 ⑦에서는 모둠 판만 바꿔요.
+       토의 화면에서는 모둠 의견을 쓰는 중일 수 있어, 상태가 바뀔 때만 다시 그립니다. */
+    if(S.step===5 && (moved || now!==was)){ grab(); render(); return; }
+    if(S.step===5 && $('grule')) return;
     var el = $('grp'); if(el && S.step>=5) el.innerHTML = groupPanel(txt);
   });
 }
@@ -1635,12 +1823,13 @@ function grpTick(){
    시트 스크립트가 옛 판이면 {ok:false}가 오니, 그때부터는 이 기기에서 더 보내지 않아요. 결과 탭은 건드리지 않습니다. */
 var progOff = false, progTimer = null, progDue = 0, progLast = '', progAt = 0, progField = '';
 var FIELDNAMES = { nm:'이름', claim:'주장', reason:'이유', ev:'근거', who:'영향', other:'다른 의견', still:'지키는 까닭',
-  moved:'움직인 말', why:'그 까닭', draft:'초안', final:'최종본' };
+  moved:'움직인 말', why:'그 까닭', draft:'초안', final:'최종본', grule:'모둠 의견' };
 function progData(){
-  var t = topic(), f = {}, ks = ['claim','reason','ev','who','other','still','moved','why','draft','final'];
+  var t = topic(), f = {}, ks = ['claim','reason','ev','who','other','still','moved','why','draft','final','grule'];
   for(var i=0;i<ks.length;i++){ var v=(S[ks[i]]||'').trim(); if(v) f[ks[i]] = v.length; }
   return { name:(S.name||'').trim(), group:S.typeName?'':(S.group||''), topic:t?t.id:'', step:S.step, field:progField,
-           sents:S.sents||'', jj:jjFlag(), cards:countPicks(S.jobs), cards2:countPicks(S.jobs2), f:f };
+           sents:S.sents||'', jj:jjFlag(), cards:countPicks(S.jobs), cards2:countPicks(S.jobs2), f:f,
+           grule:(S.grule||'').trim().slice(0,300), gs:S.grSent?1:0 };
 }
 function progPing(fast){
   if(progOff || !S.send || S.mode!=='student' || !(S.name||'').trim() || !topic() || !window.fetch) return;
@@ -1706,7 +1895,7 @@ function tryUnlock(){
   if(pinTries >= 5){ pinWait = Date.now() + 30000; pinTries = 0; msg.textContent = '여러 번 틀렸어요. 30초 뒤에 다시 해 볼까요?'; }
   else msg.textContent = '비밀번호가 맞지 않아요.';
 }
-var T = { tab:'guide', paste:'', a1:'', a2:'', a3:'', a4:'', topicPick:'', grades:{}, notes:{}, band:'56', sheet:'', unlocked:'' };
+var T = { tab:'guide', paste:'', a1:'', a2:'', a3:'', a4:'', topicPick:'', grades:{}, notes:{}, band:'56', sheet:'', unlocked:'', talkMin:0 };
 function num(x){ x=String(x==null?'':x).trim(); if(x==='') return null; var v=+x; return (v>=0 && v<=10 && v===Math.floor(v)) ? v : null; }
 function parsePastes(src){
   var rows = [], seen = {}, blocks = ((src===undefined ? T.paste : src)||'').split(/@@/);
@@ -1732,7 +1921,7 @@ function parsePastes(src){
 }
 /* 결과 글의 "[주장] ..." 같은 줄을 읽어 옵니다. 같은 이름표가 여러 번이면 마지막 것을 씁니다. */
 var FIELDS = { claim:'주장', reason:'이유', ev:'근거', who:'영향', other:'반대편에서 가장 일리 있던 말',
-  still:'그래도 내 생각인 까닭', moved:'나를 움직인 말', why:'그 까닭' };
+  still:'그래도 내 생각인 까닭', moved:'나를 움직인 말', why:'그 까닭', grule:'우리 모둠 의견' };
 function readFields(txt){
   var out = { found:false };
   for(var k in FIELDS){
@@ -1831,7 +2020,7 @@ function liveLoad(){
     .then(function(j){
       if(!j || !j.ok) throw new Error('bad');
       if(!j.progress){ LIVE.old = true; LIVE.roster = rosterFromText((j.texts||[]).join('\n\n')) || LIVE.roster; }
-      else { LIVE.old = false; LIVE.list = j.progress; LIVE.now = j.now || Date.now(); LIVE.roster = rosterFromText(j.roster||'') || LIVE.roster; }
+      else { LIVE.old = false; LIVE.list = j.progress; LIVE.now = j.now || Date.now(); LIVE.roster = rosterFromText(j.roster||'') || LIVE.roster; ctlRead(j); }
       LIVE.at = Date.now(); LIVE.err = ''; paintLive();
     })
     .catch(function(){ LIVE.err = 'fail'; paintLive(); });
@@ -1858,6 +2047,7 @@ function liveHtml(){
   var tps = Object.keys(cnt).sort(function(a,b){ return cnt[b]-cnt[a]; });
   var tp = (LIVE.topic && cnt[LIVE.topic]) ? LIVE.topic : (tps[0] || '');
   var tt = topicById(tp), kids = recent.filter(function(x){ return x.d.topic===tp; });
+  LIVE.cur = tp || LIVE.cur;
   if(tps.length>1){
     h += '<div class="chips" style="margin-top:10px">';
     for(var a=0;a<tps.length;a++){ var tq = topicById(tps[a]);
@@ -1886,6 +2076,7 @@ function liveHtml(){
          + (sn.indexOf('5')>=0 ? '<span class="mk ok">'+TWn+' 전 보냄</span>' : '')
          + (sn.indexOf('6')>=0 ? '<span class="mk ok">'+TWn+' 뒤 보냄</span>' : '')
          + (sn.indexOf('7')>=0 ? '<span class="mk ok">최종 글 보냄</span>' : '')
+         + (d.gs ? '<span class="mk ok">모둠 의견 보냄</span>' : '')
          + (d.jj==='j' ? '<span class="mk jj">자작자작</span>' : d.jj==='p' ? '<span class="mk">붙여 넣음</span>' : '')
          + '<span class="mk'+(now-(x.at||0) > 5*60000 ? ' late' : '')+'">'+ago(now-(x.at||0))+'</span></span>';
     }
@@ -1897,6 +2088,25 @@ function liveHtml(){
     } else hh += '<span></span>';
     return hh + '</div>';
   }
+  /* 모둠 토의 시간 */
+  var tm = T.talkMin || 0, anyLive = false;
+  if(R) for(var gq in R){ var s0 = talkOf(gq, R[gq].length, tp); if(s0 && !s0.stop && srvNow() < s0.end) anyLive = true; }
+  h += '<div class="lv-talk"><b>모둠 '+TWn+'</b><select data-talkmin aria-label="모둠 '+TWn+' 시간"><option value="0">자동 (모둠 인원 + 4분)</option>';
+  for(var mm=5; mm<=15; mm++) h += '<option value="'+mm+'"'+(tm===mm?' selected':'')+'>'+mm+'분</option>';
+  h += '</select><button class="btn sm" data-go="talkall">모든 모둠 시작</button>'
+    + (anyLive ? '<button class="btn sm sec" data-go="talkadd" data-min="1">모두 +1분</button><button class="btn sm sec" data-go="talkadd" data-min="3">모두 +3분</button>'
+               + '<button class="btn sm sec" data-go="talkstop">모두 끝내기</button>' : '')
+    + '<span class="mini" style="flex-basis:100%">모둠은 절반 넘게 보내면 아이들이 직접 시작할 수도 있어요. 시작하면 아직 안 보낸 아이 화면에 "'+TALK_JOIN+'분 안에 보내고 함께해요" 알림이 떠요.</span></div>';
+  /* 모둠 의견 모아 보기 (전체 토의 때 띄워요) */
+  if(R){
+    var gops = '';
+    for(var go2 in R){
+      var seen = {}, lines = [];
+      R[go2].forEach(function(nm){ var x = find(nm); var gr = x && x.d.grule; if(gr && !seen[gr]){ seen[gr] = 1; lines.push([gr, x.d.name]); } });
+      if(lines.length) gops += '<div class="gop"><b>'+esc(go2)+'모둠</b> '+lines.map(function(l){ return esc(l[0])+' <span class="mini">— '+esc(l[1])+'</span>'; }).join('')+'</div>';
+    }
+    if(gops) h += '<div class="lv-g"><h3>모둠 의견 모아 보기 <span class="mini">전체 '+TWn+' 때 이 화면을 띄워 보세요</span></h3>'+gops+'</div>';
+  }
   if(R){
     h += '<p class="mini" style="margin-top:10px">모둠을 잘못 골랐거나 자리를 옮긴 아이는 오른쪽에서 모둠을 바꿔 주세요. 아이 화면은 ⑥단계에서 저절로 따라가요.</p>';
     for(var gi=0; gi<gs.length; gi++){
@@ -1906,7 +2116,14 @@ function liveHtml(){
       var stTxt = !inn.length ? '아직 아무도 안 들어왔어요'
         : all5 ? '모두 보냈어요 — 모둠 '+TWn+' 중'
         : (inn.length<mem.length ? (mem.length-inn.length)+'명 아직 · ' : '') + '가장 느린 친구 '+(minSt+1)+'. '+stepLabel(minSt, tt);
-      h += '<div class="lv-g"><h3>'+esc(gs[gi])+'모둠 <span class="mini">'+esc(stTxt)+'</span></h3>';
+      var gt = talkOf(gs[gi], mem.length, tp), gOver = gt && (gt.stop || srvNow() >= gt.end);
+      h += '<div class="lv-g"><h3>'+esc(gs[gi])+'모둠 <span class="mini">'+esc(stTxt)+'</span>'
+        + (gt ? '<span class="tst'+(gOver?' over':'')+'">'+(gOver ? TWn+' 끝' : TWn+' 중 · <span data-end="'+gt.end+'">'+fmtLeft(gt.end - srvNow())+'</span> 남음')+'</span>' : '')
+        + '<span class="gbtn">'
+        + (!gt || gOver ? '<button class="btn sm sec" data-go="talkg" data-k="start" data-g="'+esc(gs[gi])+'">'+(gt?'다시 ':'')+'시작</button>'
+                        : '<button class="btn sm sec" data-go="talkg" data-k="add" data-min="1" data-g="'+esc(gs[gi])+'">+1분</button>'
+                        + '<button class="btn sm sec" data-go="talkg" data-k="stop" data-g="'+esc(gs[gi])+'">끝내기</button>')
+        + '</span></h3>';
       for(var mi=0; mi<mem.length; mi++) h += kidRow(mem[mi], xs[mi], gs[gi]);
       h += '</div>';
     }
@@ -2341,6 +2558,8 @@ function render(){
   if(S.mode==='teacher' && T.tab==='live'){ if(!liveTimer){ liveTimer = setInterval(liveLoad, 10000); liveLoad(); } }
   else if(liveTimer){ clearInterval(liveTimer); liveTimer = null; }
   if(S.mode==='student' && S.send && !rosterState && (S.step===1 || S.step>=5)) loadRoster();
+  if(S.mode==='student' && S.send && S.group && S.step>=1 && S.step<=4 && S.sents.indexOf('5')<0){ if(!ctlTimer){ ctlTimer = setInterval(ctlTick, 15000); setTimeout(ctlTick, 500); } }
+  else if(ctlTimer){ clearInterval(ctlTimer); ctlTimer = null; }
   if(S.mode==='student' && S.step>=5 && S.step<=6 && S.send && S.group){ if(!grpTimer){ grpTimer = setInterval(grpTick, 8000); setTimeout(grpTick, 300); } }
   else if(grpTimer){ clearInterval(grpTimer); grpTimer = null; }
   /* 아이 기기에는 단추가 보이지 않아요. 비밀번호를 넣은 선생님 기기에서만 두 화면을 오갑니다. */
@@ -2350,7 +2569,7 @@ function render(){
   render.lastKey = key;
 }
 function grab(){
-  var ids = ['claim','reason','ev','who','other','still','moved','why','draft','final','nm','cq','cl','cr','paste','a1','a2','a3','a4','sheet'];
+  var ids = ['claim','reason','ev','who','other','still','moved','why','draft','final','grule','nm','cq','cl','cr','paste','a1','a2','a3','a4','sheet'];
   for(var i=0;i<ids.length;i++){
     var el = $(ids[i]); if(!el) continue;
     var v = el.value;
@@ -2414,9 +2633,10 @@ document.addEventListener('click', function(e){
 
   switch(d.go){
     case 'next': grab(); if(!canGoNext()){ refreshNext(); break; } S.nameHere = false;
-      if(S.step===5 && S.send && S.group && ROSTER && ROSTER[S.group] && !grpDone()
-         && !confirm(S.sentStep===5 ? '아직 모둠 친구들이 다 보내지 않았어요. 모둠 판이 열리면 모둠 토의를 하고 나서 넘어가요.\n그래도 지금 넘어갈까요?'
-                                    : '아직 [선생님께 보내기]를 누르지 않았어요. 먼저 보내고, 모둠 토의를 한 뒤에 넘어가요.\n그래도 지금 넘어갈까요?')) break;
+      if(S.step===5 && S.send && S.group && ROSTER && ROSTER[S.group] && !S.grSent
+         && !confirm(S.sentStep<5 ? '아직 [선생님께 보내기]를 누르지 않았어요. 먼저 보내고, 모둠 토의를 한 뒤에 넘어가요.\n그래도 지금 넘어갈까요?'
+                   : !talkKey() ? '아직 모둠 토의를 시작하지 않았어요. 모둠 토의와 전체 토의가 끝난 뒤에 눌러요.\n그래도 지금 넘어갈까요?'
+                                : '아직 우리 모둠 의견을 보내지 않았어요. 모둠 의견을 보내고, 전체 토의가 끝난 뒤에 눌러요.\n그래도 지금 넘어갈까요?')) break;
       if(S.step<6){ S.step++;
         var tn = topic();
         if(S.step===6 && tn && tn.noLine && !countPicks(S.jobs2)){ S.jobs2={}; for(var kj in S.jobs) S.jobs2[kj]=S.jobs[kj]; }
@@ -2424,6 +2644,39 @@ document.addEventListener('click', function(e){
       break;
     case 'back': grab(); if(S.step>0){ S.step--; save(); render(); } break;
     case 'who': grab(); S.whoOpen = !S.whoOpen; render(); break;
+    case 'join': grab(); S.step = 5; save(); render(); break;
+    case 'talkstart':
+      grab();
+      (function(){
+        var mem = ROSTER && ROSTER[S.group]; if(!mem) return;
+        var dn = grpGot().filter(function(g){ return g.row; }).length;
+        if(dn < mem.length && !confirm('아직 '+(mem.length-dn)+'명이 안 보냈어요. 지금 모인 친구들과 먼저 시작할까요?\n늦는 친구 화면에는 '+TALK_JOIN+'분 안에 함께하라는 알림이 떠요.')) return;
+        el.disabled = true; el.textContent = '시작하는 중…';
+        ctlPost(S.send, { k:'start', g:S.group, min:talkMinSet, by:S.name }, function(ok){
+          if(!ok){ alert('시작하지 못했어요. 인터넷을 확인하고 다시 눌러 볼까요?'); render(); return; }
+          grpTick();
+        });
+      })();
+      break;
+    case 'gsend':
+      grab();
+      if(!(S.grule||'').trim()){ alert('우리 모둠 의견을 먼저 적어 볼까요?'); break; }
+      sendOut('grp'); break;
+    case 'talkall':
+      grab();
+      if(!confirm('모든 모둠의 '+(T.talkMin ? T.talkMin+'분' : '모둠 인원 + 4분')+' 타이머를 시작할까요?\n이미 하고 있는 모둠은 그대로 둬요.')) break;
+      ctlPost(sheetUrl(), { k:'start', g:'*', min:T.talkMin||0, by:'선생님', tp:LIVE.cur }, function(ok){ if(!ok) alert('시작하지 못했어요. 다시 해 볼까요?'); liveLoad(); });
+      break;
+    case 'talkadd':
+      ctlPost(sheetUrl(), { k:'add', g:'*', min:+d.min||1, by:'선생님', tp:LIVE.cur }, function(ok){ if(!ok) alert('늘리지 못했어요.'); liveLoad(); });
+      break;
+    case 'talkstop':
+      if(!confirm('모든 모둠의 토의 시간을 끝낼까요?')) break;
+      ctlPost(sheetUrl(), { k:'stop', g:'*', by:'선생님', tp:LIVE.cur }, function(ok){ if(!ok) alert('끝내지 못했어요.'); liveLoad(); });
+      break;
+    case 'talkg':
+      ctlPost(sheetUrl(), { k:d.k, g:d.g, min:d.k==='start' ? (T.talkMin||0) : (+d.min||1), by:'선생님', tp:LIVE.cur }, function(ok){ if(!ok) alert('바꾸지 못했어요.'); liveLoad(); });
+      break;
     case 'write': grab(); S.step = 7; if(!(S.draft||'').trim()) S.draft = buildDraft(topic()); save(); render(); break;
     case 'jj':
       /* 링크는 그대로 새 창으로 열리게 두고, 초안만 복사해 둡니다. */
@@ -2490,7 +2743,7 @@ document.addEventListener('click', function(e){
       S = { mode:S.mode, step:0, topic:null, custom:'', name:nm, first:null, claim:'', claimPick:-1,
             reason:'', ev:'', evType:-1, who:'', jobs:{}, other:'', still:'', moved:'', last:null, why:'', checked:false,
             customL:'', customR:'', band:S.band, send:S.send, lastSent:'', jobs2:{}, sentStep:-1, group:gp,
-            sents:'', draft:'', final:'', jj:'', jjOpened:false };
+            sents:'', draft:'', final:'', jj:'', jjOpened:false, grule:'', grSent:false };
       save(); render(); break;
   }
 });
@@ -2515,6 +2768,7 @@ document.addEventListener('focusin', function(e){
   if(S.mode==='student' && id && FIELDNAMES[id] && progField!==id){ progField = id; progPing(true); }
 });
 document.addEventListener('change', function(e){
+  if(e.target && e.target.hasAttribute && e.target.hasAttribute('data-talkmin')){ T.talkMin = +e.target.value || 0; save(); return; }
   var mv = e.target && e.target.getAttribute && e.target.getAttribute('data-move');
   if(mv===null || mv===undefined || !e.target.value) return;
   var g = e.target.value; e.target.blur();
@@ -2529,6 +2783,15 @@ document.addEventListener('input', function(e){
     window.__t = setTimeout(function(){ grab(); refreshNext(); }, 250);
   }
 });
+/* 남은 시간 글자를 1초마다 바꿔요. 다 되면 토의 상자를 주황으로. */
+setInterval(function(){
+  var els = document.querySelectorAll('[data-end]');
+  for(var i=0;i<els.length;i++){
+    var left = +els[i].getAttribute('data-end') - srvNow();
+    els[i].textContent = fmtLeft(left);
+    if(left<=0){ var tb = els[i].closest('.talkbox'); if(tb) tb.classList.add('over'); }
+  }
+}, 1000);
 $('btnMode').addEventListener('click', function(){
   grab();
   if(S.mode==='teacher') S.mode='student';
