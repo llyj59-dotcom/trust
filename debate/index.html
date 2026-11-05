@@ -258,6 +258,42 @@ code{font-family:inherit;background:var(--fill-2);padding:1px 6px;border-radius:
 .grpclaims{display:grid;gap:6px}
 .gcl{background:var(--fill);border-radius:12px;padding:10px 14px;font-size:14.5px;display:flex;gap:10px}
 .gcl b{flex:0 0 auto;color:var(--green-d)}
+.meline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-6px 2px 12px;font-size:14px;color:var(--sub)}
+.meline b{color:var(--ink)}
+.flow{list-style:none;margin:14px 0 8px;padding:0;display:grid;gap:6px;counter-reset:f}
+.flow li{counter-increment:f;display:flex;align-items:center;gap:10px;background:var(--fill);border-radius:12px;padding:10px 12px;font-size:14.5px;color:var(--mute);line-height:1.45}
+.flow li::before{content:counter(f);flex:0 0 24px;height:24px;border-radius:50%;background:#d5dae0;color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.flow li.on{background:var(--green-l);color:var(--green-d);font-weight:700}
+.flow li.on::before{background:var(--green)}
+.flow li.done{color:var(--sub)}
+.flow li.done::before{content:'\2713';background:#8fd0b3}
+a.btn{text-decoration:none}
+textarea.long{min-height:240px}
+.jjmark{display:inline-flex;align-items:center;gap:6px;background:var(--green-l);color:var(--green-d);font-weight:700;border-radius:999px;padding:6px 12px;font-size:14px;margin-top:10px}
+.jjmark::before{content:'\2713'}
+.jjmark.p{background:var(--fill-2);color:var(--sub)}
+.jjmark.p::before{content:none}
+.speechbox{background:var(--fill);border-radius:18px;padding:4px 16px 2px;margin-top:18px}
+.speechbox>summary{font-weight:700;padding:12px 0;cursor:pointer}
+.lv-top{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.lv-sum{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+.lv-sum span{background:var(--fill);border-radius:999px;padding:4px 11px;font-size:13.5px;color:var(--sub)}
+.lv-g{background:var(--fill);border-radius:18px;padding:14px 16px;margin-top:12px}
+.lv-g h3{font-size:16px;display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
+.lv-g h3 .mini{font-weight:600}
+.lv-k{display:grid;grid-template-columns:minmax(64px,auto) 1fr auto;gap:4px 10px;align-items:center;background:#fff;border-radius:12px;padding:9px 12px;margin-top:6px;font-size:14px}
+.lv-k .nm{font-weight:700}
+.lv-k .wh{color:var(--sub);line-height:1.45}
+.lv-k .wh .mini{display:block}
+.lv-k select{font-size:13px;border:0;background:var(--fill);border-radius:8px;padding:5px 6px;color:var(--sub)}
+.lv-k.off{opacity:.55}
+.st{display:inline-block;border-radius:999px;padding:1px 9px;font-size:12.5px;font-weight:700;background:var(--fill-2);color:var(--sub);margin-right:6px}
+.st.s5,.st.s6,.st.s7{background:var(--green-l);color:var(--green-d)}
+.mk{display:inline-block;font-size:12px;font-weight:700;border-radius:6px;padding:0 6px;margin:2px 4px 0 0;background:var(--fill-2);color:var(--sub)}
+.mk.ok{background:var(--green-l);color:var(--green-d)}
+.mk.jj{background:var(--purple-l);color:var(--purple)}
+.mk.late{background:var(--amber-l);color:var(--amber)}
+.fin{background:var(--fill);border-radius:14px;padding:12px 14px;margin-top:8px;white-space:pre-wrap;font-size:14.5px}
 .pause{background:var(--green-l);border-radius:18px;padding:16px 18px;margin:16px 0 4px}
 .pause .t{display:block;font-weight:700;color:var(--green-d);font-size:16px}
 .pause .mini{color:var(--sub);margin-top:4px;font-size:14px}
@@ -466,7 +502,7 @@ var TOPICS = [
          '양을 줄이고 꼭 필요한 것만 내야 한다',
          '스스로 고르는 숙제가 좋다']},
 
- {id:'upload3', band:'56', std:['6국01-06','6실04-03'], ic:'⏱️', cat:'디지털 시민', noLine:true,
+ {id:'upload3', intro:'우리 반은 「업로드 전 3초」 규칙을 함께 정하는 토의를 했다.', band:'56', std:['6국01-06','6실04-03'], ic:'⏱️', cat:'디지털 시민', noLine:true,
   ph:{ claim:'예: 올리기 전에 나와 친구의 개인정보가 보이지 않는지, 출처를 밝혔는지 확인한다.',
        reason:'예: 왜냐하면 개인정보는 한 번 퍼지면 다시 지울 수 없기 때문이다.',
        ev:'예: 「타워를 지켜라!」에서 출처 없이 올린 그림 때문에 타워가 무너졌다. / 다섯 모둠 가운데 네 모둠이 개인정보를 골랐다.',
@@ -845,7 +881,8 @@ var S = {
   mode:'student', step:0, topic:null, custom:'',
   name:'', first:null, claim:'', claimPick:-1, reason:'', ev:'', evType:-1,
   who:'', jobs:{}, other:'', still:'', moved:'', last:null, why:'', checked:false,
-  customL:'', customR:'', band:'56', send:'', lastSent:'', jobs2:{}, sentStep:-1, group:''
+  customL:'', customR:'', band:'56', send:'', lastSent:'', jobs2:{}, sentStep:-1, group:'',
+  sents:'', draft:'', final:'', jj:'', jjOpened:false
 };
 function save(){
   try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
@@ -853,6 +890,8 @@ function save(){
 }
 function load(){
   try{ var r=localStorage.getItem(KEY); if(r){ var o=JSON.parse(r); for(var k in o) if(k in S) S[k]=o[k];
+    /* 보낸 단계를 따로 적기 전(11-05 낮)에 보낸 기기 */
+    if(!S.sents && S.sentStep>=5) S.sents = String(S.sentStep);
     /* 10-29 오전 판(규칙 다섯 가지 찬반)으로 upload3을 열었던 기기: 카드 뜻이 바뀌었으니 처음부터 다시 엽니다. */
     if(o.topic==='upload3' && !('jobs2' in o)){ S.jobs={}; S.jobs2={}; S.first=null; S.last=null; S.claim=''; S.claimPick=-1; if(S.step>1) S.step=1; }
   } }catch(e){}
@@ -923,13 +962,34 @@ function checks(){
 function okCount(){ var c=checks(), n=0; for(var i=0;i<c.length;i++) if(c[i].ok) n++; return [n, c.length]; }
 
 /* ===================== 공통 조각 ===================== */
-var STEPNAMES = ['주제 고르기','처음 내 자리','생각 세우기','스스로 다듬기','다른 의견 보기','나눌 준비','듣고 나서'];
+var STEPNAMES = ['주제 고르기','처음 내 자리','생각 세우기','스스로 다듬기','다른 의견 보기','나눌 준비','듣고 나서','글로 완성하기'];
+function stepLabel(i, tt){ return (tt && tt.noLine && i===1) ? '처음 내 생각' : (STEPNAMES[i]||''); }
 function bar(){
-  var tt = topic(), nm = (tt && tt.noLine && S.step===1) ? '처음 내 생각' : STEPNAMES[S.step];
+  var tt = topic(), nm = stepLabel(S.step, tt);
+  /* ⑧ 글로 완성하기는 선생님이 하자고 할 때만 가는 단계라, 거기 있을 때만 막대를 하나 늘려요. */
+  var n = S.step===7 ? 8 : 7;
   var h = '<div class="stepname">'+(S.step+1)+'. '+nm+'</div><div class="steps">';
-  for(var i=0;i<STEPNAMES.length;i++)
+  for(var i=0;i<n;i++)
     h += '<i class="'+(i<S.step?'done':i===S.step?'on':'')+'"></i>';
   return h+'</div>';
+}
+/* 명단에서 고른 모둠·이름이 맞는지 */
+function inRoster(){ return !!(S.group && ROSTER && ROSTER[S.group] && ROSTER[S.group].some(function(m){ return sameName(S.name, m); })); }
+function pickerNeeded(){ return !!(S.send && ROSTER && !S.typeName && (!inRoster() || S.whoOpen)); }
+/* 막대 아래 "3모둠 · 김민준  [모둠·이름 바꾸기]" */
+function meLine(){
+  if(S.step<1 || !(S.name||'').trim() || S.whoOpen || (S.step===1 && pickerNeeded())) return '';
+  return '<div class="meline"><span>'+(S.group && !S.typeName ? esc(S.group)+'모둠 · ' : '')+'<b>'+esc(S.name)+'</b></span>'
+    + (S.send && ROSTER ? '<button class="linkbtn" data-go="who">모둠·이름 바꾸기</button>' : '') + '</div>';
+}
+/* 이 화면에서 할 일 순서. 다 한 것은 회색 체크, 지금 할 것은 초록. */
+function flowSteps(list){
+  var h = '<ol class="flow">', on = false;
+  for(var i=0;i<list.length;i++){
+    var c = list[i][1] ? 'done' : (!on ? (on = true, 'on') : '');
+    h += '<li class="'+c+'"><span>'+list[i][0]+'</span></li>';
+  }
+  return h + '</ol>';
 }
 function canGoNext(){
   if(S.step===1){ var t1=topic(); if(!(S.name||'').trim()) return false; return (t1 && t1.noLine) ? countPicks(S.jobs)>0 : S.first!==null; }
@@ -1021,7 +1081,12 @@ function viewStudent(){
   var PH = (t && t.ph) || {};
   var TAG = {y:'그렇다', n:'아니다', q:'생각해 봐요'};
   function thinkLines(arr){ var o=''; for(var i=0;i<arr.length;i++) o += '<div class="tline"><span class="s '+arr[i][0]+'">'+(TAG[arr[i][0]]||'')+'</span><span>'+esc(arr[i][1])+'</span></div>'; return o; }
-  if(S.step>0) h += bar();
+  if(S.step>0) h += bar() + meLine();
+  if(S.step>=2 && S.whoOpen && S.send && ROSTER){
+    h += '<div class="card"><h2>모둠과 이름을 다시 골라요</h2>'
+      + '<p class="lead">잘못 골랐다면 여기서 바꿔요. 쓴 글은 그대로 남아요.</p>' + whoPicker()
+      + '<div class="row" style="margin-top:12px"><button class="btn sec sm" data-go="who">닫기</button></div></div>';
+  }
 
   /* --- 0. 주제 고르기 --- */
   if(S.step===0){
@@ -1053,8 +1118,10 @@ function viewStudent(){
   if(S.step===1){
     h += '<div class="card"><h2>'+t.ic+' '+esc(t.q)+'</h2>'
       + (t.sub?'<p class="lead">'+esc(t.sub)+'</p>':'');
-    if(S.send && ROSTER && !S.typeName){
+    if(pickerNeeded()){
       h += whoPicker();
+    } else if(S.send && ROSTER && !S.typeName){
+      /* 이름을 골랐으면 위의 이름 줄로 접어 둡니다. */
     } else if(!(S.name||'').trim() || S.nameHere){
       S.nameHere = true;   /* 이름을 여기서 쓰기 시작했으면 다 쓸 때까지 칸을 그대로 둡니다 */
       h += '<label class="f" for="nm">내 이름</label>'
@@ -1177,9 +1244,9 @@ function viewStudent(){
   /* --- 5. 나눌 준비 --- */
   if(S.step===5){
     var evt = S.evType>=0 ? EVTYPE[S.evType][0] : '';
-    h += '<div class="card"><h2>친구들에게 이렇게 말해요</h2>'
-      + '<p class="lead">아래 차례대로 읽으면 30초 발표가 돼요. 종이에 옮겨 적어도 좋아요.</p>'
-      + '<div class="speech">'
+    var grpMode = !!(S.send && (S.group || ROSTER));
+    var sent5 = S.sentStep>=5, gDone = grpMode && inRoster() && grpDone();
+    var speech = '<div class="speech">'
       + '<p class="ln"><span class="k">주장</span>'+esc(S.claim)+'</p>'
       + '<p class="ln"><span class="k">이유</span>'+esc(S.reason)+'</p>'
       + (S.ev?'<p class="ln"><span class="k">근거</span>'+esc(S.ev)+(evt?' <b>('+evt+')</b>':'')+'</p>':'')
@@ -1188,19 +1255,34 @@ function viewStudent(){
       + (S.still?'<p class="ln"><span class="k">그래도</span>'+esc(S.still)+'</p>':'')
       + '</div>'
       + '<div class="note"><b>이야기할 때 세 가지만 지켜요.</b><br>'
-      + '① 사람이 아니라 생각에 반대하기 &nbsp; ② 끝까지 듣고 말하기 &nbsp; ③ "왜 그렇게 생각했어?"라고 먼저 묻기</div>'
+      + '① 사람이 아니라 생각에 반대하기 &nbsp; ② 끝까지 듣고 말하기 &nbsp; ③ "왜 그렇게 생각했어?"라고 먼저 묻기</div>';
+    if(S.send){
+      h += '<div class="card"><h2>보내고, 친구들과 '+TW+'해요</h2>'
+        + flowSteps([
+            ['[선생님께 보내기]를 눌러요', sent5],
+            [grpMode ? '모둠 친구들이 다 보내면 아래에 <b>우리 모둠 판</b>이 열려요. 그걸 보며 모둠 '+TW+'해요' : '친구들과 '+TW+'해요', gDone],
+            [TWg+' 끝나면 맨 아래 ['+TW+' 끝나고 누르기]를 눌러요', false]])
+        + '<div class="row noprint" style="margin-top:12px">'
+        + '<button class="btn'+(sent5?' sec':'')+'" data-go="send" style="flex:1">'+(sent5?'다시 보내기':'선생님께 보내기')+'</button></div>'
+        + (sent5 ? '<p class="hint"><b>보냈어요. ('+esc(S.lastSent)+')</b> 고친 게 있으면 다시 보내도 돼요.</p>' : '')
+        + (grpMode ? '<div class="grpbox" id="grp">'+groupPanel(null)+'</div>'
+                   : (sent5 ? '<div class="pause"><span class="t">이제 친구들과 '+TW+'해요</span></div>' : ''))
+        + '<details class="speechbox"'+(sent5 && !gDone ? ' open' : '')+'><summary>내 발표 카드 — 차례대로 읽으면 30초 발표</summary>' + speech + '</details>'
+        + '<div class="row noprint" style="margin-top:14px"><button class="btn sec sm" data-go="copy">결과 복사하기</button>'
+        + '<button class="btn sec sm" data-go="print">인쇄하기</button></div>'
+        + '<div class="nav static noprint"><button class="btn sec" data-go="back">이전</button>'
+        + '<button class="btn'+(sent5 && (gDone || !grpMode) ? '' : ' sec')+'" data-go="next" style="flex:1">'+TW+' 끝나고 누르기</button></div></div>';
+      return h;
+    }
+    h += '<div class="card"><h2>친구들에게 이렇게 말해요</h2>'
+      + '<p class="lead">아래 차례대로 읽으면 30초 발표가 돼요. 종이에 옮겨 적어도 좋아요.</p>'
+      + speech
       + '<div class="row noprint">'
-      + (S.send ? '<button class="btn" data-go="send">선생님께 보내기</button>' : '')
       + '<button class="btn sec" data-go="copy">결과 복사하기</button>'
       + '<button class="btn sec" data-go="print">인쇄하기</button></div>'
-      + (S.send
-          ? '<p class="hint">'+(S.sentStep===5 ? '<b>보냈어요. ('+esc(S.lastSent)+')</b> ' : '')
-            + '[선생님께 보내기]를 누르면 선생님 화면으로 바로 가요. '+TWg+' 끝난 뒤에 한 번 더 보낼 거예요.</p>'
-          : '<p class="hint">복사한 내용을 선생님이 알려 주신 곳(패들렛 등)에 붙여 넣으면 돼요. '+TWg+' 끝난 뒤에 한 번 더 복사해서 올릴 거예요.</p>')
-      + (S.send && (S.group || ROSTER)
-          ? '<div class="grpbox" id="grp">'+groupPanel(null)+'</div>'
-          : '<div class="pause"><span class="t">'+(S.send?'보냈다면':'올렸다면')+' 여기서 잠깐 멈춰요</span>'
-            + '<div class="mini">이제 친구들과 '+TW+'해요. '+TWg+' 끝나면 아래 ['+TW+' 끝나고 누르기]를 눌러 이어서 해요.</div></div>')
+      + '<p class="hint">복사한 내용을 선생님이 알려 주신 곳(패들렛 등)에 붙여 넣으면 돼요. '+TWg+' 끝난 뒤에 한 번 더 복사해서 올릴 거예요.</p>'
+      + '<div class="pause"><span class="t">올렸다면 여기서 잠깐 멈춰요</span>'
+      + '<div class="mini">이제 친구들과 '+TW+'해요. '+TWg+' 끝나면 아래 ['+TW+' 끝나고 누르기]를 눌러 이어서 해요.</div></div>'
       + nav('이전', TW+' 끝나고 누르기', true) + '</div>';
     return h;
   }
@@ -1208,8 +1290,14 @@ function viewStudent(){
   /* --- 6. 듣고 나서 --- */
   if(S.step===6){
     var moved = S.last!==null && S.first!==null && S.last!==S.first;
+    var sent6 = S.sents.indexOf('6')>=0;
     h += '<div class="card hasprint"><h2>이야기를 다 나눈 뒤</h2>'
       + '<p class="lead">'+TWg+' 끝났으면 여기를 채워요. 오늘의 진짜 기록이에요.</p>'
+      + (S.send ? flowSteps([
+          ['나를 움직인 말 쓰기', !!(S.moved||'').trim()],
+          [t.noLine ? '카드 다시 고르기' : '내 자리 다시 찍기', t.noLine ? true : S.last!==null],
+          ['그렇게 된 까닭 쓰기', !!(S.why||'').trim()],
+          ['[선생님께 보내기]', sent6]]) : '')
       + '<label class="f"><span class="n">1</span>나를 움직인 친구의 말</label>'
       + '<div class="fh">생각이 바뀌지 않았어도, 마음에 남은 말 한마디를 적어요.</div>'
       + '<textarea id="moved" placeholder="예: ○○가 말한 ~라는 말이 계속 생각났다.">'+esc(S.moved)+'</textarea>'
@@ -1243,18 +1331,70 @@ function viewStudent(){
       + '<textarea id="why" placeholder="'+(t.noLine ? '예: ~라는 말을 듣고 ~ 카드를 바꿨다. / 다른 의견을 들었지만 ~ 때문에 그대로다.' : '예: ~라는 근거를 듣고 ~ 쪽으로 옮겼다. / 반대 의견을 들었지만 ~ 때문에 그대로다.')+'">'+esc(S.why)+'</textarea>'
       + '<pre class="plain printonly">'+esc(resultText())+'</pre>'
       + '<div class="row noprint" style="margin-top:16px">'
-      + (S.send ? '<button class="btn" data-go="send" style="flex:1">선생님께 보내기</button>' : '')
+      + (S.send ? '<button class="btn'+(sent6?' sec':'')+'" data-go="send" style="flex:1">'+(sent6?'다시 보내기':'선생님께 보내기')+'</button>' : '')
       + '<button class="btn'+(S.send?' sec':'')+'" data-go="copy" style="flex:1">결과 복사하기</button>'
       + '<button class="btn sec" data-go="print">인쇄</button></div>'
-      + (S.send ? (S.sentStep===6
-          ? '<div class="pause done"><span class="t">다 했어요! 선생님께 보냈어요 ('+esc(S.lastSent)+')</span><div class="mini">고친 게 있으면 한 번 더 보내도 돼요. 마지막에 보낸 것만 셀게요.</div></div>'
+      + (S.send ? (sent6
+          ? '<div class="pause done"><span class="t">다 했어요! 선생님께 보냈어요 ('+esc(S.lastSent)+')</span><div class="mini">고친 게 있으면 한 번 더 보내도 돼요. 마지막에 보낸 것만 셀게요. '
+            + '선생님이 설득하는 글까지 쓰자고 하셨다면 아래 [글로 완성하기]로 가요.</div></div>'
           : '<p class="hint">다 쓰면 [선생님께 보내기]를 눌러요. '+TW+' 뒤 생각은 아직 보내지 않았어요.</p>') : '')
       + (S.send && (S.group || ROSTER) ? '<div class="grpbox" id="grp">'+groupPanel(null)+'</div>' : '')
       + '<div class="nav static noprint"><button class="btn sec" data-go="back">이전</button>'
-      + '<button class="btn sec" data-go="reset" style="flex:1">새 주제로 다시 하기</button></div></div>';
+      + '<button class="btn'+(sent6?'':' sec')+'" data-go="write" style="flex:1">글로 완성하기</button></div>'
+      + '<p class="hint noprint" style="text-align:center"><button class="linkbtn" data-go="reset">새 주제로 다시 하기</button></p></div>';
+    return h;
+  }
+
+  /* --- 7. 글로 완성하기 (자작자작) --- */
+  if(S.step===7){
+    var sent7 = S.sents.indexOf('7')>=0, hasFinal = !!(S.final||'').trim();
+    h += '<div class="card"><h2>설득하는 글로 완성해요</h2>'
+      + '<p class="lead">지금까지 쓴 생각을 이어 붙여 초안을 만들어 두었어요. 자작자작에서 도움을 받아 다듬고, 최종본을 붙여 넣어요.</p>'
+      + flowSteps([['초안을 읽고 어색한 곳 고치기', S.jjOpened || hasFinal], ['[초안 복사하고 자작자작 열기]로 도움 받기', S.jjOpened || hasFinal],
+                   ['다듬은 최종본을 붙여 넣기', hasFinal], ['[선생님께 보내기]', sent7]])
+      + '<label class="f"><span class="n">1</span>내 초안</label>'
+      + '<div class="fh">주장 → 이유·근거 → 다른 의견 → 다시 주장 순서예요. 이어지는 말이 어색하면 내 말로 고쳐요.</div>'
+      + '<textarea id="draft" class="long">'+esc(S.draft)+'</textarea>'
+      + '<label class="f"><span class="n">2</span>자작자작에서 도움 받기</label>'
+      + '<div class="fh">단추를 누르면 초안이 복사되고 자작자작이 새 창으로 열려요. 거기에 붙여 넣고 피드백을 받아 봐요.</div>'
+      + '<div class="row noprint"><a class="btn sec" href="https://www.jajakjajak.com/" target="_blank" rel="noopener" data-go="jj" style="flex:1">초안 복사하고 자작자작 열기</a></div>'
+      + '<div class="note">고쳐 준 글을 그대로 가져오기보다, <b>왜 그렇게 고쳤는지</b> 읽고 내 말로 다듬어야 내 글이 돼요.</div>'
+      + '<label class="f"><span class="n">3</span>최종본</label>'
+      + '<div class="fh">자작자작에서 다듬은 글을 여기에 붙여 넣거나, 직접 고쳐 써요.</div>'
+      + '<textarea id="final" class="long" placeholder="여기에 최종본을 붙여 넣어요.">'+esc(S.final)+'</textarea>'
+      + '<div id="jjmark">'+jjMark()+'</div>'
+      + '<div class="row noprint" style="margin-top:16px">'
+      + (S.send ? '<button class="btn'+(sent7?' sec':'')+'" data-go="send" style="flex:1">'+(sent7?'다시 보내기':'선생님께 보내기')+'</button>' : '')
+      + '<button class="btn'+(S.send?' sec':'')+'" data-go="copy" style="flex:1">결과 복사하기</button></div>'
+      + (S.send ? (sent7
+          ? '<div class="pause done"><span class="t">최종 글까지 보냈어요! ('+esc(S.lastSent)+')</span><div class="mini">고친 게 있으면 한 번 더 보내도 돼요.</div></div>'
+          : '<p class="hint">최종본을 붙여 넣었으면 [선생님께 보내기]를 눌러요.</p>') : '')
+      + '<div class="nav static noprint"><button class="btn sec" data-go="back">이전</button></div></div>';
     return h;
   }
   return h;
+}
+/* 최종 글 표시: j 자작자작 창을 연 뒤 붙여 넣음 · p 붙여 넣음 · w 직접 씀 */
+function jjFlag(){ return (S.final||'').trim() ? (S.jj || 'w') : ''; }
+function jjMark(){
+  var f = jjFlag();
+  return f==='j' ? '<span class="jjmark">자작자작 도움을 받았어요</span>'
+       : f==='p' ? '<span class="jjmark p">붙여 넣은 글이에요</span>' : '';
+}
+/* 지금까지 쓴 것을 이어 붙인 설득하는 글 초안 */
+function buildDraft(t){
+  function s(x){ x=(x||'').trim(); if(x && !/[.!?。~]$/.test(x)) x += '.'; return x; }
+  function bare(x){ return (x||'').trim().replace(/[.!?。~\s]+$/,''); }
+  var P = [];
+  P.push((t && t.noLine ? (t.intro || '우리 반은 함께 지킬 규칙을 정하는 토의를 했다.') + ' 나는 우리 반 규칙으로 이것을 제안한다. '
+                        : '「'+(t ? t.q : '')+'」에 대해 나는 이렇게 생각한다. ') + s(S.claim));
+  var body = [s(S.reason), s(S.ev), s(S.who)].filter(Boolean).join(' ');
+  if(body) P.push(body);
+  if((S.other||'').trim()) P.push('물론 「' + bare(S.other) + '」라는 의견도 일리가 있다.'
+    + ((S.still||'').trim() ? (/^(하지만|그래도|그런데|그렇지만)/.test(S.still.trim()) ? ' ' : ' 하지만 ') + s(S.still) : ''));
+  if((S.moved||'').trim() || (S.why||'').trim()) P.push([(S.moved||'').trim() ? '이야기를 나누며 마음에 남은 말이 있다. ' + s(S.moved) : '', s(S.why)].filter(Boolean).join(' '));
+  P.push('그래서 나는 다시 한번 말하고 싶다. ' + s(S.claim));
+  return P.join('\n\n');
 }
 
 /* ===================== 결과 글 ===================== */
@@ -1308,12 +1448,19 @@ function resultText(){
     }
     L.push('[그 까닭] ' + (S.why||''));
   }
+  var jf = jjFlag();
+  if(jf){
+    L.push('');
+    L.push('[최종 글' + (jf==='j' ? ' — 자작자작 도움 받음' : jf==='p' ? ' — 붙여 넣음' : '') + ']');
+    L.push(String(S.final).trim().replace(/@@/g,'@ @').replace(/^\[/mg,' ['));
+    L.push('[최종 글 끝]');
+  }
   L.push('');
   function cell(x){ return String(x==null?'':x).replace(/[|@\r\n]/g,' ').trim(); }
   L.push('@@' + [ cell(S.name), (t?t.id:''),
     (S.first===null?'':S.first), (S.last===null?'':S.last),
     (S.evType<0?'':EVTYPE[S.evType][0]), n[0]+'/'+n[1],
-    cell(t?t.ends[0]:''), cell(t?t.ends[1]:''), cell(t&&t.id==='custom'?t.q:''), cardCode ].concat(after ? [after] : []).join('|') + '@@');
+    cell(t?t.ends[0]:''), cell(t?t.ends[1]:''), cell(t&&t.id==='custom'?t.q:''), cardCode, after, cell(S.typeName?'':S.group), jf ].join('|') + '@@');
   return L.join('\n');
 }
 function sendOut(){
@@ -1329,10 +1476,11 @@ function sendOut(){
   function stamp(){ var d=new Date(); return d.getHours()+'시 '+(d.getMinutes()<10?'0':'')+d.getMinutes()+'분'; }
   function ok(){
     var tt = topic(), tw = tt && tt.noLine ? '토의가' : '토론이';
-    S.lastSent=stamp(); S.sentStep=S.step; save(); render();
-    var gm = S.group && ROSTER && ROSTER[S.group], gd = gm && grpDone();
+    S.lastSent=stamp(); S.sentStep=S.step; if(S.sents.indexOf(String(S.step))<0) S.sents += S.step; save(); render(); progPing(true);
+    var gm = S.step<7 && S.group && ROSTER && ROSTER[S.group], gd = gm && grpDone();
     if(gm) grpTick();
-    alert(gm && !gd ? '선생님께 보냈어요. 모둠 친구들이 다 보내면 아래에 우리 모둠 판이 나와요.'
+    alert(S.step>=7 ? '선생님께 보냈어요. 최종 글까지 다 했어요! 수고했어요.'
+      : gm && !gd ? '선생님께 보냈어요. 모둠 친구들이 다 보내면 아래에 우리 모둠 판이 나와요.'
       : S.step>=6 ? '선생님께 보냈어요. 오늘 활동 끝! 수고했어요.'
       : '선생님께 보냈어요. 이제 친구들과 이야기해요. '+tw+' 끝나면 한 번 더 보내요.');
   }
@@ -1390,8 +1538,18 @@ function loadRoster(){
     ROSTER = r && Object.keys(r).length ? r : null;
     rosterState = 'done';
     if(txt) grpLast = txt;
+    syncGroup();
     render();
   });
+}
+/* 선생님이 명단에서 모둠을 옮겼으면 이 기기의 모둠도 따라 바꿉니다. 명단이 기준이에요. */
+function syncGroup(){
+  if(!ROSTER || S.typeName || !(S.name||'').trim()) return false;
+  var gs = Object.keys(ROSTER), hit = '';
+  for(var i=0;i<gs.length && !hit;i++) if(ROSTER[gs[i]].indexOf(S.name)>=0) hit = gs[i];
+  for(var j=0;j<gs.length && !hit;j++) if(ROSTER[gs[j]].some(function(m){ return sameName(S.name, m); })) hit = gs[j];
+  if(hit && hit!==S.group){ S.group = hit; save(); return true; }
+  return false;
 }
 function sameName(a, b){ a=(a||'').replace(/\s/g,''); b=(b||'').replace(/\s/g,''); return !!a && !!b && (a===b || a.indexOf(b)>=0); }
 function whoPicker(){
@@ -1463,12 +1621,45 @@ function grpDone(){
   return m.every(function(nm){ return rows.some(function(r){ return sameName(r.name, nm); }); });
 }
 function grpTick(){
-  if(S.mode!=='student' || S.step<5 || !S.send || !S.group){ clearInterval(grpTimer); grpTimer=null; return; }
+  if(S.mode!=='student' || S.step<5 || S.step>6 || !S.send || !S.group){ clearInterval(grpTimer); grpTimer=null; return; }
+  var was = inRoster() && grpDone();
   sheetGet(S.send, function(txt){
     if(txt){ grpLast = txt; var r = rosterFromText(txt); if(r) ROSTER = r; }
+    var moved = syncGroup(), now = inRoster() && grpDone();
+    /* ⑥에서는 모둠이 다 모이면 위의 순서 안내까지 바뀌도록 다시 그리고, 쓰는 칸이 있는 ⑦에서는 모둠 판만 바꿔요. */
+    if(S.step===5 && (moved || now!==was)){ render(); return; }
     var el = $('grp'); if(el && S.step>=5) el.innerHTML = groupPanel(txt);
   });
 }
+/* 실시간 진행: 아이 기기가 "지금 몇 단계, 어느 칸"을 시트 '진행' 탭에 한 줄로 알립니다(이름마다 한 줄을 고쳐 씀).
+   시트 스크립트가 옛 판이면 {ok:false}가 오니, 그때부터는 이 기기에서 더 보내지 않아요. 결과 탭은 건드리지 않습니다. */
+var progOff = false, progTimer = null, progDue = 0, progLast = '', progAt = 0, progField = '';
+var FIELDNAMES = { nm:'이름', claim:'주장', reason:'이유', ev:'근거', who:'영향', other:'다른 의견', still:'지키는 까닭',
+  moved:'움직인 말', why:'그 까닭', draft:'초안', final:'최종본' };
+function progData(){
+  var t = topic(), f = {}, ks = ['claim','reason','ev','who','other','still','moved','why','draft','final'];
+  for(var i=0;i<ks.length;i++){ var v=(S[ks[i]]||'').trim(); if(v) f[ks[i]] = v.length; }
+  return { name:(S.name||'').trim(), group:S.typeName?'':(S.group||''), topic:t?t.id:'', step:S.step, field:progField,
+           sents:S.sents||'', jj:jjFlag(), cards:countPicks(S.jobs), cards2:countPicks(S.jobs2), f:f };
+}
+function progPing(fast){
+  if(progOff || !S.send || S.mode!=='student' || !(S.name||'').trim() || !topic() || !window.fetch) return;
+  /* 곧 보낼 알림이 이미 있으면 더 늦은 것으로 미루지 않아요(쓰는 동안에도 단계가 바뀐 건 바로 가게). */
+  var wait = fast ? 600 : Math.max(2000, 15000 - (Date.now() - progAt));
+  if(progTimer && progDue <= Date.now() + wait) return;
+  clearTimeout(progTimer); progDue = Date.now() + wait;
+  progTimer = setTimeout(function(){
+    progTimer = null;
+    var d = progData(), key = JSON.stringify(d);
+    if(key===progLast) return;
+    progLast = key; progAt = Date.now();
+    fetch(S.send, { method:'POST', body:JSON.stringify({progress:d}), headers:{'Content-Type':'text/plain;charset=utf-8'} })
+      .then(function(r){ return r.json(); })
+      .then(function(j){ if(!j || !j.progress) progOff = true; })
+      .catch(function(){ progLast = ''; });
+  }, wait);
+}
+
 /* 선생님 화면: 모둠별 진행 */
 function teacherGroups(){
   var R = rosterFromText(T.paste); if(!R) return '';
@@ -1527,7 +1718,10 @@ function parsePastes(src){
       endL:(p[6]||'').trim(), endR:(p[7]||'').trim(), q:(p[8]||'').trim(),
       cards:/^[0-3]+$/.test((p[9]||'').trim()) ? (p[9]||'').trim() : '',
       cards2:/^[0-3]+$/.test((p[10]||'').trim()) ? (p[10]||'').trim() : '', dup:false,
+      group:(p[11]||'').trim(), jj:/^[jpw]$/.test((p[12]||'').trim()) ? (p[12]||'').trim() : '',
       text:readFields(blocks[i-1]||'') };
+    var fm = /\[최종 글[^\]\n]*\]\n([\s\S]*?)\n\[최종 글 끝\]/.exec(blocks[i-1]||'');
+    row.final = fm ? fm[1].trim() : '';
     /* 같은 이름이 같은 주제로 두 번 들어오면(토론 전·후 두 번 복사) 뒤의 것을 씁니다. */
     var key = row.name==='(이름없음)' ? null : row.name+'\u0001'+row.topic;
     if(key && seen[key]!==undefined){ rows[seen[key]] = row; row.dup=true; continue; }
@@ -1625,6 +1819,118 @@ function loadSheet(testOnly){
     })
     .catch(function(){ if(msg) msg.textContent = '불러오지 못했어요. 주소가 맞는지, 배포의 액세스가 "모든 사용자"인지 봐 주세요.'; });
 }
+/* ===================== 지금 아이들 (실시간) =====================
+   시트 '진행' 탭을 10초마다 읽어 아이마다 몇 단계·어느 칸인지, 모둠마다 어디까지 왔는지 보여 줍니다. */
+var LIVE = { list:null, roster:null, now:0, at:0, err:'', old:false, topic:'' }, liveTimer = null;
+function jjTag(f){ return f==='j' ? '<span class="mk jj">자작자작</span>' : f==='p' ? '<span class="mk">붙여 넣음</span>' : f==='w' ? '<span class="mk">직접 씀</span>' : '-'; }
+function liveLoad(){
+  var u = sheetUrl();
+  if(!u){ LIVE.err = 'nosheet'; paintLive(); return; }
+  fetch(u + (u.indexOf('?')>=0?'&':'?') + 'what=progress&t=' + Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(j){
+      if(!j || !j.ok) throw new Error('bad');
+      if(!j.progress){ LIVE.old = true; LIVE.roster = rosterFromText((j.texts||[]).join('\n\n')) || LIVE.roster; }
+      else { LIVE.old = false; LIVE.list = j.progress; LIVE.now = j.now || Date.now(); LIVE.roster = rosterFromText(j.roster||'') || LIVE.roster; }
+      LIVE.at = Date.now(); LIVE.err = ''; paintLive();
+    })
+    .catch(function(){ LIVE.err = 'fail'; paintLive(); });
+}
+function paintLive(){
+  var el = $('live'); if(!el) return;
+  /* 모둠 옮기기 고르는 중이면 그 사이에 다시 그리지 않아요. */
+  if(document.activeElement && document.activeElement.getAttribute && document.activeElement.getAttribute('data-move')!==null) return;
+  el.innerHTML = liveHtml();
+}
+function ago(ms){ var m = Math.floor(ms/60000); return m<1 ? '방금' : m<60 ? m+'분 전' : Math.floor(m/60)+'시간 전'; }
+function liveHtml(){
+  var h = '<div class="lv-top"><h2 style="margin:0">지금 아이들</h2>'
+    + '<div class="row"><span class="mini">'+(LIVE.at ? '10초마다 저절로 새로 봐요 · '+new Date(LIVE.at).toLocaleTimeString('ko-KR') : '불러오는 중…')+'</span>'
+    + '<button class="btn sm sec" data-go="liveload">지금 새로 보기</button></div></div>';
+  if(LIVE.err==='nosheet') return h + '<p class="lead" style="margin-top:10px">[결과 모아 보기]에 시트 웹 앱 주소를 먼저 넣어 주세요.</p>';
+  if(LIVE.err==='fail') h += '<div class="warn">시트를 읽지 못했어요. 인터넷을 확인하고 잠시 뒤 다시 볼게요.</div>';
+  if(LIVE.old) return h + '<div class="warn"><b>시트 스크립트가 옛 판이에요.</b> 실시간 보기를 쓰려면 시트의 Apps Script를 새 판으로 바꿔야 해요. '
+    + '안내 문서 「02_구글시트_연결하기」의 "새 판으로 바꾸기"를 봐 주세요. 결과 보내기·모아 보기는 그대로 돼요.</div>';
+  if(!LIVE.list) return h;
+  /* 지난 세 시간 안에 움직인 아이만, 가장 많이 쓰는 주제로 */
+  var now = LIVE.now || Date.now(), recent = LIVE.list.filter(function(x){ return x && x.d && now - (x.at||0) < 3*3600000; });
+  var cnt = {}; recent.forEach(function(x){ cnt[x.d.topic] = (cnt[x.d.topic]||0) + 1; });
+  var tps = Object.keys(cnt).sort(function(a,b){ return cnt[b]-cnt[a]; });
+  var tp = (LIVE.topic && cnt[LIVE.topic]) ? LIVE.topic : (tps[0] || '');
+  var tt = topicById(tp), kids = recent.filter(function(x){ return x.d.topic===tp; });
+  if(tps.length>1){
+    h += '<div class="chips" style="margin-top:10px">';
+    for(var a=0;a<tps.length;a++){ var tq = topicById(tps[a]);
+      h += '<button class="chip" data-livetopic="'+esc(tps[a])+'" aria-pressed="'+(tps[a]===tp)+'">'+esc(tq ? tq.q : tps[a])+' ('+cnt[tps[a]]+'명)</button>'; }
+    h += '</div>';
+  }
+  if(!kids.length && !LIVE.roster) return h + '<p class="lead" style="margin-top:10px">아직 들어온 아이가 없어요. 아이들이 학생용 주소로 들어와 이름을 고르면 여기에 나와요.</p>';
+  var TWn = tt && tt.noLine ? '토의' : '토론';
+  /* 단계별 인원 */
+  var bySt = {}; kids.forEach(function(x){ bySt[x.d.step] = (bySt[x.d.step]||0) + 1; });
+  h += '<div class="lv-sum">';
+  for(var st=1; st<=7; st++) if(bySt[st]) h += '<span>'+(st+1)+'. '+esc(stepLabel(st, tt))+' <b>'+bySt[st]+'명</b></span>';
+  h += '</div>';
+  function find(nm){ var hit=null; for(var i=0;i<kids.length;i++) if(kids[i].d.name===nm) hit=kids[i];
+    if(!hit) for(var j=0;j<kids.length;j++) if(sameName(kids[j].d.name, nm)) hit=kids[j]; return hit; }
+  var R = LIVE.roster, used = {}, gs = R ? Object.keys(R) : [];
+  function kidRow(nm, x, g){
+    if(x) used[x.d.name] = true;
+    var hh = '<div class="lv-k'+(x?'':' off')+'"><span class="nm">'+esc(nm)+'</span><span class="wh">';
+    if(!x) hh += '아직 안 들어왔어요';
+    else {
+      var d = x.d, sn = d.sents||'', fl = d.field && FIELDNAMES[d.field] ? FIELDNAMES[d.field] : '';
+      hh += '<span class="st s'+d.step+'">'+(d.step+1)+'. '+esc(stepLabel(d.step, tt))+'</span>'
+         + (fl ? esc(fl)+' 칸'+(d.f && d.f[d.field] ? ' · '+d.f[d.field]+'자' : '') : (d.step===1 && tt && tt.noLine ? '카드 '+(d.cards||0)+'장 고름' : ''))
+         + '<span class="mini">'
+         + (sn.indexOf('5')>=0 ? '<span class="mk ok">'+TWn+' 전 보냄</span>' : '')
+         + (sn.indexOf('6')>=0 ? '<span class="mk ok">'+TWn+' 뒤 보냄</span>' : '')
+         + (sn.indexOf('7')>=0 ? '<span class="mk ok">최종 글 보냄</span>' : '')
+         + (d.jj==='j' ? '<span class="mk jj">자작자작</span>' : d.jj==='p' ? '<span class="mk">붙여 넣음</span>' : '')
+         + '<span class="mk'+(now-(x.at||0) > 5*60000 ? ' late' : '')+'">'+ago(now-(x.at||0))+'</span></span>';
+    }
+    hh += '</span>';
+    if(R){
+      hh += '<select data-move="'+esc(x ? x.d.name : nm)+'" aria-label="모둠 옮기기"><option value="">'+(g ? esc(g)+'모둠' : '모둠 없음')+'</option>';
+      for(var q=0;q<gs.length;q++) if(gs[q]!==g) hh += '<option value="'+esc(gs[q])+'">'+esc(gs[q])+'모둠으로</option>';
+      hh += '</select>';
+    } else hh += '<span></span>';
+    return hh + '</div>';
+  }
+  if(R){
+    h += '<p class="mini" style="margin-top:10px">모둠을 잘못 골랐거나 자리를 옮긴 아이는 오른쪽에서 모둠을 바꿔 주세요. 아이 화면은 ⑥단계에서 저절로 따라가요.</p>';
+    for(var gi=0; gi<gs.length; gi++){
+      var mem = R[gs[gi]], xs = mem.map(function(nm){ return find(nm); }), inn = xs.filter(Boolean);
+      var minSt = inn.length ? Math.min.apply(null, inn.map(function(x){ return x.d.step; })) : -1;
+      var all5 = inn.length===mem.length && inn.every(function(x){ return (x.d.sents||'').indexOf('5')>=0 || (x.d.sents||'').indexOf('6')>=0; });
+      var stTxt = !inn.length ? '아직 아무도 안 들어왔어요'
+        : all5 ? '모두 보냈어요 — 모둠 '+TWn+' 중'
+        : (inn.length<mem.length ? (mem.length-inn.length)+'명 아직 · ' : '') + '가장 느린 친구 '+(minSt+1)+'. '+stepLabel(minSt, tt);
+      h += '<div class="lv-g"><h3>'+esc(gs[gi])+'모둠 <span class="mini">'+esc(stTxt)+'</span></h3>';
+      for(var mi=0; mi<mem.length; mi++) h += kidRow(mem[mi], xs[mi], gs[gi]);
+      h += '</div>';
+    }
+  }
+  var rest = kids.filter(function(x){ return !used[x.d.name]; });
+  if(rest.length){
+    h += '<div class="lv-g"><h3>'+(R ? '명단에 없는 이름' : '들어온 아이')+' <span class="mini">'+rest.length+'명</span></h3>';
+    for(var ri=0; ri<rest.length; ri++) h += kidRow(rest[ri].d.name, rest[ri], rest[ri].d.group||'');
+    h += '</div>';
+  }
+  return h;
+}
+/* 선생님이 아이의 모둠을 옮김 → 명단 줄을 새로 하나 보냄(가장 마지막 줄을 씀) */
+function moveKid(nm, g){
+  var R = JSON.parse(JSON.stringify(LIVE.roster || {})), u = sheetUrl();
+  if(!u || !g || !R[g]) return;
+  for(var k in R) R[k] = R[k].filter(function(m){ return m!==nm && !sameName(nm, m); });
+  R[g].push(nm);
+  var tx = '모둠명단 ' + JSON.stringify(R) + '\n@@__모둠명단__|' + (LIVE.topic || 'upload3') + '@@';
+  fetch(u, { method:'POST', body:JSON.stringify({text:tx}), headers:{'Content-Type':'text/plain;charset=utf-8'} })
+    .then(function(r){ return r.json(); })
+    .then(function(j){ if(!j || !j.ok) throw new Error('bad'); LIVE.roster = R; paintLive(); })
+    .catch(function(){ alert('모둠을 바꾸지 못했어요. 인터넷을 확인하고 다시 해 볼까요?'); paintLive(); });
+}
 function topicById(id){ for(var i=0;i<TOPICS.length;i++) if(TOPICS[i].id===id) return TOPICS[i]; return null; }
 function viewTeacher(){
   var B = bandOf();
@@ -1633,6 +1939,7 @@ function viewTeacher(){
     + '<span class="mini">성취기준 · 평가 기준 · 추천 주제가 이에 맞춰 바뀝니다.</span></div></div>';
   h += '<div class="tabs noprint">'
     + '<button class="tab" data-tab="guide" aria-pressed="'+(T.tab==='guide')+'">진행 순서</button>'
+    + '<button class="tab" data-tab="live" aria-pressed="'+(T.tab==='live')+'">지금 아이들</button>'
     + '<button class="tab" data-tab="gather" aria-pressed="'+(T.tab==='gather')+'">결과 모아 보기</button>'
     + '<button class="tab" data-tab="agree" aria-pressed="'+(T.tab==='agree')+'">마무리 — 합의문</button>'
     + '</div>';
@@ -1755,6 +2062,10 @@ function viewTeacher(){
     return h;
   }
 
+  if(T.tab==='live'){
+    h += '<div class="card"><div id="live">'+liveHtml()+'</div></div>';
+    return h;
+  }
   if(T.tab==='gather'){
     var rows = parsePastes();
     h += '<div class="card noprint"><h2>구글 시트에서 바로 모으기 <span class="mini" style="font-weight:600">(선택)</span></h2>'
@@ -1920,7 +2231,7 @@ function viewTeacher(){
         + '<div class="note" style="margin-top:12px">"경험"이나 "들은 말"이 많다면 다음 시간에 <b>자료를 찾아보는 활동</b>을 한 번 넣어 주세요.</div>';
 
       h += '<h3 style="font-size:16px;margin:18px 0 6px">한 명씩 보기</h3><table>'
-        + '<tr><th>이름/코드</th><th>처음</th><th>나중</th><th>근거</th><th>점검</th></tr>';
+        + '<tr><th>이름/코드</th><th>처음</th><th>나중</th><th>근거</th><th>점검</th><th>최종 글</th></tr>';
       for(var y=0;y<rows.length;y++){
         var rr=rows[y];
         h += '<tr><td>'+esc(rr.name)+'</td>'
@@ -1929,9 +2240,17 @@ function viewTeacher(){
                + '<td>'+(rr.cards2 ? (cardsChanged(rr.cards||'',rr.cards2) ? cardsChanged(rr.cards||'',rr.cards2)+'장 바꿈' : '그대로') : '-')+'</td>'
              : '<td>'+(rr.first!==null?rr.first:'-')+'</td>'
                + '<td>'+(rr.last!==null?rr.last:'-')+(rr.first!==null&&rr.last!==null&&rr.first!==rr.last?'':'')+'</td>')
-          + '<td>'+esc(rr.evt)+'</td><td>'+esc(rr.score)+'</td></tr>';
+          + '<td>'+esc(rr.evt)+'</td><td>'+esc(rr.score)+'</td><td>'+jjTag(rr.jj)+'</td></tr>';
       }
       h += '</table>';
+      var fins = rows.filter(function(x){ return x.final; });
+      if(fins.length){
+        var nj = fins.filter(function(x){ return x.jj==='j'; }).length;
+        h += '<h3 style="font-size:16px;margin:18px 0 6px">최종 글 모아 보기 <span class="mini">('+fins.length+'명 · 자작자작 도움 '+nj+'명)</span></h3>'
+          + '<p class="mini">"자작자작"은 아이가 앱에서 자작자작을 연 뒤 최종본 칸에 붙여 넣은 글이에요. "붙여 넣음"은 자작자작을 열지 않고 붙여 넣은 글이에요.</p>';
+        for(i=0;i<fins.length;i++)
+          h += '<details class="think"><summary>'+esc(fins[i].name)+' '+jjTag(fins[i].jj)+'</summary><div class="fin">'+esc(fins[i].final)+'</div></details>';
+      }
 
       /* 상·중·하 평가 */
       var cnt = {'상':0,'중':0,'하':0}, partial=0;
@@ -2018,8 +2337,11 @@ function render(){
   if(S.mode!=='teacher' && S.step>0 && !topic()){ S.step=0; S.topic=null; }
   var key = S.mode+'/'+(S.mode==='teacher'?T.tab:S.step), y = window.pageYOffset||0;
   app(S.mode==='teacher' ? viewTeacher() : viewStudent());
+  if(S.mode==='student' && key!==render.lastKey) progPing(true);
+  if(S.mode==='teacher' && T.tab==='live'){ if(!liveTimer){ liveTimer = setInterval(liveLoad, 10000); liveLoad(); } }
+  else if(liveTimer){ clearInterval(liveTimer); liveTimer = null; }
   if(S.mode==='student' && S.send && !rosterState && (S.step===1 || S.step>=5)) loadRoster();
-  if(S.mode==='student' && S.step>=5 && S.send && S.group){ if(!grpTimer){ grpTimer = setInterval(grpTick, 8000); setTimeout(grpTick, 300); } }
+  if(S.mode==='student' && S.step>=5 && S.step<=6 && S.send && S.group){ if(!grpTimer){ grpTimer = setInterval(grpTick, 8000); setTimeout(grpTick, 300); } }
   else if(grpTimer){ clearInterval(grpTimer); grpTimer = null; }
   /* 아이 기기에는 단추가 보이지 않아요. 비밀번호를 넣은 선생님 기기에서만 두 화면을 오갑니다. */
   bm.hidden = !(S.mode==='teacher' || unlocked());
@@ -2028,7 +2350,7 @@ function render(){
   render.lastKey = key;
 }
 function grab(){
-  var ids = ['claim','reason','ev','who','other','still','moved','why','nm','cq','cl','cr','paste','a1','a2','a3','a4','sheet'];
+  var ids = ['claim','reason','ev','who','other','still','moved','why','draft','final','nm','cq','cl','cr','paste','a1','a2','a3','a4','sheet'];
   for(var i=0;i<ids.length;i++){
     var el = $(ids[i]); if(!el) continue;
     var v = el.value;
@@ -2051,13 +2373,14 @@ function grab(){
   save();
 }
 document.addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('[data-go],[data-topic],[data-first],[data-last],[data-stem],[data-evt],[data-job],[data-tab],[data-tpick],[data-grade],[data-band],[data-job2],[data-grp],[data-me]') : null;
+  var el = e.target.closest ? e.target.closest('[data-go],[data-topic],[data-first],[data-last],[data-stem],[data-evt],[data-job],[data-tab],[data-tpick],[data-grade],[data-band],[data-job2],[data-grp],[data-me],[data-livetopic]') : null;
   if(!el) return;
   var d = el.dataset;
 
   if(d.band){ grab(); if(S.mode==='teacher') T.band=d.band; else S.band=d.band; save(); render(); return; }
 
   if(d.tab){ grab(); T.tab=d.tab; render(); return; }
+  if(d.livetopic!==undefined){ LIVE.topic=d.livetopic; paintLive(); return; }
   if(d.tpick!==undefined){ grab(); T.topicPick=d.tpick; save(); render(); return; }
   if(d.grade!==undefined){ grab(); T.grades[d.gkey]=d.grade; save(); render(); return; }
 
@@ -2081,7 +2404,7 @@ document.addEventListener('click', function(e){
   }
   if(d.evt!==undefined){ grab(); S.evType = (S.evType===+d.evt)?-1:+d.evt; save(); render(); return; }
   if(d.grp!==undefined){ grab(); if(S.group!==d.grp){ S.group=d.grp; if(ROSTER && ROSTER[d.grp] && !ROSTER[d.grp].some(function(m){ return sameName(S.name, m); })) S.name=''; } save(); render(); return; }
-  if(d.me!==undefined){ grab(); S.name=d.me; S.typeName=false; save(); render(); if(S.step>=5) grpTick(); refreshNext(); return; }
+  if(d.me!==undefined){ grab(); S.name=d.me; S.typeName=false; S.whoOpen=false; save(); render(); progPing(true); if(S.step>=5) grpTick(); refreshNext(); return; }
   if(d.job2!==undefined){ grab(); var j2=+d.job2;
     if(d.v){ var v2=+d.v; S.jobs2[j2] = (S.jobs2[j2]===v2) ? 0 : v2; } else S.jobs2[j2] = ((S.jobs2[j2]||0)+1) % 4;
     save(); render(); return; }
@@ -2100,6 +2423,14 @@ document.addEventListener('click', function(e){
         save(); render(); }
       break;
     case 'back': grab(); if(S.step>0){ S.step--; save(); render(); } break;
+    case 'who': grab(); S.whoOpen = !S.whoOpen; render(); break;
+    case 'write': grab(); S.step = 7; if(!(S.draft||'').trim()) S.draft = buildDraft(topic()); save(); render(); break;
+    case 'jj':
+      /* 링크는 그대로 새 창으로 열리게 두고, 초안만 복사해 둡니다. */
+      grab(); S.jjOpened = true; save();
+      if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(S.draft||'').catch(function(){});
+      break;
+    case 'liveload': liveLoad(); break;
     case 'fix':  grab(); S.step=2; save(); render(); break;
     case 'copy': grab(); copyOut(); break;
     case 'send': grab(); sendOut(); break;
@@ -2158,7 +2489,8 @@ document.addEventListener('click', function(e){
       var nm = S.name, gp = S.group;
       S = { mode:S.mode, step:0, topic:null, custom:'', name:nm, first:null, claim:'', claimPick:-1,
             reason:'', ev:'', evType:-1, who:'', jobs:{}, other:'', still:'', moved:'', last:null, why:'', checked:false,
-            customL:'', customR:'', band:S.band, send:S.send, lastSent:'', jobs2:{}, sentStep:-1, group:gp };
+            customL:'', customR:'', band:S.band, send:S.send, lastSent:'', jobs2:{}, sentStep:-1, group:gp,
+            sents:'', draft:'', final:'', jj:'', jjOpened:false };
       save(); render(); break;
   }
 });
@@ -2168,7 +2500,29 @@ document.addEventListener('keydown', function(e){
     e.preventDefault(); var b=document.querySelector('[data-topic="custom"]'); if(b) b.click();
   }
 });
+/* 최종본 칸에 붙여 넣으면: 자작자작을 열었던 아이는 '자작자작 도움', 아니면 '붙여 넣음' */
+document.addEventListener('paste', function(e){
+  if(!e.target || e.target.id!=='final') return;
+  setTimeout(function(){
+    grab();
+    if((S.final||'').trim().length >= 10){ S.jj = S.jjOpened ? 'j' : (S.jj==='j' ? 'j' : 'p'); save(); }
+    var m = $('jjmark'); if(m) m.innerHTML = jjMark();
+    progPing(true);
+  }, 0);
+});
+document.addEventListener('focusin', function(e){
+  var id = e.target && e.target.id;
+  if(S.mode==='student' && id && FIELDNAMES[id] && progField!==id){ progField = id; progPing(true); }
+});
+document.addEventListener('change', function(e){
+  var mv = e.target && e.target.getAttribute && e.target.getAttribute('data-move');
+  if(mv===null || mv===undefined || !e.target.value) return;
+  var g = e.target.value; e.target.blur();
+  if(confirm(mv+'을(를) '+g+'모둠으로 옮길까요?')) moveKid(mv, g); else paintLive();
+});
 document.addEventListener('input', function(e){
+  if(e.target && e.target.id==='final' && !(e.target.value||'').trim()){ S.jj=''; var jm=$('jjmark'); if(jm) jm.innerHTML=''; }
+  if(S.mode==='student' && e.target && FIELDNAMES[e.target.id]) progPing(false);
   if(e.target && e.target.tagName==='TEXTAREA') grow(e.target);
   if(e.target && (e.target.tagName==='TEXTAREA' || e.target.tagName==='INPUT')){
     clearTimeout(window.__t);
