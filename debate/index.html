@@ -2498,7 +2498,7 @@ function agLoop(){
   if(!go){ agTimer = setTimeout(agLoop, 6000); return; }
   agLoad(function(){
     if(S.mode==='student') paintWhole();
-    else { agApply(document); if(T.tab==='whole' && !SHOW.open && !document.activeElement.closest('.card textarea')) { var c = $('wholectl'); if(c) c.innerHTML = wholeCtl(); } }
+    else { agApply(document); if(T.tab==='whole' && !SHOW.open && !document.activeElement.closest('.card textarea')) { var c = $('wholectl'); if(c) c.innerHTML = wholeCtl(); var rb = $('repbox'); if(rb) rb.innerHTML = repChips(); } }
     agTimer = setTimeout(agLoop, AG.on || SHOW.open ? 4000 : 12000);
   });
 }
@@ -2682,7 +2682,7 @@ function viewTeacher(){
       + '<div class="row" id="wholectl">'+wholeCtl()+'</div>'
       + '<label class="f" style="margin-top:16px">합의문 대표 (반장·부반장)</label>'
       + '<div class="fh">이름을 누르면 대표가 돼요. 다시 누르면 빠져요. 대표가 아니어도 선생님은 언제든 적을 수 있어요.</div>'
-      + repChips()
+      + '<div id="repbox">'+repChips()+'</div>'
       + '<p class="mini" style="margin-top:8px">대표 아이 화면에는 합의문 칸이 쓰는 칸으로 바뀌어요. 같은 칸을 두 사람이 동시에 고치면 나중에 쓴 쪽이 남으니, 대표마다 맡을 칸을 정해 주면 좋아요(예: 반장 ①②, 부반장 ③④).</p>'
       + '<p class="mini">서버가 없는 앱이라 완전한 잠금은 아니에요. 수업 중에 아무나 고치지 못하게 하는 정도예요.</p>'
       + '<p class="mini" style="margin-top:8px">넘기기: 화면 아래 [다음]·[이전], 키보드 ←·→, 손가락으로 밀기. [전체 화면]을 누르면 칠판 가득 보여요. 끝내려면 [닫기]나 Esc.</p></div>';
