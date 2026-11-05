@@ -241,6 +241,23 @@ code{font-family:inherit;background:var(--fill-2);padding:1px 6px;border-radius:
 .pk3[aria-pressed=true]{background:var(--green);color:#fff;box-shadow:none}
 .pk2[aria-pressed=true]{background:#f5a524;color:#fff;box-shadow:none}
 .pk1[aria-pressed=true]{background:#e5534b;color:#fff;box-shadow:none}
+.linkbtn{color:var(--mute);text-decoration:underline;font-size:13.5px;padding:0}
+.grpbox{margin:16px 0 4px}
+.who{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.who span{background:#fff;border-radius:999px;padding:4px 11px;font-size:13.5px;color:var(--mute)}
+.who span.ok{color:var(--green-d);font-weight:700}
+.grph{font-size:16px;margin:18px 0 8px}
+.grpcards{display:grid;gap:8px}
+.gc{background:var(--fill);border-radius:14px;padding:12px 14px}
+.gc.split{background:var(--amber-l)}
+.gc .nm{font-weight:700;font-size:14.5px;margin-bottom:4px}
+.gc .tag{font-size:11.5px;font-weight:700;color:var(--amber);background:#fff;border-radius:6px;padding:1px 6px;margin-left:4px}
+.gl{font-size:14px;color:var(--sub);margin-top:2px}
+.gl b{font-size:12px;border-radius:6px;padding:1px 7px;margin-right:4px;color:#fff}
+.gl b.k0{background:var(--green)} .gl b.k1{background:#f5a524} .gl b.k2{background:#e5534b}
+.grpclaims{display:grid;gap:6px}
+.gcl{background:var(--fill);border-radius:12px;padding:10px 14px;font-size:14.5px;display:flex;gap:10px}
+.gcl b{flex:0 0 auto;color:var(--green-d)}
 .pause{background:var(--green-l);border-radius:18px;padding:16px 18px;margin:16px 0 4px}
 .pause .t{display:block;font-weight:700;color:var(--green-d);font-size:16px}
 .pause .mini{color:var(--sub);margin-top:4px;font-size:14px}
@@ -828,7 +845,7 @@ var S = {
   mode:'student', step:0, topic:null, custom:'',
   name:'', first:null, claim:'', claimPick:-1, reason:'', ev:'', evType:-1,
   who:'', jobs:{}, other:'', still:'', moved:'', last:null, why:'', checked:false,
-  customL:'', customR:'', band:'56', send:'', lastSent:'', jobs2:{}, sentStep:-1
+  customL:'', customR:'', band:'56', send:'', lastSent:'', jobs2:{}, sentStep:-1, group:''
 };
 function save(){
   try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
@@ -929,7 +946,7 @@ var NEEDMSG = {1:'선 위에서 내 자리를 먼저 골라 주세요.',
   2:'주장과 이유를 적어야 다음으로 갈 수 있어요.',
   4:'반대편에서 가장 일리 있던 말을 한 줄 적어 주세요.'};
 function nav(backLabel, nextLabel, canNext){
-  var tn = topic(), msg = (S.step===1 && !(S.name||'').trim()) ? '맨 위에 이름이나 참여 코드를 먼저 적어 주세요.'
+  var tn = topic(), msg = (S.step===1 && !(S.name||'').trim()) ? '맨 위에서 내 이름을 먼저 골라(적어) 주세요.'
       : (S.step===1 && tn && tn.noLine) ? '카드를 하나 이상 골라 주세요.' : NEEDMSG[S.step];
   return (!canNext && msg ? '<p class="hint noprint" style="text-align:right;margin-top:14px">'+msg+'</p>' : '')
     + '<div class="nav noprint">'
@@ -1010,9 +1027,9 @@ function viewStudent(){
   if(S.step===0){
     h += '<div class="card"><h2>오늘 어떤 이야기를 나눌까요?</h2>'
       + '<p class="lead">주제를 하나 고르세요. 선생님이 정해 주신 주제가 있으면 그것을 고르면 돼요.</p>'
-      + '<label class="f" for="nm">내 이름이나 참여 코드</label>'
-      + '<div class="fh">선생님이 코드를 주셨다면 그 코드를, 아니면 별명을 적어요.</div>'
-      + '<input type="text" id="nm" value="'+esc(S.name)+'" placeholder="예: K07 또는 초록별">'
+      + '<label class="f" for="nm">내 이름</label>'
+      + '<div class="fh">선생님이 누구 생각인지 알 수 있게 적어 주세요.</div>'
+      + '<input type="text" id="nm" value="'+esc(S.name)+'" placeholder="예: 김민준">'
       + '<label class="f" style="margin-top:20px">우리는 몇 학년?</label>'
       + '<div class="fh">학년에 맞는 주제가 보여요. 선생님이 주신 주소로 들어왔다면 이미 맞춰져 있어요.</div>' + bandChips(S.band)
       + '<label class="f" style="margin-top:18px">주제</label><div class="topics">';
@@ -1036,11 +1053,13 @@ function viewStudent(){
   if(S.step===1){
     h += '<div class="card"><h2>'+t.ic+' '+esc(t.q)+'</h2>'
       + (t.sub?'<p class="lead">'+esc(t.sub)+'</p>':'');
-    if(!(S.name||'').trim() || S.nameHere){
+    if(S.send && ROSTER && !S.typeName){
+      h += whoPicker();
+    } else if(!(S.name||'').trim() || S.nameHere){
       S.nameHere = true;   /* 이름을 여기서 쓰기 시작했으면 다 쓸 때까지 칸을 그대로 둡니다 */
-      h += '<label class="f" for="nm">내 이름이나 참여 코드</label>'
-        + '<div class="fh">선생님이 누구 생각인지 알 수 있게 적어 주세요.</div>'
-        + '<input type="text" id="nm" value="'+esc(S.name)+'" placeholder="예: 12 김민준 또는 K07">';
+      h += '<label class="f" for="nm">내 이름</label>'
+        + '<div class="fh">'+(S.send && rosterState==='loading' ? '모둠 명단을 불러오는 중이에요. 기다리지 않고 이름을 적어도 돼요.' : '선생님이 누구 생각인지 알 수 있게 적어 주세요.')+'</div>'
+        + '<input type="text" id="nm" value="'+esc(S.name)+'" placeholder="예: 김민준">';
     }
     if(t.noLine){
       var CD1 = cardsOf(t);
@@ -1178,8 +1197,10 @@ function viewStudent(){
           ? '<p class="hint">'+(S.sentStep===5 ? '<b>보냈어요. ('+esc(S.lastSent)+')</b> ' : '')
             + '[선생님께 보내기]를 누르면 선생님 화면으로 바로 가요. '+TWg+' 끝난 뒤에 한 번 더 보낼 거예요.</p>'
           : '<p class="hint">복사한 내용을 선생님이 알려 주신 곳(패들렛 등)에 붙여 넣으면 돼요. '+TWg+' 끝난 뒤에 한 번 더 복사해서 올릴 거예요.</p>')
-      + '<div class="pause"><span class="t">'+(S.send?'보냈다면':'올렸다면')+' 여기서 잠깐 멈춰요</span>'
-      + '<div class="mini">이제 친구들과 '+TW+'해요. '+TWg+' 끝나면 아래 ['+TW+' 끝나고 누르기]를 눌러 이어서 해요.</div></div>'
+      + (S.send && (S.group || ROSTER)
+          ? '<div class="grpbox" id="grp">'+groupPanel(null)+'</div>'
+          : '<div class="pause"><span class="t">'+(S.send?'보냈다면':'올렸다면')+' 여기서 잠깐 멈춰요</span>'
+            + '<div class="mini">이제 친구들과 '+TW+'해요. '+TWg+' 끝나면 아래 ['+TW+' 끝나고 누르기]를 눌러 이어서 해요.</div></div>')
       + nav('이전', TW+' 끝나고 누르기', true) + '</div>';
     return h;
   }
@@ -1297,7 +1318,7 @@ function resultText(){
 function sendOut(){
   if(!S.send) return;
   if(!(S.name||'').trim()){
-    var nm = prompt('이름이나 참여 코드를 적지 않았어요. 선생님이 누구 글인지 알 수 있게 적어 주세요.', '');
+    var nm = prompt('이름을 적지 않았어요. 선생님이 누구 글인지 알 수 있게 적어 주세요.', '');
     if(nm===null) return;
     S.name = nm.trim(); save();
   }
@@ -1319,7 +1340,7 @@ function sendOut(){
 }
 function copyOut(){
   if(!(S.name||'').trim()){
-    var nm = prompt('이름이나 참여 코드를 적지 않았어요. 선생님이 누구 글인지 알 수 있게 적어 주세요.', '');
+    var nm = prompt('이름을 적지 않았어요. 선생님이 누구 글인지 알 수 있게 적어 주세요.', '');
     if(nm===null) return;
     S.name = nm.trim(); save();
   }
@@ -1338,10 +1359,127 @@ function copyOut(){
   }
 }
 
+
+/* ===================== 모둠 =====================
+   명단은 코드에 넣지 않고 선생님 시트에 한 줄로 둡니다: "모둠명단 {JSON}\n@@__모둠명단__|주제@@"
+   (코드 줄이 두 칸뿐이라 선생님 집계에서는 저절로 빠집니다.) 아이 기기는 시트 글을 읽어 명단을 찾고,
+   ⑥단계에서 같은 모둠 친구들이 보냈는지 8초마다 확인합니다. */
+var ROSTER = null, rosterState = '', grpTimer = null, grpLast = null;
+function rosterFromText(txt){
+  var m, re = /모둠명단 (\{[^\n]*\})/g, found = null;
+  while((m = re.exec(txt||''))){ try{ found = JSON.parse(m[1]); }catch(e){} }
+  return found;
+}
+function sheetGet(url, cb){
+  if(!url || !window.fetch){ cb(null); return; }
+  fetch(url + (url.indexOf('?')>=0?'&':'?') + 't=' + Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(j){ cb(j && j.ok ? (j.texts||[]).join('\n\n') : null); })
+    .catch(function(){ cb(null); });
+}
+function loadRoster(){
+  if(rosterState) return;
+  rosterState = 'loading';
+  sheetGet(S.send, function(txt){
+    var r = txt ? rosterFromText(txt) : null;
+    ROSTER = r && Object.keys(r).length ? r : null;
+    rosterState = 'done';
+    if(txt) grpLast = txt;
+    render();
+  });
+}
+function sameName(a, b){ a=(a||'').replace(/\s/g,''); b=(b||'').replace(/\s/g,''); return !!a && !!b && (a===b || a.indexOf(b)>=0); }
+function whoPicker(){
+  var h = '<label class="f">우리 모둠과 내 이름</label><div class="fh">우리 모둠을 누르고, 내 이름을 눌러요.</div><div class="chips">';
+  var gs = Object.keys(ROSTER);
+  for(var i=0;i<gs.length;i++) h += '<button class="chip" data-grp="'+esc(gs[i])+'" aria-pressed="'+(S.group===gs[i])+'">'+esc(gs[i])+'모둠</button>';
+  h += '</div>';
+  if(S.group && ROSTER[S.group]){
+    h += '<div class="chips" style="margin-top:12px">';
+    for(var j=0;j<ROSTER[S.group].length;j++){ var nm = ROSTER[S.group][j];
+      h += '<button class="chip" data-me="'+esc(nm)+'" aria-pressed="'+(S.name===nm)+'">'+esc(nm)+'</button>'; }
+    h += '</div>';
+  }
+  h += '<p class="hint"><button class="linkbtn" data-go="typename">명단에 내 이름이 없어요</button></p>';
+  return h;
+}
+/* ⑥단계 모둠 판. txt 가 없으면 '확인하는 중'으로 그립니다. */
+function groupPanel(txt){
+  var t = topic(), TW = t && t.noLine ? '토의' : '토론';
+  if(!S.group || !ROSTER || !ROSTER[S.group]){
+    if(ROSTER) return '<div class="pause"><span class="t">우리 모둠을 골라 주세요</span><div class="mini">모둠 친구들이 다 보냈는지 보려면 모둠과 이름이 필요해요.</div></div>' + whoPicker();
+    return '<div class="pause"><span class="t">보냈다면 여기서 잠깐 멈춰요</span><div class="mini">이제 친구들과 '+TW+'해요.</div></div>';
+  }
+  var members = ROSTER[S.group];
+  if(txt===null || txt===undefined) txt = grpLast;
+  if(!txt) return '<div class="pause"><span class="t">'+esc(S.group)+'모둠 친구들을 확인하는 중…</span></div>';
+  var rows = parsePastes(txt).filter(function(r){ return t && r.topic===t.id; });
+  var got = members.map(function(m){ var r=null; for(var i=0;i<rows.length;i++) if(sameName(rows[i].name, m)) r=rows[i]; return {name:m, row:r}; });
+  var done = got.filter(function(g){ return g.row; }).length, me = got.filter(function(g){ return g.name===S.name; })[0];
+  var h = '';
+  if(done < members.length){
+    h += '<div class="pause"><span class="t">우리 모둠 '+done+' / '+members.length+'명 보냈어요</span>'
+       + '<div class="mini">'+(me && !me.row ? '<b>나는 아직 안 보냈어요.</b> 위의 [선생님께 보내기]를 눌러요. ' : '')
+       + '모두 보내면 우리 모둠이 고른 것이 여기에 저절로 나와요. 기다리는 동안 내 발표 카드를 소리 내어 읽어 봐요.</div>'
+       + '<div class="who">';
+    for(var i=0;i<got.length;i++) h += '<span class="'+(got[i].row?'ok':'')+'">'+(got[i].row?'✓ ':'')+esc(got[i].name)+'</span>';
+    h += '</div></div>';
+    return h;
+  }
+  /* 모두 보냄 → 우리 모둠 판 */
+  h += '<div class="pause done"><span class="t">'+esc(S.group)+'모둠 모두 모였어요! 모둠 '+TW+'를 시작해요</span>'
+     + '<div class="mini">같은 카드를 다르게 고른 친구에게 "왜 그렇게 골랐어?"를 먼저 물어봐요. 우리 모둠이 함께 내놓을 규칙을 1~2개 정해요.</div></div>';
+  var CD = cardsOf(t);
+  if(CD){
+    var B = CD.btn || CD.keys;
+    h += '<h3 class="grph">우리 모둠이 고른 카드</h3><div class="grpcards">';
+    for(var c=0;c<CD.list.length;c++){
+      var col = [[],[],[]];
+      for(var g=0;g<got.length;g++){ var v = +((got[g].row.cards||'').charAt(c)||0); if(v) col[v-1].push(got[g].name); }
+      var split = (col[0].length>0) + (col[1].length>0) + (col[2].length>0) > 1;
+      h += '<div class="gc'+(split?' split':'')+'"><div class="nm">'+esc(CD.list[c][0])+(split?' <span class="tag">생각이 갈려요</span>':'')+'</div>';
+      for(var k=0;k<3;k++) if(col[k].length) h += '<div class="gl"><b class="k'+k+'">'+esc(B[k])+'</b> '+col[k].map(esc).join(', ')+'</div>';
+      h += '</div>';
+    }
+    h += '</div>';
+  }
+  h += '<h3 class="grph">우리 모둠이 제안한 규칙</h3><div class="grpclaims">';
+  for(var q=0;q<got.length;q++){ var x = got[q].row.text || {};
+    h += '<div class="gcl"><b>'+esc(got[q].name)+'</b><span>'+esc(x.claim || '(글 없이 보냈어요)')+'</span></div>'; }
+  h += '</div>';
+  return h;
+}
+function grpTick(){
+  if(S.mode!=='student' || S.step!==5 || !S.send || !S.group){ clearInterval(grpTimer); grpTimer=null; return; }
+  sheetGet(S.send, function(txt){
+    if(txt){ grpLast = txt; var r = rosterFromText(txt); if(r) ROSTER = r; }
+    var el = $('grp'); if(el && S.step===5) el.innerHTML = groupPanel(txt);
+  });
+}
+/* 선생님 화면: 모둠별 진행 */
+function teacherGroups(){
+  var R = rosterFromText(T.paste); if(!R) return '';
+  var tp = T.topicPick || 'upload3';
+  var rows = parsePastes().filter(function(r){ return r.topic===tp; });
+  var h = '<div class="card"><h2>모둠별 진행</h2><p class="lead">시트에서 불러온 때를 기준으로 누가 보냈는지 보여 줘요. 다시 보려면 [시트에서 불러오기]를 한 번 더 눌러요.</p>'
+    + '<table><tr><th style="width:70px">모둠</th><th>토의 전 보냄</th><th>토의 뒤 보냄</th><th>아직 안 보낸 친구</th></tr>';
+  var gs = Object.keys(R);
+  for(var i=0;i<gs.length;i++){
+    var mem = R[gs[i]], pre=0, post=0, miss=[];
+    for(var j=0;j<mem.length;j++){
+      var r=null; for(var k=0;k<rows.length;k++) if(sameName(rows[k].name, mem[j])) r=rows[k];
+      if(r){ pre++; if(r.cards2 || r.last!==null) post++; } else miss.push(mem[j]);
+    }
+    h += '<tr><td><b>'+esc(gs[i])+'모둠</b></td><td'+(pre===mem.length?' style="color:var(--green);font-weight:700"':'')+'>'+pre+' / '+mem.length+'</td>'
+       + '<td>'+post+' / '+mem.length+'</td><td class="mini">'+(miss.length?miss.map(esc).join(', '):'모두 보냄')+'</td></tr>';
+  }
+  return h + '</table></div>';
+}
+
 /* ===================== 선생님 화면 ===================== */
 /* 선생님 화면 잠금. 비밀번호는 코드에 적지 않고 그 해시만 둡니다(바꾸려면 PIN_HASH 를 새로 계산).
    서버가 없어 완벽한 잠금은 아니지만, 아이들이 수업 중에 들어오는 것은 막습니다. */
-var PIN_HASH = 'bf01bbaa';
+var PIN_HASH = '9a632a12';
 function pinHash(v){ var x=2166136261>>>0, t='saenggak-moagi:'+v; for(var i=0;i<t.length;i++){ x^=t.charCodeAt(i); x=Math.imul(x,16777619)>>>0; } return x.toString(16); }
 function unlocked(){ return T.unlocked===PIN_HASH; }
 var askPin = false, pinTries = 0, pinWait = 0;
@@ -1366,8 +1504,8 @@ function tryUnlock(){
 }
 var T = { tab:'guide', paste:'', a1:'', a2:'', a3:'', a4:'', topicPick:'', grades:{}, notes:{}, band:'56', sheet:'', unlocked:'' };
 function num(x){ x=String(x==null?'':x).trim(); if(x==='') return null; var v=+x; return (v>=0 && v<=10 && v===Math.floor(v)) ? v : null; }
-function parsePastes(){
-  var rows = [], seen = {}, blocks = (T.paste||'').split(/@@/);
+function parsePastes(src){
+  var rows = [], seen = {}, blocks = ((src===undefined ? T.paste : src)||'').split(/@@/);
   for(var i=1;i<blocks.length;i+=2){
     var p = blocks[i].split('|');
     if(p.length<6) continue;
@@ -1618,6 +1756,7 @@ function viewTeacher(){
       + '<span class="mini" id="sheetmsg"></span></div>'
       + '<p class="mini" style="margin-top:8px">불러오면 아래 붙여넣기 칸이 시트 내용으로 바뀌어요. 주소를 넣은 뒤 [진행 순서]의 [학생용 주소 복사]를 누르면 '
       + '시트 주소가 함께 들어가서, 그 주소로 들어온 아이 화면에만 보내기 단추가 생깁니다.</p></div>';
+    h += teacherGroups();
     h += '<div class="card noprint"><h2>학생 결과 모아 보기</h2>'
       + '<p class="lead">아이들이 복사한 글을 모두 아래에 붙여 넣으세요. 여러 명을 한꺼번에 붙여도 됩니다.</p>'
       + '<textarea class="out" id="paste" placeholder="학생들의 [결과 복사하기] 내용을 그대로 붙여 넣으세요.">'+esc(T.paste)+'</textarea>'
@@ -1866,6 +2005,9 @@ function render(){
   if(S.mode!=='teacher' && S.step>0 && !topic()){ S.step=0; S.topic=null; }
   var key = S.mode+'/'+(S.mode==='teacher'?T.tab:S.step), y = window.pageYOffset||0;
   app(S.mode==='teacher' ? viewTeacher() : viewStudent());
+  if(S.mode==='student' && S.send && !rosterState && (S.step===1 || S.step===5)) loadRoster();
+  if(S.mode==='student' && S.step===5 && S.send && S.group){ if(!grpTimer){ grpTimer = setInterval(grpTick, 8000); setTimeout(grpTick, 300); } }
+  else if(grpTimer){ clearInterval(grpTimer); grpTimer = null; }
   /* 아이 기기에는 단추가 보이지 않아요. 비밀번호를 넣은 선생님 기기에서만 두 화면을 오갑니다. */
   bm.hidden = !(S.mode==='teacher' || unlocked());
   bm.textContent = S.mode==='teacher' ? '학생 화면' : '선생님 화면';
@@ -1896,7 +2038,7 @@ function grab(){
   save();
 }
 document.addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('[data-go],[data-topic],[data-first],[data-last],[data-stem],[data-evt],[data-job],[data-tab],[data-tpick],[data-grade],[data-band],[data-job2]') : null;
+  var el = e.target.closest ? e.target.closest('[data-go],[data-topic],[data-first],[data-last],[data-stem],[data-evt],[data-job],[data-tab],[data-tpick],[data-grade],[data-band],[data-job2],[data-grp],[data-me]') : null;
   if(!el) return;
   var d = el.dataset;
 
@@ -1925,6 +2067,8 @@ document.addEventListener('click', function(e){
     save(); render(); return;
   }
   if(d.evt!==undefined){ grab(); S.evType = (S.evType===+d.evt)?-1:+d.evt; save(); render(); return; }
+  if(d.grp!==undefined){ grab(); if(S.group!==d.grp){ S.group=d.grp; if(ROSTER && ROSTER[d.grp] && ROSTER[d.grp].indexOf(S.name)<0) S.name=''; } save(); render(); return; }
+  if(d.me!==undefined){ grab(); S.name=d.me; S.typeName=false; save(); render(); if(S.step===5) grpTick(); refreshNext(); return; }
   if(d.job2!==undefined){ grab(); var j2=+d.job2;
     if(d.v){ var v2=+d.v; S.jobs2[j2] = (S.jobs2[j2]===v2) ? 0 : v2; } else S.jobs2[j2] = ((S.jobs2[j2]||0)+1) % 4;
     save(); render(); return; }
@@ -1948,6 +2092,7 @@ document.addEventListener('click', function(e){
     case 'print': grab(); window.print(); break;
     case 'agg': grab(); render(); break;
     case 'unlock': tryUnlock(); break;
+    case 'typename': grab(); S.typeName = true; S.group = ''; S.nameHere = true; save(); render(); break;
     case 'lockback':
       askPin = false; S.mode = 'student'; save();
       try{ history.replaceState(null, '', location.pathname + location.search.replace(/([?&])teacher(=[^&]*)?&?/, '$1').replace(/[?&]$/, '')); }catch(e){}
@@ -1994,10 +2139,10 @@ document.addEventListener('click', function(e){
       break;
     case 'reset':
       if(!confirm('지금 쓴 내용을 지우고 새 주제로 시작할까요?')) break;
-      var nm = S.name;
+      var nm = S.name, gp = S.group;
       S = { mode:S.mode, step:0, topic:null, custom:'', name:nm, first:null, claim:'', claimPick:-1,
             reason:'', ev:'', evType:-1, who:'', jobs:{}, other:'', still:'', moved:'', last:null, why:'', checked:false,
-            customL:'', customR:'', band:S.band, send:S.send, lastSent:'', jobs2:{}, sentStep:-1 };
+            customL:'', customR:'', band:S.band, send:S.send, lastSent:'', jobs2:{}, sentStep:-1, group:gp };
       save(); render(); break;
   }
 });
